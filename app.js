@@ -201,22 +201,20 @@ function getLocation() {
                 document.getElementById('elevation').textContent = '取得中...';
             }
 
-            // グリッドロケーターの計算
+            // グリッドロケーターの計算（これは常に正確）
             const gridLocator = calculateGridLocator(lat, lon);
             document.getElementById('gridLocator').textContent = gridLocator;
 
-            // まず、ローカルデータからJCC/JCGを取得（即座に表示）
-            const locationInfo = findLocationInfo(lat, lon);
-            document.getElementById('prefecture').textContent = locationInfo.prefecture;
-            document.getElementById('city').textContent = locationInfo.city;
-            document.getElementById('jcc').textContent = locationInfo.jcc;
-            document.getElementById('jcg').textContent = locationInfo.jcg;
+            // 初期状態：取得中と表示
+            document.getElementById('prefecture').textContent = '取得中...';
+            document.getElementById('city').textContent = '取得中...';
+            document.getElementById('jcc').textContent = '取得中...';
+            document.getElementById('jcg').textContent = '取得中...';
 
             // 結果の表示
             document.getElementById('result').style.display = 'block';
-            statusElement.textContent = '位置情報を取得しました';
 
-            // オンラインの場合、より正確な情報を取得
+            // オンラインの場合、正確な情報を取得
             if (navigator.onLine) {
                 statusElement.textContent = '詳細情報を取得中...';
 
@@ -224,20 +222,36 @@ function getLocation() {
                 const elevation = await getElevation(lat, lon);
                 if (elevation !== null) {
                     document.getElementById('elevation').textContent = `${elevation}m`;
+                } else {
+                    document.getElementById('elevation').textContent = '取得失敗';
                 }
 
                 // 正確な住所を取得
                 const geoData = await reverseGeocode(lat, lon);
                 if (geoData) {
-                    if (geoData.prefecture) {
-                        document.getElementById('prefecture').textContent = geoData.prefecture;
-                    }
-                    if (geoData.city) {
-                        document.getElementById('city').textContent = geoData.city;
-                    }
+                    document.getElementById('prefecture').textContent = geoData.prefecture || '不明';
+                    document.getElementById('city').textContent = geoData.city || '不明';
+                } else {
+                    document.getElementById('prefecture').textContent = '取得失敗';
+                    document.getElementById('city').textContent = '取得失敗';
                 }
 
+                // JCC/JCGをローカルデータから取得
+                const locationInfo = findLocationInfo(lat, lon);
+                document.getElementById('jcc').textContent = locationInfo.jcc;
+                document.getElementById('jcg').textContent = locationInfo.jcg;
+
                 statusElement.textContent = '位置情報を取得しました';
+            } else {
+                // オフラインの場合はローカルデータから推定
+                statusElement.textContent = 'オフラインモード：推定値を表示';
+
+                const locationInfo = findLocationInfo(lat, lon);
+                document.getElementById('prefecture').textContent = locationInfo.prefecture + ' (推定)';
+                document.getElementById('city').textContent = locationInfo.city + ' (推定)';
+                document.getElementById('jcc').textContent = locationInfo.jcc;
+                document.getElementById('jcg').textContent = locationInfo.jcg;
+                document.getElementById('elevation').textContent = '取得不可';
             }
         },
         (error) => {
