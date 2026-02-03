@@ -4,7 +4,7 @@ import { getElevation, reverseGeocode, findLocationInfo } from '../utils/api'
 import { convertToDMS, calculateGridLocator } from '../utils/coordinate'
 
 export function useGeolocation(locationData: LocationData | null) {
-  const [status, setStatus] = useState('status.fetching')
+  const [status, setStatus] = useState('status.ready')
   const [location, setLocation] = useState<QTHInfo | null>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [error, setError] = useState<string | null>(null)
@@ -138,14 +138,8 @@ export function useGeolocation(locationData: LocationData | null) {
     )
   }, [locationData])
 
-  // 初回自動取得
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchLocation()
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [fetchLocation])
+  // 初回自動取得を削除（ユーザージェスチャーが必要なため）
+  // ユーザーが「Refetch」ボタンをクリックした時のみ取得する
 
   return {
     status,

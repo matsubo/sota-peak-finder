@@ -4,6 +4,7 @@
     "subtitle": "JCC/JCG Finder"
   },
   "status": {
+    "ready": "Tap the \"Refetch\" button to get your location",
     "fetching": "Fetching location...",
     "fetchingDetails": "Fetching details...",
     "success": "Location fetched successfully",
@@ -15,7 +16,7 @@
     "offline": "Offline mode: Showing estimated values"
   },
   "button": {
-    "refetch": "Refetch"
+    "refetch": "Get Location"
   },
   "label": {
     "latitude": "Latitude",
@@ -29,7 +30,7 @@
   },
   "info": {
     "title": "How to use:",
-    "autoFetch": "Location is automatically fetched when page loads",
+    "autoFetch": "Tap the \"Refetch\" button to get your location",
     "permission": "Allow location access when prompted",
     "offline": "Works offline (requires online for first visit)"
   },

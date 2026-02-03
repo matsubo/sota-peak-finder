@@ -49,16 +49,31 @@
 
 ## 開発
 
+### セットアップ
+
+```bash
+# 依存関係のインストール
+bun install
+```
+
 ### ローカルで実行
 
 ```bash
-# シンプルなHTTPサーバーで実行
-python -m http.server 8000
-# または
-npx serve
+# 開発サーバーを起動
+bun run dev
 ```
 
-ブラウザで `http://localhost:8000` を開く
+ブラウザで `http://localhost:5173` を開く
+
+### プレビュー（本番ビルドの確認）
+
+```bash
+# ビルド
+bun run build
+
+# プレビュー
+bun run preview
+```
 
 ### データの更新
 
@@ -110,8 +125,9 @@ JCC/JCGデータは `data/location-data.json` に格納されています。
 
 ## 🛠️ 技術スタック
 
-- **フロントエンド**: Pure JavaScript (フレームワーク不要)
-- **PWA**: Service Worker、manifest.json
+- **フロントエンド**: React + TypeScript
+- **ビルドツール**: Vite
+- **PWA**: Service Worker (vite-plugin-pwa)、manifest.json
 - **位置情報**: Geolocation API
 - **標高API**: 国土地理院
 - **住所API**: OpenStreetMap Nominatim
