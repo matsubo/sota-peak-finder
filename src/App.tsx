@@ -1,4 +1,4 @@
-import { RefreshCw, Github, Languages, HelpCircle, Navigation, Database, Mountain, Hash } from 'lucide-react'
+import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useLocationData } from './hooks/useLocationData'
@@ -142,11 +142,11 @@ function App() {
           <div className="bg-slate-800/50 backdrop-blur-md rounded-2xl p-4 border border-slate-700/80">
             <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="text-left">
-                  {jccJcgCount && <p className="font-semibold text-slate-300">{t('footer.jccJcgData', { count: jccJcgCount.toLocaleString() })}</p>}
+                  {jccJcgCount && <p className="font-semibold text-slate-300">{t('footer.jccJcgData', { count: jccJcgCount })}</p>}
                   {locationDataLastUpdate && <p className="text-slate-500">{t('footer.lastUpdated', { date: locationDataLastUpdate})}</p>}
                 </div>
                 <div className="text-left">
-                  {sotaCount && <p className="font-semibold text-slate-300">{t('footer.sotaData', { count: sotaCount.toLocaleString() })}</p>}
+                  {sotaCount && <p className="font-semibold text-slate-300">{t('footer.sotaData', { count: sotaCount })}</p>}
                   {sotaDataLastUpdate && <p className="text-slate-500">{t('footer.lastUpdated', { date: sotaDataLastUpdate})}</p>}
                 </div>
             </div>

@@ -161,7 +161,8 @@ export function findNearbySotaSummits(
         distance,
         bearing,
         cardinalBearing,
-        isActivationZone: false // 初期値
+        isActivationZone: false, // 初期値
+        verticalDistance: null // 標高差（現在地の標高が必要なため、後で計算）
       }
     })
     .sort((a, b) => a.distance - b.distance) // 距離順にソート
