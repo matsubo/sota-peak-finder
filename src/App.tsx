@@ -1,4 +1,4 @@
-import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain } from 'lucide-react'
+import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain, BookOpen, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useLocationData } from './hooks/useLocationData'
@@ -138,44 +138,80 @@ function App() {
           )}
         </main>
 
-        <footer className="mt-12 text-center text-slate-400 text-sm space-y-4 animate-fade-in">
-           <p className="flex items-center justify-center gap-2">
-            <span className={cn(
-              "px-4 py-1.5 rounded-full text-xs font-medium border",
-              isOnline
-                ? "bg-green-500/10 border-green-400/30 text-green-300"
-                : "bg-orange-500/10 border-orange-400/30 text-orange-300"
-            )}>
-              {isOnline ? '● ' + t('footer.online') : '● ' + t('footer.offline')}
-            </span>
-          </p>
-          <p>
-            <span className="font-mono bg-slate-800/60 px-2 py-1 rounded text-xs">v{__APP_VERSION__}</span>
-            {' '} | {t('footer.createdBy')}{' '}
-            <a
-              href="https://x.com/je1wfv"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              JE1WFV
-            </a>
-          </p>
-          <a
-            href="https://github.com/matsubo/offline-qth"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 hover:text-indigo-300 transition-colors"
-          >
-            <Github className="w-4 h-4" />
-            <span>{t('footer.github')}</span>
-          </a>
-          <div className="text-xs text-slate-500 space-y-1">
-            {jccJcgCount && sotaCount && (
-              <p>
-                {t('footer.jccJcgData', { count: jccJcgCount })} / {t('footer.sotaData', { count: sotaCount })}
-              </p>
-            )}
+        <footer className="mt-16 animate-fade-in">
+          <div className="bg-slate-800/30 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 text-center text-slate-400 text-sm space-y-4">
+            <p className="flex items-center justify-center gap-2">
+              <span className={cn(
+                "px-4 py-1.5 rounded-full text-xs font-medium border",
+                isOnline
+                  ? "bg-green-500/10 border-green-400/30 text-green-300"
+                  : "bg-orange-500/10 border-orange-400/30 text-orange-300"
+              )}>
+                {isOnline ? '● ' + t('footer.online') : '● ' + t('footer.offline')}
+              </span>
+            </p>
+
+            <div className="h-px bg-slate-700/50 my-3"></div>
+
+            <p>
+              <span className="font-mono bg-slate-800/60 px-2 py-1 rounded text-xs">v{__APP_VERSION__}</span>
+              {' '} | {t('footer.createdBy')}{' '}
+              <a
+                href="https://x.com/je1wfv"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                JE1WFV
+              </a>
+            </p>
+
+            <div className="flex items-center justify-center gap-4">
+              <a
+                href="https://je1wfv.teraren.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 hover:text-indigo-300 transition-colors"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>{t('footer.blog')}</span>
+              </a>
+              <span className="text-slate-600">|</span>
+              <a
+                href="https://discord.gg/Fztt8jwr6A"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 hover:text-indigo-300 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>{t('footer.discord')}</span>
+              </a>
+              <span className="text-slate-600">|</span>
+              <a
+                href="https://github.com/matsubo/offline-qth"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 hover:text-indigo-300 transition-colors"
+              >
+                <Github className="w-4 h-4" />
+                <span>{t('footer.github')}</span>
+              </a>
+            </div>
+
+            <div className="h-px bg-slate-700/50 my-3"></div>
+
+            <div className="text-xs text-slate-500 space-y-1 pb-2">
+              {jccJcgCount && sotaCount && (
+                <p>
+                  {t('footer.jccJcgData', { count: jccJcgCount })} / {t('footer.sotaData', { count: sotaCount })}
+                </p>
+              )}
+              {(locationDataLastUpdate || sotaDataLastUpdate) && (
+                <p>
+                  {t('footer.lastUpdated', { date: locationDataLastUpdate || sotaDataLastUpdate })}
+                </p>
+              )}
+            </div>
           </div>
         </footer>
       </div>

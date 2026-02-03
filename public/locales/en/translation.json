@@ -42,6 +42,8 @@
     "offline": "Offline",
     "createdBy": "Created by",
     "github": "GitHub",
+    "blog": "Blog",
+    "discord": "Discord",
     "dataStats": "Data: 1,892 JCC/JCG | 4,600 SOTA summits",
     "lastUpdated": "Updated: {{date}}",
     "jccJcgData": "JCC/JCG: {{count}}",

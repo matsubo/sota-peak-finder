@@ -42,6 +42,8 @@
     "offline": "オフライン",
     "createdBy": "Created by",
     "github": "GitHub",
+    "blog": "Blog",
+    "discord": "Discord",
     "dataStats": "データ: JCC/JCG 1,892件 | SOTA 4,600山頂",
     "lastUpdated": "更新日: {{date}}",
     "jccJcgData": "JCC/JCG: {{count}}件",
