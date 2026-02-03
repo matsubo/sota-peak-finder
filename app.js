@@ -155,8 +155,8 @@ function findLocationInfo(lat, lon) {
     };
 }
 
-// 位置情報の取得
-document.getElementById('getLocation').addEventListener('click', () => {
+// 位置情報の取得関数
+function getLocation() {
     const statusElement = document.getElementById('status');
 
     if (!navigator.geolocation) {
@@ -245,7 +245,18 @@ document.getElementById('getLocation').addEventListener('click', () => {
             maximumAge: 0
         }
     );
-});
+}
 
-// ページ読み込み時にデータをロード
+// ボタンクリック時に位置情報取得
+document.getElementById('getLocation').addEventListener('click', getLocation);
+
+// ページ読み込み時にデータをロードし、自動的に位置情報を取得
 loadLocationData();
+
+// ページ読み込み完了後、自動的に位置情報を取得
+window.addEventListener('load', () => {
+    // 少し遅延させてから自動取得（Service Worker登録後）
+    setTimeout(() => {
+        getLocation();
+    }, 500);
+});
