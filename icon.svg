@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2196F3" rx="64"/>
+  <g fill="white">
+    <!-- 位置マーカー -->
+    <path d="M256 128c-44.2 0-80 35.8-80 80 0 60 80 144 80 144s80-84 80-144c0-44.2-35.8-80-80-80zm0 112c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/>
+
+    <!-- QTHテキスト -->
+    <text x="256" y="400" font-family="Arial, sans-serif" font-size="72" font-weight="bold" text-anchor="middle" fill="white">QTH</text>
+  </g>
+</svg>

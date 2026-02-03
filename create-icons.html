@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイコン生成ツール</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        .preview {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>PWAアイコン生成ツール</h1>
+    <p>このページでPWA用のアイコン画像を生成できます。</p>
+
+    <div class="preview">
+        <div>
+            <h3>192x192</h3>
+            <canvas id="canvas192" width="192" height="192"></canvas>
+            <br>
+            <button onclick="downloadIcon(192)">icon-192.png をダウンロード</button>
+        </div>
+        <div>
+            <h3>512x512</h3>
+            <canvas id="canvas512" width="512" height="512"></canvas>
+            <br>
+            <button onclick="downloadIcon(512)">icon-512.png をダウンロード</button>
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const radius = size * 0.125; // 角丸
+
+            // 背景
+            ctx.fillStyle = '#2196F3';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+
+            // 位置マーカー
+            ctx.fillStyle = 'white';
+            const markerX = size / 2;
+            const markerY = size * 0.35;
+            const markerSize = size * 0.3;
+
+            // マーカーの円
+            ctx.beginPath();
+            ctx.arc(markerX, markerY, markerSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // マーカーの先端
+            ctx.beginPath();
+            ctx.moveTo(markerX, markerY + markerSize / 2);
+            ctx.lineTo(markerX - markerSize / 4, markerY + markerSize);
+            ctx.lineTo(markerX + markerSize / 4, markerY + markerSize);
+            ctx.closePath();
+            ctx.fill();
+
+            // マーカーの中心の円（青）
+            ctx.fillStyle = '#2196F3';
+            ctx.beginPath();
+            ctx.arc(markerX, markerY, markerSize / 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // QTHテキスト
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.14}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('QTH', size / 2, size * 0.75);
+        }
+
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // 初期描画
+        drawIcon(document.getElementById('canvas192'), 192);
+        drawIcon(document.getElementById('canvas512'), 512);
+    </script>
+</body>
+</html>

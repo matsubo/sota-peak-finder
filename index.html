@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <title>オフラインQTH - JCC/JCG検索</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📍 オフラインQTH</h1>
+            <p class="subtitle">JCC/JCG検索ツール</p>
+        </header>
+
+        <main>
+            <div class="status-card">
+                <div id="status">位置情報を取得中...</div>
+            </div>
+
+            <button id="getLocation" class="btn-primary">
+                現在地を取得
+            </button>
+
+            <div id="result" class="result-card" style="display: none;">
+                <div class="result-item">
+                    <span class="label">緯度:</span>
+                    <span id="latitude">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">経度:</span>
+                    <span id="longitude">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">標高:</span>
+                    <span id="elevation">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">都道府県:</span>
+                    <span id="prefecture">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">市区町村:</span>
+                    <span id="city">-</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="label">グリッドロケーター:</span>
+                    <span id="gridLocator">-</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="label">JCC:</span>
+                    <span id="jcc">-</span>
+                </div>
+                <div class="result-item highlight">
+                    <span class="label">JCG:</span>
+                    <span id="jcg">-</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <p><strong>使い方:</strong></p>
+                <ul>
+                    <li>「現在地を取得」ボタンをタップ</li>
+                    <li>位置情報の許可を求められたら「許可」を選択</li>
+                    <li>オフラインでも動作します</li>
+                </ul>
+            </div>
+        </main>
+
+        <footer>
+            <p class="offline-indicator">
+                <span id="onlineStatus">オンライン</span>
+            </p>
+            <p class="version">v1.0.0 | オープンソース</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

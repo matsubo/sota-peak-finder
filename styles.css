@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    opacity: 0.9;
+    font-size: 1.1em;
+}
+
+.status-card,
+.result-card,
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#status {
+    text-align: center;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #1976D2;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-item.highlight {
+    background: #f0f8ff;
+    padding: 15px;
+    margin: 10px -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: none;
+}
+
+.label {
+    font-weight: bold;
+    color: #555;
+}
+
+.result-item span:last-child {
+    color: #2196F3;
+    font-weight: 600;
+}
+
+.result-item.highlight span:last-child {
+    font-size: 1.3em;
+    color: #FF5722;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.info-card ul {
+    margin-left: 20px;
+    margin-top: 10px;
+    line-height: 1.8;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+    opacity: 0.9;
+}
+
+.offline-indicator {
+    margin-bottom: 10px;
+}
+
+#onlineStatus {
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 0.9em;
+}
+
+.version {
+    font-size: 0.9em;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .status-card,
+    .result-card,
+    .info-card {
+        padding: 15px;
+    }
+}
