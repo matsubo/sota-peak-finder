@@ -4,11 +4,39 @@ import { Link } from 'react-router-dom'
 import { useLocationData } from './hooks/useLocationData'
 import { useGeolocation } from './hooks/useGeolocation'
 import { cn } from './lib/utils'
+import { useState, useEffect } from 'react' // Import useState and useEffect
 
 function App() {
   const { t, i18n } = useTranslation()
   const locationData = useLocationData()
   const { status, location, isOnline, refetch } = useGeolocation(locationData)
+
+  const [jccJcgCount, setJccJcgCount] = useState<number | null>(null)
+  const [sotaCount, setSotaCount] = useState<number | null>(null)
+  const [locationDataLastUpdate, setLocationDataLastUpdate] = useState<string | null>(null)
+  const [sotaDataLastUpdate, setSotaDataLastUpdate] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch JCC/JCG data
+        const locationResponse = await fetch('/offline-qth/data/location-data.json')
+        const locationJson = await locationResponse.json()
+        setJccJcgCount(locationJson.locations.length)
+        setLocationDataLastUpdate(locationJson.lastUpdate)
+
+        // Fetch SOTA data
+        const sotaResponse = await fetch('/offline-qth/data/sota-data.json')
+        const sotaJson = await sotaResponse.json()
+        setSotaCount(sotaJson.summits.length)
+        setSotaDataLastUpdate(sotaJson.lastUpdate)
+      } catch (error) {
+        console.error("Failed to fetch data:", error)
+      }
+    }
+
+    fetchData()
+  }, []) // Empty dependency array means this effect runs once on mount
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'ja' ? 'en' : 'ja'
@@ -21,10 +49,11 @@ function App() {
         <header className="text-center text-white mb-10 relative animate-fade-in">
           <Link
             to="/help"
-            className="absolute right-20 top-0 px-4 py-2 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-xl flex items-center gap-2 transition-all duration-300 text-sm border border-white/20 shadow-lg hover:shadow-xl hover:scale-105"
+            className="absolute right-24 top-0 px-4 py-2 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-xl flex items-center gap-2 transition-all duration-300 text-sm border border-white/20 shadow-lg hover:shadow-xl hover:scale-105"
             aria-label="Help"
           >
             <HelpCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('button.help')}</span>
           </Link>
           <button
             onClick={toggleLanguage}
@@ -62,6 +91,7 @@ function App() {
             <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-8 shadow-2xl space-y-1 animate-fade-in border border-white/30">
               <ResultItem label={t('label.latitude')} value={location.latitude} t={t} />
               <ResultItem label={t('label.longitude')} value={location.longitude} t={t} />
+              {location.accuracy && <ResultItem label={t('label.accuracy')} value={`±${Math.round(location.accuracy)}m`} t={t} />}
               <ResultItem label={t('label.elevation')} value={location.elevation} t={t} />
               <ResultItem label={t('label.prefecture')} value={location.prefecture} t={t} />
               <ResultItem label={t('label.city')} value={location.city} t={t} />
@@ -85,7 +115,12 @@ function App() {
                   : `${(summit.distance / 1000).toFixed(2)}km`
 
                 return (
-                  <div key={summit.ref} className="mb-6 last:mb-0 bg-white/70 rounded-xl p-4 space-y-1">
+                  <div key={summit.ref} className="mb-6 last:mb-0 bg-white/70 rounded-xl p-4 space-y-1 relative">
+                    {summit.isActivationZone && (
+                      <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                        {t('sota.activationZone')}
+                      </div>
+                    )}
                     <ResultItem label={t('sota.reference')} value={summit.ref} highlight t={t} />
                     <ResultItem
                       label={t('sota.name')}
@@ -120,6 +155,15 @@ function App() {
                 <span>{t('info.offline')}</span>
               </li>
             </ul>
+            <div className="mt-6 pt-4 border-t border-white/20">
+              <Link
+                to="/help"
+                className="inline-flex items-center gap-2 text-orange-300 hover:text-orange-200 transition-colors underline decoration-2"
+              >
+                <HelpCircle className="w-5 h-5" />
+                <span>{t('info.moreHelp')}</span>
+              </Link>
+            </div>
           </div>
         </main>
 
@@ -146,7 +190,23 @@ function App() {
               JE1WFV
             </a>
           </p>
+          <p className="text-xs opacity-75 space-y-1">
+            {locationDataLastUpdate && jccJcgCount && (
+              <span>{t('footer.jccJcgData', { count: jccJcgCount, date: locationDataLastUpdate })}</span>
+            )}
+            <br />
+            {sotaDataLastUpdate && sotaCount && (
+              <span>{t('footer.sotaData', { count: sotaCount, date: sotaDataLastUpdate })}</span>
+            )}
+          </p>
           <p className="text-sm flex items-center justify-center gap-3">
+            <Link
+              to="/help"
+              className="hover:text-orange-300 transition-colors flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-md border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300"
+            >
+              <HelpCircle className="w-4 h-4" />
+              {t('button.help')}
+            </Link>
             <a
               href="https://github.com/matsubo/offline-qth"
               target="_blank"

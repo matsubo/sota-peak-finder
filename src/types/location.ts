@@ -24,11 +24,13 @@ export interface QTHInfo {
   city: string
   jcc: string
   jcg: string
+  accuracy: number | null // 位置情報の精度（メートル）
   sotaSummits?: SotaSummitWithDistance[]  // 最寄りのSOTA山頂リスト（オプショナル）
 }
 
 export interface SotaSummitWithDistance extends SotaSummit {
   distance: number  // 距離（メートル）
+  isActivationZone: boolean // SOTAアクティベーションゾーン内にいるか
 }
 
 export interface GeocodingResult {

@@ -56,6 +56,9 @@ export function Help() {
               {t('help.data.title')}
             </h2>
             <div className="prose max-w-none text-gray-700 space-y-4">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                <p className="font-bold text-blue-900">🗾 {t('help.data.region')}</p>
+              </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">JCC/JCG</h3>
                 <p>{t('help.data.jccJcg')}</p>

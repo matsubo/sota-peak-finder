@@ -16,7 +16,8 @@
     "offline": "Offline mode: Showing estimated values"
   },
   "button": {
-    "refetch": "Get Location"
+    "refetch": "Get Location",
+    "help": "Help"
   },
   "label": {
     "latitude": "Latitude",
@@ -26,19 +27,22 @@
     "city": "City",
     "gridLocator": "Grid Locator",
     "jcc": "JCC",
-    "jcg": "JCG"
+    "jcg": "JCG",
+    "accuracy": "Accuracy"
   },
   "info": {
     "title": "How to use:",
     "autoFetch": "Tap the \"Refetch\" button to get your location",
     "permission": "Allow location access when prompted",
-    "offline": "Works offline (requires online for first visit)"
+    "offline": "Works offline (requires online for first visit)",
+    "moreHelp": "For more details and FAQ, click here"
   },
   "footer": {
     "online": "Online",
     "offline": "Offline",
     "createdBy": "Created by",
-    "github": "GitHub"
+    "github": "GitHub",
+    "dataStats": "Data: 1,892 JCC/JCG | 4,600 SOTA summits"
   },
   "elevation": {
     "gps": "{{value}}m (GPS)",
@@ -58,7 +62,8 @@
     "altitude": "Altitude",
     "points": "Points",
     "distance": "Distance",
-    "noSummits": "No SOTA summits data available"
+    "noSummits": "No SOTA summits data available",
+    "activationZone": "In Activation Zone"
   },
   "help": {
     "title": "How to Use & FAQ",
@@ -79,8 +84,9 @@
     },
     "data": {
       "title": "Data Accuracy",
+      "region": "This app supports Japan only. JCC/JCG/SOTA data are all for Japan.",
       "jccJcg": "Calculated from representative coordinates of each municipality (e.g., city hall). Near municipal boundaries, adjacent municipalities' JCC/JCG may be displayed.",
-      "sota": "Uses summit data from the official SOTA database. Displays the nearest summits (top 3) in order of distance.",
+      "sota": "Uses summit data from the official SOTA database for Japan (4,600 summits). Displays the nearest summits (top 3) in order of distance.",
       "elevation": "Online: Accurate elevation from Japan GSI API. Offline: Displays 'Unavailable'.",
       "addressTitle": "Address",
       "address": "Online: Accurate address from OpenStreetMap API. Offline: Estimated from local data with '(Estimated)' label."

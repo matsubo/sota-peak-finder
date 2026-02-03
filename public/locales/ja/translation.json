@@ -16,7 +16,8 @@
     "offline": "オフラインモード：推定値を表示"
   },
   "button": {
-    "refetch": "位置情報を取得"
+    "refetch": "位置情報を取得",
+    "help": "ヘルプ"
   },
   "label": {
     "latitude": "緯度",
@@ -26,19 +27,22 @@
     "city": "市区町村",
     "gridLocator": "グリッドロケーター",
     "jcc": "JCC",
-    "jcg": "JCG"
+    "jcg": "JCG",
+    "accuracy": "測位精度"
   },
   "info": {
     "title": "使い方:",
     "autoFetch": "「再取得」ボタンをタップして位置情報を取得",
     "permission": "位置情報の許可を求められたら「許可」を選択",
-    "offline": "オフラインでも動作します（初回はオンライン必須）"
+    "offline": "オフラインでも動作します（初回はオンライン必須）",
+    "moreHelp": "詳しい使い方・よくある質問はこちら"
   },
   "footer": {
     "online": "オンライン",
     "offline": "オフライン",
     "createdBy": "Created by",
-    "github": "GitHub"
+    "github": "GitHub",
+    "dataStats": "データ: JCC/JCG 1,892件 | SOTA 4,600山頂"
   },
   "elevation": {
     "gps": "{{value}}m (GPS)",
@@ -58,7 +62,8 @@
     "altitude": "標高",
     "points": "ポイント",
     "distance": "距離",
-    "noSummits": "SOTA山頂情報がありません"
+    "noSummits": "SOTA山頂情報がありません",
+    "activationZone": "アクティベーションゾーン内"
   },
   "help": {
     "title": "使い方・よくある質問",
@@ -79,8 +84,9 @@
     },
     "data": {
       "title": "データの精度",
+      "region": "このアプリは日本国内のみ対応しています。JCC/JCG/SOTAすべて日本国内のデータのみを含みます。",
       "jccJcg": "市区町村の代表地点（役場など）の座標から計算しています。市区町村の境界付近では、隣接する市区町村のJCC/JCGが表示される場合があります。",
-      "sota": "SOTA公式データベースから取得した山頂情報を使用しています。最寄りの山頂（上位3件）を距離順に表示します。",
+      "sota": "SOTA公式データベースから取得した日本国内の山頂情報（4,600山頂）を使用しています。最寄りの山頂（上位3件）を距離順に表示します。",
       "elevation": "オンライン時は国土地理院APIで正確な標高を取得します。オフライン時は「取得不可」と表示されます。",
       "addressTitle": "住所",
       "address": "オンライン時はOpenStreetMap APIで正確な住所を取得します。オフライン時はローカルデータから推定し「(推定)」と表示されます。"
