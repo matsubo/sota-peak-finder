@@ -4,10 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2196F3">
-    <title>オフラインQTH - JCC/JCG検索</title>
+
+    <!-- SEO Meta Tags -->
+    <title>オフラインQTH - アマチュア無線用JCC/JCG/グリッドロケーター検索ツール</title>
+    <meta name="description" content="山岳運用・移動運用に最適！オフラインで使えるアマチュア無線用QTH検索PWA。GPS位置情報からJCC/JCG、グリッドロケーター（Maidenhead）、標高を自動表示。インターネット接続不要で山でも使える。">
+    <meta name="keywords" content="アマチュア無線,QTH,JCC,JCG,グリッドロケーター,Maidenhead,標高,GPS,オフライン,PWA,山岳運用,移動運用,SOTA,ハム,ham radio">
+    <meta name="author" content="Offline QTH Project">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://matsubo.github.io/offline-qth/">
+    <meta property="og:title" content="オフラインQTH - アマチュア無線用JCC/JCG/グリッドロケーター検索">
+    <meta property="og:description" content="山岳運用・移動運用に最適！オフラインで使えるアマチュア無線用QTH検索PWA。GPS位置情報からJCC/JCG、グリッドロケーター、標高を自動表示。">
+    <meta property="og:image" content="https://matsubo.github.io/offline-qth/icon-512.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://matsubo.github.io/offline-qth/">
+    <meta property="twitter:title" content="オフラインQTH - アマチュア無線用位置情報検索">
+    <meta property="twitter:description" content="山でもオフラインで使える！JCC/JCG/グリッドロケーター/標高を自動表示">
+    <meta property="twitter:image" content="https://matsubo.github.io/offline-qth/icon-512.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://matsubo.github.io/offline-qth/">
+
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "オフラインQTH",
+      "description": "アマチュア無線の山岳運用・移動運用向けオフライン対応QTH検索ツール。GPS位置情報からJCC/JCG、グリッドロケーター（Maidenhead Locator System）、標高を自動表示。",
+      "url": "https://matsubo.github.io/offline-qth/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "JPY"
+      },
+      "featureList": [
+        "GPS位置情報取得",
+        "グリッドロケーター（Maidenhead 6桁）自動計算",
+        "標高表示（国土地理院API）",
+        "都道府県・市区町村表示（OpenStreetMap API）",
+        "JCC/JCGコード表示",
+        "完全オフライン対応（PWA）",
+        "レスポンシブデザイン"
+      ],
+      "keywords": "アマチュア無線,QTH,JCC,JCG,グリッドロケーター,Maidenhead,標高,GPS,オフライン,PWA",
+      "inLanguage": "ja"
+    }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -65,8 +118,13 @@
                 <ul>
                     <li>「現在地を取得」ボタンをタップ</li>
                     <li>位置情報の許可を求められたら「許可」を選択</li>
-                    <li>オフラインでも動作します</li>
+                    <li>オフラインでも動作します（初回はオンライン必須）</li>
                 </ul>
+                <p style="margin-top: 15px;">
+                    <a href="how-it-works.html" style="color: #2196F3; text-decoration: none; font-weight: bold;">
+                        📚 仕組みの解説を見る →
+                    </a>
+                </p>
             </div>
         </main>
 

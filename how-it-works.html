@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <title>仕組みの解説 - オフラインQTH</title>
+    <meta name="description" content="オフラインQTHの計算ロジックと仕組みを詳しく解説。グリッドロケーター（Maidenhead Locator System）、標高取得、逆ジオコーディングの技術的な詳細。">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .content-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .content-wrapper h2 {
+            color: #2196F3;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 10px;
+        }
+        .content-wrapper h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .content-wrapper p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        .content-wrapper code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .content-wrapper pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .formula {
+            background: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 仕組みの解説</h1>
+            <p class="subtitle">オフラインQTHの計算ロジック</p>
+        </header>
+
+        <main>
+            <div class="content-wrapper">
+                <h2>🌐 グリッドロケーター（Maidenhead Locator System）</h2>
+
+                <h3>概要</h3>
+                <p>
+                    グリッドロケーターは、地球上の位置を表す世界共通の座標系です。
+                    Maidenhead Locator System とも呼ばれ、アマチュア無線で広く使用されています。
+                    緯度・経度を英数字6桁（またはそれ以上）で表現します。
+                </p>
+
+                <h3>計算方法</h3>
+                <p>6桁のグリッドロケーター（例：PM95vr）は以下のように計算されます：</p>
+
+                <div class="formula">
+                    <strong>1. Field（フィールド）- 最初の2文字（大文字）</strong><br>
+                    経度: -180° 〜 +180° を 20° ごとに18分割 → A-R<br>
+                    緯度: -90° 〜 +90° を 10° ごとに18分割 → A-R<br>
+                    <br>
+                    例: 経度139.69° → P、緯度35.68° → M<br>
+                    結果: <strong>PM</strong>
+                </div>
+
+                <div class="formula">
+                    <strong>2. Square（スクエア）- 次の2文字（数字）</strong><br>
+                    Fieldをさらに 10×10 に分割 → 0-9<br>
+                    経度: 2° ごと、緯度: 1° ごと<br>
+                    <br>
+                    例: 経度139.69° → 9、緯度35.68° → 5<br>
+                    結果: <strong>95</strong>
+                </div>
+
+                <div class="formula">
+                    <strong>3. Subsquare（サブスクエア）- 最後の2文字（小文字）</strong><br>
+                    Squareをさらに 24×24 に分割 → a-x<br>
+                    経度: 5分 ごと、緯度: 2.5分 ごと<br>
+                    <br>
+                    例: 経度139.69° → v、緯度35.68° → r<br>
+                    結果: <strong>vr</strong>
+                </div>
+
+                <p>最終的なグリッドロケーター: <strong>PM95vr</strong></p>
+
+                <h3>JavaScriptコード例</h3>
+                <pre><code>function calculateGridLocator(lat, lon) {
+    // 経度を0-360の範囲に変換
+    let adjustedLon = lon + 180;
+    // 緯度を0-180の範囲に変換
+    let adjustedLat = lat + 90;
+
+    // Field (A-R)
+    const fieldLon = String.fromCharCode(65 + Math.floor(adjustedLon / 20));
+    const fieldLat = String.fromCharCode(65 + Math.floor(adjustedLat / 10));
+
+    // Square (0-9)
+    adjustedLon = adjustedLon % 20;
+    adjustedLat = adjustedLat % 10;
+    const squareLon = Math.floor(adjustedLon / 2);
+    const squareLat = Math.floor(adjustedLat / 1);
+
+    // Subsquare (a-x)
+    adjustedLon = (adjustedLon % 2) * 60;
+    adjustedLat = (adjustedLat % 1) * 60;
+    const subsquareLon = String.fromCharCode(97 + Math.floor(adjustedLon / 5));
+    const subsquareLat = String.fromCharCode(97 + Math.floor(adjustedLat / 2.5));
+
+    return `${fieldLon}${fieldLat}${squareLon}${squareLat}${subsquareLon}${subsquareLat}`;
+}</code></pre>
+
+                <h2>⛰️ 標高の取得</h2>
+
+                <h3>2段階の取得方法</h3>
+                <p>標高は以下の2つの方法で取得されます：</p>
+
+                <div class="formula">
+                    <strong>1. GPS標高（即座に表示）</strong><br>
+                    Geolocation API の <code>altitude</code> プロパティから取得<br>
+                    精度: 低〜中（±10m〜50m程度）<br>
+                    利点: オフラインで使用可能、即座に表示
+                </div>
+
+                <div class="formula">
+                    <strong>2. 国土地理院標高API（オンライン時）</strong><br>
+                    URL: <code>https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php</code><br>
+                    精度: 高（±数m程度）<br>
+                    利点: 非常に正確、無料で使用可能
+                </div>
+
+                <h3>API使用例</h3>
+                <pre><code>async function getElevation(lat, lon) {
+    const url = `https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php?lon=${lon}&lat=${lat}&outtype=JSON`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return Math.round(data.elevation);
+}</code></pre>
+
+                <h2>🗺️ 都道府県・市区町村の取得</h2>
+
+                <h3>逆ジオコーディング（Reverse Geocoding）</h3>
+                <p>
+                    緯度・経度から住所を取得する技術を「逆ジオコーディング」と呼びます。
+                    本アプリでは OpenStreetMap の Nominatim API を使用しています。
+                </p>
+
+                <div class="formula">
+                    <strong>OpenStreetMap Nominatim API</strong><br>
+                    URL: <code>https://nominatim.openstreetmap.org/reverse</code><br>
+                    利点: 無料、オープンソース、日本語対応<br>
+                    制限: 利用規約に従い、1秒に1リクエストまで
+                </div>
+
+                <h3>API使用例</h3>
+                <pre><code>async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ja`;
+    const response = await fetch(url, {
+        headers: {
+            'User-Agent': 'OfflineQTH/1.0'
+        }
+    });
+    const data = await response.json();
+
+    if (data.address) {
+        return {
+            prefecture: data.address.state || data.address.province,
+            city: data.address.city || data.address.town || data.address.village
+        };
+    }
+}</code></pre>
+
+                <h2>📍 JCC/JCG コード</h2>
+
+                <h3>概要</h3>
+                <p>
+                    <strong>JCC（Japan Century City）</strong>と<strong>JCG（Japan Century Gun）</strong>は、
+                    日本国内の市区町村・郡に割り当てられた識別番号です。
+                    アマチュア無線のアワード（賞）取得に使用されます。
+                </p>
+
+                <h3>判定方法</h3>
+                <p>現在の実装では、以下の方法でJCC/JCGを判定しています：</p>
+
+                <div class="formula">
+                    <strong>最近傍探索（Nearest Neighbor）</strong><br>
+                    1. ローカルデータベース（location-data.json）に登録された地点との距離を計算<br>
+                    2. 最も近い地点のJCC/JCGコードを返す<br>
+                    <br>
+                    精度向上のため、データベースの拡充が必要です。
+                </div>
+
+                <h2>💾 オフライン対応の仕組み</h2>
+
+                <h3>Service Worker</h3>
+                <p>
+                    PWA（Progressive Web App）の Service Worker を使用して、
+                    アプリのファイルをブラウザにキャッシュします。
+                </p>
+
+                <div class="formula">
+                    <strong>キャッシュ戦略</strong><br>
+                    1. 初回アクセス時に全ファイルをキャッシュ<br>
+                    2. オフライン時はキャッシュから読み込み<br>
+                    3. オンライン時は API で正確な情報を取得
+                </div>
+
+                <h3>ハイブリッド方式</h3>
+                <p>
+                    グリッドロケーターはローカル計算のため完全オフラインで動作しますが、
+                    標高と住所はオンライン時により正確な情報を取得します。
+                </p>
+
+                <h2>🔧 技術スタック</h2>
+                <ul>
+                    <li><strong>フロントエンド:</strong> Pure JavaScript（フレームワーク不要）</li>
+                    <li><strong>PWA:</strong> Service Worker、manifest.json</li>
+                    <li><strong>位置情報:</strong> Geolocation API</li>
+                    <li><strong>標高API:</strong> 国土地理院</li>
+                    <li><strong>住所API:</strong> OpenStreetMap Nominatim</li>
+                    <li><strong>ホスティング:</strong> GitHub Pages</li>
+                </ul>
+
+                <h2>📖 参考資料</h2>
+                <ul>
+                    <li><a href="https://en.wikipedia.org/wiki/Maidenhead_Locator_System" target="_blank">Maidenhead Locator System - Wikipedia</a></li>
+                    <li><a href="https://maps.gsi.go.jp/development/api.html" target="_blank">国土地理院 API仕様</a></li>
+                    <li><a href="https://nominatim.org/release-docs/latest/api/Reverse/" target="_blank">Nominatim Reverse Geocoding API</a></li>
+                    <li><a href="https://www.jarl.org/" target="_blank">JARL - 一般社団法人日本アマチュア無線連盟</a></li>
+                </ul>
+
+                <a href="index.html" class="back-link">← アプリに戻る</a>
+            </div>
+        </main>
+
+        <footer>
+            <p class="version">v1.0.0 | オープンソース</p>
+        </footer>
+    </div>
+</body>
+</html>
