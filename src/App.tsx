@@ -79,7 +79,7 @@ function App() {
             </span>
           </p>
           <p className="text-sm">
-            v2.0.0 | {t('footer.createdBy')}{' '}
+            v{__APP_VERSION__} | {t('footer.createdBy')}{' '}
             <a
               href="https://x.com/je1wfv"
               target="_blank"
