@@ -139,18 +139,6 @@ function App() {
         </main>
 
         <footer className="mt-12 text-center text-slate-400 text-sm space-y-4 animate-fade-in">
-          <div className="bg-slate-800/50 backdrop-blur-md rounded-2xl p-4 border border-slate-700/80">
-            <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="text-left">
-                  {jccJcgCount && <p className="font-semibold text-slate-300">{t('footer.jccJcgData', { count: jccJcgCount })}</p>}
-                  {locationDataLastUpdate && <p className="text-slate-500">{t('footer.lastUpdated', { date: locationDataLastUpdate})}</p>}
-                </div>
-                <div className="text-left">
-                  {sotaCount && <p className="font-semibold text-slate-300">{t('footer.sotaData', { count: sotaCount })}</p>}
-                  {sotaDataLastUpdate && <p className="text-slate-500">{t('footer.lastUpdated', { date: sotaDataLastUpdate})}</p>}
-                </div>
-            </div>
-          </div>
            <p className="flex items-center justify-center gap-2">
             <span className={cn(
               "px-4 py-1.5 rounded-full text-xs font-medium border",
@@ -182,6 +170,13 @@ function App() {
             <Github className="w-4 h-4" />
             <span>{t('footer.github')}</span>
           </a>
+          <div className="text-xs text-slate-500 space-y-1">
+            {jccJcgCount && sotaCount && (
+              <p>
+                {t('footer.jccJcgData', { count: jccJcgCount })} / {t('footer.sotaData', { count: sotaCount })}
+              </p>
+            )}
+          </div>
         </footer>
       </div>
     </div>

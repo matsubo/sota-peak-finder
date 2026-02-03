@@ -17,12 +17,21 @@ const lines = csvContent.split('\n');
 // ヘッダー行をスキップ（最初の2行）
 const dataLines = lines.slice(2);
 
-// 日本（JA）のデータのみフィルタリングして変換
+// 日本（JA, JA5, JA6, JA8）のデータをフィルタリングして変換
 const jaSummits = [];
 let lineNumber = 3; // 実際のデータは3行目から
 
 for (const line of dataLines) {
-  if (!line.trim() || !line.startsWith('JA/')) {
+  if (!line.trim()) {
+    continue;
+  }
+
+  // JA/, JA5/, JA6/, JA8/ のいずれかで始まる行のみ処理
+  const hasValidPrefix = line.startsWith('JA/') ||
+                         line.startsWith('JA5/') ||
+                         line.startsWith('JA6/') ||
+                         line.startsWith('JA8/');
+  if (!hasValidPrefix) {
     continue;
   }
 
@@ -103,7 +112,7 @@ for (const line of dataLines) {
 const sotaData = {
   version: '1.0.0',
   lastUpdate: new Date().toISOString().split('T')[0],
-  region: 'JA',
+  region: 'JA/JA5/JA6/JA8',
   summits: jaSummits
 };
 
