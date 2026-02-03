@@ -144,6 +144,12 @@ JCC（Japan Century City）とJCG（Japan Century Gun）は、日本国内の市
 ### グリッドロケーター
 グリッドロケーター（Maidenhead Locator System）は、地球上の位置を表す世界共通の座標系です。6桁の英数字（例：PM95vr）で位置を表現し、VHF/UHF帯のコンテストやDXでよく使用されます。
 
+## 👨‍💻 作者
+
+**JE1WFV**
+- X (Twitter): [@je1wfv](https://x.com/je1wfv)
+- GitHub: [matsubo/offline-qth](https://github.com/matsubo/offline-qth)
+
 ## 73!
 
 Good DX & Happy Trails!
