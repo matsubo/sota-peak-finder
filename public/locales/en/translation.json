@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "Offline QTH",
+    "subtitle": "JCC/JCG Finder"
+  },
+  "status": {
+    "fetching": "Fetching location...",
+    "fetchingDetails": "Fetching details...",
+    "success": "Location fetched successfully",
+    "notSupported": "Geolocation is not supported",
+    "permissionDenied": "Location permission denied",
+    "unavailable": "Location unavailable",
+    "timeout": "Request timed out",
+    "error": "An error occurred",
+    "offline": "Offline mode: Showing estimated values"
+  },
+  "button": {
+    "refetch": "Refetch"
+  },
+  "label": {
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "elevation": "Elevation",
+    "prefecture": "Prefecture",
+    "city": "City",
+    "gridLocator": "Grid Locator",
+    "jcc": "JCC",
+    "jcg": "JCG"
+  },
+  "info": {
+    "title": "How to use:",
+    "autoFetch": "Location is automatically fetched when page loads",
+    "permission": "Allow location access when prompted",
+    "offline": "Works offline (requires online for first visit)"
+  },
+  "footer": {
+    "online": "Online",
+    "offline": "Offline",
+    "createdBy": "Created by",
+    "github": "GitHub"
+  },
+  "elevation": {
+    "gps": "{{value}}m (GPS)",
+    "unavailable": "Unavailable",
+    "failed": "Failed"
+  },
+  "location": {
+    "fetching": "Fetching...",
+    "unknown": "Unknown",
+    "failed": "Failed",
+    "estimated": "{{value}} (Estimated)"
+  }
+}

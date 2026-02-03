@@ -4,7 +4,7 @@ import { getElevation, reverseGeocode, findLocationInfo } from '../utils/api'
 import { convertToDMS, calculateGridLocator } from '../utils/coordinate'
 
 export function useGeolocation(locationData: LocationData | null) {
-  const [status, setStatus] = useState('位置情報を取得中...')
+  const [status, setStatus] = useState('status.fetching')
   const [location, setLocation] = useState<QTHInfo | null>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [error, setError] = useState<string | null>(null)
@@ -25,12 +25,12 @@ export function useGeolocation(locationData: LocationData | null) {
 
   const fetchLocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setError('位置情報がサポートされていません')
-      setStatus('位置情報がサポートされていません')
+      setError('status.notSupported')
+      setStatus('status.notSupported')
       return
     }
 
-    setStatus('位置情報を取得中...')
+    setStatus('status.fetching')
     setError(null)
 
     navigator.geolocation.getCurrentPosition(
@@ -46,15 +46,15 @@ export function useGeolocation(locationData: LocationData | null) {
           latRaw: lat,
           lonRaw: lon,
           gridLocator: calculateGridLocator(lat, lon),
-          elevation: altitudeGPS ? `${Math.round(altitudeGPS)}m (GPS)` : '取得中...',
-          prefecture: '取得中...',
-          city: '取得中...',
-          jcc: '取得中...',
-          jcg: '取得中...'
+          elevation: altitudeGPS ? `${Math.round(altitudeGPS)}m (GPS)` : 'location.fetching',
+          prefecture: 'location.fetching',
+          city: 'location.fetching',
+          jcc: 'location.fetching',
+          jcg: 'location.fetching'
         }
 
         setLocation(initialData)
-        setStatus('詳細情報を取得中...')
+        setStatus('status.fetchingDetails')
 
         // オンラインの場合、API で詳細情報を取得
         if (navigator.onLine) {
@@ -63,18 +63,24 @@ export function useGeolocation(locationData: LocationData | null) {
             const elevation = await getElevation(lat, lon)
             if (elevation !== null) {
               initialData.elevation = `${elevation}m`
+            } else {
+              initialData.elevation = 'elevation.unavailable'
             }
 
             // 住所を取得
             const geoData = await reverseGeocode(lat, lon)
             if (geoData) {
-              initialData.prefecture = geoData.prefecture || '不明'
-              initialData.city = geoData.city || '不明'
+              initialData.prefecture = geoData.prefecture || 'location.unknown'
+              initialData.city = geoData.city || 'location.unknown'
+            } else {
+              initialData.prefecture = 'location.failed'
+              initialData.city = 'location.failed'
             }
           } catch (err) {
             console.error('API取得エラー:', err)
-            initialData.prefecture = '取得失敗'
-            initialData.city = '取得失敗'
+            initialData.prefecture = 'location.failed'
+            initialData.city = 'location.failed'
+            initialData.elevation = 'elevation.failed'
           }
 
           // JCC/JCGを取得
@@ -83,34 +89,34 @@ export function useGeolocation(locationData: LocationData | null) {
           initialData.jcg = locationInfo.jcg
 
           setLocation({ ...initialData })
-          setStatus('位置情報を取得しました')
+          setStatus('status.success')
         } else {
           // オフラインの場合
           const locationInfo = findLocationInfo(lat, lon, locationData)
-          initialData.prefecture = `${locationInfo.prefecture} (推定)`
-          initialData.city = `${locationInfo.city} (推定)`
+          initialData.prefecture = locationInfo.prefecture !== '不明' ? `${locationInfo.prefecture} (推定)` : 'location.unknown'
+          initialData.city = locationInfo.city !== '不明' ? `${locationInfo.city} (推定)` : 'location.unknown'
           initialData.jcc = locationInfo.jcc
           initialData.jcg = locationInfo.jcg
-          initialData.elevation = '取得不可'
+          initialData.elevation = 'elevation.unavailable'
 
           setLocation({ ...initialData })
-          setStatus('オフラインモード：推定値を表示')
+          setStatus('status.offline')
         }
       },
       (error) => {
-        let errorMessage = ''
+        let errorMessage = 'status.error'
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = '位置情報の許可が拒否されました'
+            errorMessage = 'status.permissionDenied'
             break
           case error.POSITION_UNAVAILABLE:
-            errorMessage = '位置情報が取得できません'
+            errorMessage = 'status.unavailable'
             break
           case error.TIMEOUT:
-            errorMessage = 'タイムアウトしました'
+            errorMessage = 'status.timeout'
             break
           default:
-            errorMessage = 'エラーが発生しました'
+            errorMessage = 'status.error'
         }
         setError(errorMessage)
         setStatus(errorMessage)

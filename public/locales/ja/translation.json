@@ -1,0 +1,53 @@
+{
+  "app": {
+    "title": "オフラインQTH",
+    "subtitle": "JCC/JCG検索ツール"
+  },
+  "status": {
+    "fetching": "位置情報を取得中...",
+    "fetchingDetails": "詳細情報を取得中...",
+    "success": "位置情報を取得しました",
+    "notSupported": "位置情報がサポートされていません",
+    "permissionDenied": "位置情報の許可が拒否されました",
+    "unavailable": "位置情報が取得できません",
+    "timeout": "タイムアウトしました",
+    "error": "エラーが発生しました",
+    "offline": "オフラインモード：推定値を表示"
+  },
+  "button": {
+    "refetch": "再取得"
+  },
+  "label": {
+    "latitude": "緯度",
+    "longitude": "経度",
+    "elevation": "標高",
+    "prefecture": "都道府県",
+    "city": "市区町村",
+    "gridLocator": "グリッドロケーター",
+    "jcc": "JCC",
+    "jcg": "JCG"
+  },
+  "info": {
+    "title": "使い方:",
+    "autoFetch": "ページを開くと自動的に位置情報を取得",
+    "permission": "位置情報の許可を求められたら「許可」を選択",
+    "offline": "オフラインでも動作します（初回はオンライン必須）"
+  },
+  "footer": {
+    "online": "オンライン",
+    "offline": "オフライン",
+    "createdBy": "Created by",
+    "github": "GitHub"
+  },
+  "elevation": {
+    "gps": "{{value}}m (GPS)",
+    "unavailable": "取得不可",
+    "failed": "取得失敗"
+  },
+  "location": {
+    "fetching": "取得中...",
+    "unknown": "不明",
+    "failed": "取得失敗",
+    "estimated": "{{value}} (推定)"
+  }
+}
