@@ -42,7 +42,10 @@
     "offline": "Offline",
     "createdBy": "Created by",
     "github": "GitHub",
-    "dataStats": "Data: 1,892 JCC/JCG | 4,600 SOTA summits"
+    "dataStats": "Data: 1,892 JCC/JCG | 4,600 SOTA summits",
+    "lastUpdated": "Updated: {{date}}",
+    "jccJcgData": "JCC/JCG: {{count}}",
+    "sotaData": "SOTA Summits: {{count}}"
   },
   "elevation": {
     "gps": "{{value}}m (GPS)",
@@ -63,7 +66,11 @@
     "points": "Points",
     "distance": "Distance",
     "noSummits": "No SOTA summits data available",
-    "activationZone": "In Activation Zone"
+    "activationZone": "OK",
+    "bearing": "Bearing",
+    "verticalDistance": "Vertical Dist.",
+    "rangeQuestion": "In range?",
+    "outOfRange": "NG"
   },
   "help": {
     "title": "How to Use & FAQ",

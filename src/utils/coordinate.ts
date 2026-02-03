@@ -75,3 +75,42 @@ export function haversineDistance(
 
   return R * c; // メートル単位
 }
+
+/**
+ * 2点間の方位を計算する
+ * @param lat1 地点1の緯度
+ * @param lon1 地点1の経度
+ * @param lat2 地点2の緯度
+ * @param lon2 地点2の経度
+ * @returns 方位（0-360度）
+ */
+export function calculateBearing(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const λ1 = (lon1 * Math.PI) / 180;
+  const λ2 = (lon2 * Math.PI) / 180;
+
+  const y = Math.sin(λ2 - λ1) * Math.cos(φ2);
+  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(λ2 - λ1);
+  const θ = Math.atan2(y, x);
+  const brng = ((θ * 180) / Math.PI + 360) % 360; // 度数法に変換し、0-360の範囲に正規化
+
+  return brng;
+}
+
+
+/**
+ * 方位（度）を8方位の文字列に変換する
+ * @param bearing 方位（0-360度）
+ * @returns 8方位の文字列 (N, NE, E, SE, S, SW, W, NW)
+ */
+export function bearingToCardinal(bearing: number): string {
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const index = Math.round(bearing / 45) % 8;
+  return directions[index];
+}

@@ -117,18 +117,41 @@ export function useGeolocation(locationData: LocationData | null) {
                   initialData.elevation = 'elevation.unavailable'
                 }
         
-                // SOTA アクティベーションゾーン判定
-                if (initialData.sotaSummits && currentElevation !== null) {
-                  initialData.sotaSummits.forEach(summit => {
-                    const verticalDistance = Math.abs(currentElevation! - summit.altitude)
-                    // 標高差25m以内、かつ水平距離100m以内
-                    summit.isActivationZone = verticalDistance <= 25 && summit.distance <= 100
-                  })
-                }
+                        // SOTA アクティベーションゾーン判定
         
-                setLocation({ ...initialData })
-                setStatus(navigator.onLine ? 'status.success' : 'status.offline')
-              },      (error) => {
+                        if (initialData.sotaSummits) {
+        
+                          initialData.sotaSummits.forEach(summit => {
+        
+                            if (currentElevation !== null) {
+        
+                              const verticalDistance = currentElevation - summit.altitude
+        
+                              summit.verticalDistance = verticalDistance
+        
+                              // 標高差25m以内（下方向）、かつ水平距離100m以内
+        
+                              summit.isActivationZone = verticalDistance <= 25 && verticalDistance >= -25 && summit.distance <= 100
+        
+                            } else {
+        
+                              summit.verticalDistance = null
+        
+                              summit.isActivationZone = false
+        
+                            }
+        
+                          })
+        
+                        }
+        
+                
+        
+                        setLocation({ ...initialData })
+        
+                        setStatus(navigator.onLine ? 'status.success' : 'status.offline')
+        
+                      },      (error) => {
         let errorMessage = 'status.error'
         switch (error.code) {
           case error.PERMISSION_DENIED:
@@ -152,7 +175,7 @@ export function useGeolocation(locationData: LocationData | null) {
         maximumAge: 300000 // 5分間はキャッシュを使用（オフライン対応）
       }
     )
-  }, [locationData])
+  }, [locationData, sotaData])
 
   // 初回自動取得を削除（ユーザージェスチャーが必要なため）
   // ユーザーが「Refetch」ボタンをクリックした時のみ取得する

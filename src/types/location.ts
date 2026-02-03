@@ -31,6 +31,9 @@ export interface QTHInfo {
 export interface SotaSummitWithDistance extends SotaSummit {
   distance: number  // 距離（メートル）
   isActivationZone: boolean // SOTAアクティベーションゾーン内にいるか
+  bearing: number // 方位（度）
+  cardinalBearing: string // 8方位
+  verticalDistance: number | null // 山頂との標高差（メートル）
 }
 
 export interface GeocodingResult {

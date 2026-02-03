@@ -1,5 +1,5 @@
 import type { LocationData, Location, GeocodingResult, SotaData, SotaSummitWithDistance } from '../types/location'
-import { haversineDistance } from './coordinate'
+import { haversineDistance, calculateBearing, bearingToCardinal } from './coordinate'
 
 /**
  * 国土地理院APIで標高を取得
@@ -138,7 +138,7 @@ export async function loadSotaData(): Promise<SotaData | null> {
  * @param lon 現在地の経度
  * @param sotaData SOTAデータ
  * @param limit 取得する山頂数（デフォルト3）
- * @returns 最寄りのSOTA山頂リスト（距離順、距離情報を含む）
+ * @returns 最寄りのSOTA山頂リスト（距離順、距離・方位情報を含む）
  */
 export function findNearbySotaSummits(
   lat: number,
@@ -150,12 +150,20 @@ export function findNearbySotaSummits(
     return []
   }
 
-  // 各山頂までの距離を計算し、距離順にソート
+  // 各山頂までの距離と方位を計算し、距離順にソート
   const nearbySummits = sotaData.summits
-    .map(summit => ({
-      ...summit,
-      distance: haversineDistance(lat, lon, summit.lat, summit.lon)
-    }))
+    .map(summit => {
+      const distance = haversineDistance(lat, lon, summit.lat, summit.lon)
+      const bearing = calculateBearing(lat, lon, summit.lat, summit.lon)
+      const cardinalBearing = bearingToCardinal(bearing)
+      return {
+        ...summit,
+        distance,
+        bearing,
+        cardinalBearing,
+        isActivationZone: false // 初期値
+      }
+    })
     .sort((a, b) => a.distance - b.distance) // 距離順にソート
     .slice(0, limit) // 上位limit件を取得
 

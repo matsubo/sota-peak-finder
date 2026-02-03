@@ -42,7 +42,10 @@
     "offline": "オフライン",
     "createdBy": "Created by",
     "github": "GitHub",
-    "dataStats": "データ: JCC/JCG 1,892件 | SOTA 4,600山頂"
+    "dataStats": "データ: JCC/JCG 1,892件 | SOTA 4,600山頂",
+    "lastUpdated": "更新日: {{date}}",
+    "jccJcgData": "JCC/JCG: {{count}}件",
+    "sotaData": "SOTA山頂: {{count}}座"
   },
   "elevation": {
     "gps": "{{value}}m (GPS)",
@@ -63,7 +66,11 @@
     "points": "ポイント",
     "distance": "距離",
     "noSummits": "SOTA山頂情報がありません",
-    "activationZone": "アクティベーションゾーン内"
+    "activationZone": "OK",
+    "bearing": "方位",
+    "verticalDistance": "山頂との標高差",
+    "rangeQuestion": "範囲内か？",
+    "outOfRange": "NG"
   },
   "help": {
     "title": "使い方・よくある質問",
