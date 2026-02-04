@@ -114,6 +114,36 @@ export function findLocationInfo(
 }
 
 /**
+ * 市区町村名からJCC/JCGを検索
+ */
+export function findJccJcgByCity(
+  city: string,
+  locationData: LocationData | null
+): { jcc: string; jcg: string } {
+  if (!locationData || !locationData.locations) {
+    return {
+      jcc: 'location.unknown',
+      jcg: 'location.unknown'
+    }
+  }
+
+  // 市区町村名で完全一致検索
+  const location = locationData.locations.find(loc => loc.city === city)
+
+  if (location) {
+    return {
+      jcc: location.jcc,
+      jcg: location.jcg
+    }
+  }
+
+  return {
+    jcc: 'location.unknown',
+    jcg: 'location.unknown'
+  }
+}
+
+/**
  * SOTAデータのロード
  */
 export async function loadSotaData(): Promise<SotaData | null> {

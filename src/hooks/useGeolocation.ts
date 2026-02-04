@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { LocationData, QTHInfo } from '../types/location'
-import { getElevation, reverseGeocode, findLocationInfo, findNearbySotaSummits } from '../utils/api'
+import { getElevation, reverseGeocode, findLocationInfo, findJccJcgByCity, findNearbySotaSummits } from '../utils/api'
 import { convertToDMS, calculateGridLocator } from '../utils/coordinate'
 import { useSotaData } from './useSotaData'
 import { trackLocationFetchSuccess, trackLocationFetchError, trackOfflineMode } from '../utils/analytics'
@@ -96,11 +96,18 @@ export function useGeolocation(locationData: LocationData | null) {
                       // API成功時はそのまま使用
                       initialData.prefecture = geoData.prefecture
                       initialData.city = geoData.city
+
+                      // APIで取得した市区町村名からJCC/JCGを検索
+                      const jccJcgData = findJccJcgByCity(geoData.city, locationData)
+                      initialData.jcc = jccJcgData.jcc
+                      initialData.jcg = jccJcgData.jcg
                     } else {
                       // APIが空の結果を返した場合、ローカルデータにフォールバック
                       const locationInfo = findLocationInfo(lat, lon, locationData)
                       initialData.prefecture = locationInfo.prefecture
                       initialData.city = locationInfo.city
+                      initialData.jcc = locationInfo.jcc
+                      initialData.jcg = locationInfo.jcg
                     }
                   } catch (err) {
                     console.error('逆ジオコーディングエラー:', err)
@@ -108,12 +115,9 @@ export function useGeolocation(locationData: LocationData | null) {
                     const locationInfo = findLocationInfo(lat, lon, locationData)
                     initialData.prefecture = locationInfo.prefecture
                     initialData.city = locationInfo.city
+                    initialData.jcc = locationInfo.jcc
+                    initialData.jcg = locationInfo.jcg
                   }
-        
-                  // JCC/JCGは常にローカルデータから取得（最寄りの市区町村で判定）
-                  const locationInfo = findLocationInfo(lat, lon, locationData)
-                  initialData.jcc = locationInfo.jcc
-                  initialData.jcg = locationInfo.jcg
                 } else {
                   // オフラインの場合
                   const locationInfo = findLocationInfo(lat, lon, locationData)
