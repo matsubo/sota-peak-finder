@@ -5,6 +5,7 @@ import { useLocationData } from './hooks/useLocationData'
 import { useGeolocation } from './hooks/useGeolocation'
 import { cn } from './lib/utils'
 import { useState, useEffect } from 'react'
+import { trackLanguageChange, trackSotaSummitView } from './utils/analytics'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -35,9 +36,25 @@ function App() {
     fetchData()
   }, [])
 
+  // Track SOTA summit view
+  useEffect(() => {
+    if (location && location.sotaSummits && location.sotaSummits.length > 0) {
+      const nearestSummit = location.sotaSummits[0]
+      trackSotaSummitView(
+        location.sotaSummits.length,
+        nearestSummit.ref,
+        nearestSummit.distance
+      )
+    }
+  }, [location?.sotaSummits])
+
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'ja' ? 'en' : 'ja'
+    const currentLang = i18n.language
+    const newLang = currentLang === 'ja' ? 'en' : 'ja'
     i18n.changeLanguage(newLang)
+
+    // Track language change
+    trackLanguageChange(currentLang, newLang)
   }
 
   return (

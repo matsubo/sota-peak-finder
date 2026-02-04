@@ -3,6 +3,7 @@ import type { LocationData, QTHInfo } from '../types/location'
 import { getElevation, reverseGeocode, findLocationInfo, findNearbySotaSummits } from '../utils/api'
 import { convertToDMS, calculateGridLocator } from '../utils/coordinate'
 import { useSotaData } from './useSotaData'
+import { trackLocationFetchSuccess, trackLocationFetchError, trackOfflineMode } from '../utils/analytics'
 
 export function useGeolocation(locationData: LocationData | null) {
   const [status, setStatus] = useState('status.ready')
@@ -13,8 +14,14 @@ export function useGeolocation(locationData: LocationData | null) {
 
   // オンライン/オフライン状態の監視
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
+    const handleOnline = () => {
+      setIsOnline(true)
+      trackOfflineMode(false)
+    }
+    const handleOffline = () => {
+      setIsOnline(false)
+      trackOfflineMode(true)
+    }
 
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
@@ -148,26 +155,44 @@ export function useGeolocation(locationData: LocationData | null) {
                 
         
                         setLocation({ ...initialData })
-        
+
                         setStatus(navigator.onLine ? 'status.success' : 'status.offline')
-        
+
+                        // Track location fetch success
+                        trackLocationFetchSuccess({
+                          latitude: lat,
+                          longitude: lon,
+                          accuracy,
+                          hasElevation: currentElevation !== null,
+                          hasAddress: initialData.prefecture !== 'location.unknown' && initialData.city !== 'location.unknown',
+                          isOnline: navigator.onLine
+                        })
+
                       },      (error) => {
         let errorMessage = 'status.error'
+        let errorType = 'unknown'
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = 'status.permissionDenied'
+            errorType = 'permission_denied'
             break
           case error.POSITION_UNAVAILABLE:
             errorMessage = 'status.unavailable'
+            errorType = 'position_unavailable'
             break
           case error.TIMEOUT:
             errorMessage = 'status.timeout'
+            errorType = 'timeout'
             break
           default:
             errorMessage = 'status.error'
+            errorType = 'unknown'
         }
         setError(errorMessage)
         setStatus(errorMessage)
+
+        // Track location fetch error
+        trackLocationFetchError(errorType, error.message)
       },
       {
         enableHighAccuracy: true,

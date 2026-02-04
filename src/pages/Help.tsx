@@ -80,7 +80,7 @@ export function Help() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">SOTA</h3>
-                <p>{t('help.data.sota', { count: sotaCount || '...' })}</p>
+                <p>{sotaCount ? t('help.data.sota', { count: sotaCount }) : '...'}</p>
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">{t('label.elevation')}</h3>

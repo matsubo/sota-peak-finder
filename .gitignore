@@ -11,3 +11,4 @@ test-results/
 .env
 .env.local
 master.json
+.playwright-mcp/
