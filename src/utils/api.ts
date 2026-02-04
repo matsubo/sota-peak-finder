@@ -82,15 +82,13 @@ export function findLocationInfo(
     }
   }
 
-  // 最も近い地点を探す
+  // 最も近い地点を探す（Haversine距離を使用）
   let minDistance = Infinity
   let closestLocation: Location | null = null
 
   for (const location of locationData.locations) {
-    const distance = Math.sqrt(
-      Math.pow(lat - location.lat, 2) +
-      Math.pow(lon - location.lon, 2)
-    )
+    // 球面距離（メートル）を計算
+    const distance = haversineDistance(lat, lon, location.lat, location.lon)
 
     if (distance < minDistance) {
       minDistance = distance
