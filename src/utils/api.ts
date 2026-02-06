@@ -1,5 +1,6 @@
 import type { LocationData, Location, GeocodingResult, SotaData, SotaSummitWithDistance } from '../types/location'
 import { haversineDistance, calculateBearing, bearingToCardinal } from './coordinate'
+import { sotaDatabase } from './sotaDatabase'
 
 /**
  * 国土地理院APIで標高を取得
@@ -144,15 +145,37 @@ export function findJccJcgByCity(
 }
 
 /**
- * SOTAデータのロード
+ * SOTAデータベースの初期化
+ *
+ * SQLite WASMを使用して世界中のSOTAデータにアクセス可能にします
+ *
+ * @returns 初期化が成功したかどうか
+ */
+export async function initSotaDatabase(): Promise<boolean> {
+  try {
+    await sotaDatabase.init()
+    return true
+  } catch (error) {
+    console.error('Failed to initialize SOTA database:', error)
+    return false
+  }
+}
+
+/**
+ * SOTAデータのロード（後方互換性のため維持）
+ *
+ * @deprecated Use initSotaDatabase() instead for worldwide support
  */
 export async function loadSotaData(): Promise<SotaData | null> {
+  console.warn('loadSotaData() is deprecated. Database is initialized automatically.')
   try {
-    const basePath = import.meta.env.BASE_URL || '/'
-    const response = await fetch(`${basePath}data/sota-data.json`)
-    const data = await response.json()
-    console.log('SOTA data loaded successfully:', data)
-    return data
+    await sotaDatabase.init()
+    return {
+      version: '2.0.0',
+      lastUpdate: new Date().toISOString().split('T')[0],
+      region: 'Worldwide',
+      summits: [] // Empty array for backward compatibility
+    }
   } catch (error) {
     console.error('Failed to load SOTA data:', error)
     return null
@@ -162,39 +185,41 @@ export async function loadSotaData(): Promise<SotaData | null> {
 /**
  * 現在地から最寄りのSOTA山頂を検索
  *
+ * SQLite R*Tree spatial indexを使用して高速検索します
+ *
  * @param lat 現在地の緯度
  * @param lon 現在地の経度
- * @param sotaData SOTAデータ
+ * @param sotaData SOTAデータ（廃止予定、後方互換性のため保持）
  * @param limit 取得する山頂数（デフォルト10）
+ * @param radiusKm 検索半径（km、デフォルト50km）
  * @returns 最寄りのSOTA山頂リスト（距離順、距離・方位情報を含む）
  */
-export function findNearbySotaSummits(
+export async function findNearbySotaSummits(
   lat: number,
   lon: number,
-  sotaData: SotaData | null,
-  limit: number = 10
-): SotaSummitWithDistance[] {
-  if (!sotaData || !sotaData.summits) {
-    return []
-  }
+  _sotaData: SotaData | null = null,
+  limit: number = 10,
+  radiusKm: number = 50
+): Promise<SotaSummitWithDistance[]> {
+  try {
+    // SQLiteデータベースから検索
+    const summits = await sotaDatabase.findNearby(lat, lon, radiusKm, limit)
 
-  // 各山頂までの距離と方位を計算し、距離順にソート
-  const nearbySummits = sotaData.summits
-    .map(summit => {
-      const distance = haversineDistance(lat, lon, summit.lat, summit.lon)
+    // 距離情報に加えて方位情報を追加
+    return summits.map(summit => {
       const bearing = calculateBearing(lat, lon, summit.lat, summit.lon)
       const cardinalBearing = bearingToCardinal(bearing)
       return {
         ...summit,
-        distance,
+        distance: summit.distance * 1000, // Convert km to meters for consistency
         bearing,
         cardinalBearing,
-        isActivationZone: false, // 初期値
+        isActivationZone: false, // 初期値（後で標高情報と合わせて判定）
         verticalDistance: null // 標高差（現在地の標高が必要なため、後で計算）
       }
     })
-    .sort((a, b) => a.distance - b.distance) // 距離順にソート
-    .slice(0, limit) // 上位limit件を取得
-
-  return nearbySummits
+  } catch (error) {
+    console.error('Failed to find nearby SOTA summits:', error)
+    return []
+  }
 }

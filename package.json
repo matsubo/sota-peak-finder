@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:sota": "bun run scripts/build-sota-database.mjs",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "lint:fix": "eslint . --ext ts,tsx --fix",
@@ -46,6 +47,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@sqlite.org/sqlite-wasm": "^3.51.2-build6",
     "i18next": "^25.8.1",
     "i18next-browser-languagedetector": "^8.2.0",
     "leaflet": "^1.9.4",

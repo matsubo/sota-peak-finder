@@ -51,13 +51,16 @@ export interface SotaData {
 }
 
 export interface SotaSummit {
+  id?: number           // Database ID (optional, from SQLite)
   ref: string           // SOTA参照番号 (例: JA/WK-001)
-  name: string          // 山名（日本語）
-  nameEn: string        // 山名（英語）
+  name: string          // 山名
+  nameEn?: string       // 山名（英語）- legacy field for backward compatibility
   lat: number           // 緯度
   lon: number           // 経度
   altitude: number      // 標高（メートル）
   points: number        // SOTAポイント
   activations?: number  // アクティベーション回数（オプション）
   bonus?: number | null // ボーナスポイント（オプション）
+  association?: string  // SOTA Association (例: Japan, USA)
+  region?: string       // SOTA Region (例: JA/NS, W7W)
 }

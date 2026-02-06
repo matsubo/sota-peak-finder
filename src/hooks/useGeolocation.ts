@@ -65,11 +65,20 @@ export function useGeolocation(locationData: LocationData | null) {
                   city: 'location.fetching',
                   jcc: 'location.fetching',
                   jcg: 'location.fetching',
-                  sotaSummits: findNearbySotaSummits(lat, lon, sotaData, 10)
+                  sotaSummits: [] // 非同期で取得するため、初期値は空配列
                 }
-        
+
                 setLocation(initialData)
                 setStatus('status.fetchingDetails')
+
+                // SOTA 山頂を非同期で取得
+                findNearbySotaSummits(lat, lon, sotaData, 10).then(summits => {
+                  initialData.sotaSummits = summits
+                  setLocation({ ...initialData })
+                }).catch(err => {
+                  console.error('SOTA summits fetch error:', err)
+                  initialData.sotaSummits = []
+                })
         
                 let currentElevation: number | null = altitudeGPS ? Math.round(altitudeGPS) : null
         

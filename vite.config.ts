@@ -38,8 +38,23 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wasm,db}'],
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15 MB for SQLite database
         runtimeCaching: [
+          {
+            // SQLite database - cache first with long expiration
+            urlPattern: /\/data\/sota\.db$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sota-database-cache',
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 90 // 90 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/www\.googletagmanager\.com\/gtm\.js/i,
             handler: 'StaleWhileRevalidate',
