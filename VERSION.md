@@ -66,6 +66,13 @@ bun run --version
 
 ## 変更履歴
 
+### v2.3.1 (2026-02-06)
+- プログラマティックSEO実装（9,000+ページ対応）
+- 翻訳ファイルの正しいインポート（src/localesに移動）
+- pre-commit linting（Husky + lint-staged）の追加
+- LocationPage型定義の修正
+- react-helmet-async追加（SEOメタタグ対応）
+
 ### v2.1.0 (2024-02-03)
 - バージョン自動管理システムの追加
 - l10n問題の修正
