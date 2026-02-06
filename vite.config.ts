@@ -39,7 +39,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wasm,db}'],
-        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024, // 15 MB for SQLite database
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50 MB for SQLite database
         runtimeCaching: [
           {
             // SQLite database - cache first with long expiration
