@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "Offline QTH",
-    "subtitle": "JCC/JCG Finder"
+    "title": "SOTA Activator Map",
+    "subtitle": "Offline Summit Finder"
   },
   "status": {
     "ready": "Tap the \"Refetch\" button to get your location",
@@ -78,26 +78,26 @@
     "backToHome": "Back to Home",
     "offline": {
       "title": "How Offline Mode Works",
-      "pwa": "This app is a PWA (Progressive Web App). All files are cached on your device during the first visit, allowing offline use thereafter.",
+      "pwa": "This app is a PWA (Progressive Web App) designed for SOTA activators. All files are cached on your device during the first visit, allowing complete offline use in remote locations.",
       "cache": "HTML, CSS, JavaScript files are cached by Service Worker on first visit",
-      "data": "JCC/JCG/SOTA data files are stored locally and searchable offline",
-      "gps": "GPS (geolocation) is a hardware feature of your smartphone, so it works without internet connection"
+      "data": "Worldwide SOTA summit database (~6MB) is cached locally for instant offline access with 200,000+ summits",
+      "gps": "GPS (geolocation) is a hardware feature of your device, so it works without internet connection—perfect for mountain activation"
     },
     "accuracy": {
-      "title": "Location Accuracy",
-      "gpsLimits": "GPS accuracy typically has an error of 5-10 meters. Accuracy may decrease due to the following factors:",
-      "obstacles": "GPS signals may be blocked by obstacles such as buildings, mountains, or trees, reducing accuracy",
-      "agps": "A-GPS (network-assisted) is unavailable offline, which may increase initial location acquisition time",
-      "estimation": "JCC/JCG/SOTA are estimated using nearest neighbor search from local data"
+      "title": "Location & SOTA Activation Zone",
+      "gpsLimits": "GPS accuracy typically has an error of 5-10 meters. On summit activation, accuracy may vary:",
+      "obstacles": "GPS signals may be affected by terrain, weather, or tree cover",
+      "agps": "A-GPS (network-assisted) is unavailable offline, which may increase initial GPS lock time",
+      "estimation": "SOTA summits and activation zones are calculated using R*Tree spatial indexing with sub-millisecond query times"
     },
     "data": {
-      "title": "Data Accuracy",
-      "region": "This app supports Japan only. JCC/JCG/SOTA data are all for Japan.",
-      "jccJcg": "Calculated from representative coordinates of each municipality (e.g., city hall). Near municipal boundaries, adjacent municipalities' JCC/JCG may be displayed.",
-      "sota": "Uses summit data from the official SOTA database for Japan ({{count}} summits). Displays the nearest summits (top 3) in order of distance.",
-      "elevation": "Online: Accurate elevation from Japan GSI API. Offline: Displays 'Unavailable'.",
-      "addressTitle": "Address",
-      "address": "Online: Accurate address from OpenStreetMap API. Offline: Estimated from local data with '(Estimated)' label."
+      "title": "Worldwide Summit Database",
+      "region": "This app supports SOTA summits worldwide across all associations and regions.",
+      "jccJcg": "JCC/JCG data (Japan only) calculated from representative coordinates of each municipality for reference.",
+      "sota": "Uses official SOTA database with {{count}} summits worldwide. Displays nearest summits within 50km radius using spatial indexing. Activation zone detection shows if you're within 25m vertical and 100m horizontal of summit.",
+      "elevation": "Online: Accurate elevation from GSI API (Japan) or GPS. Offline: GPS elevation or 'Unavailable'.",
+      "addressTitle": "Address & Location",
+      "address": "Online: Accurate address from OpenStreetMap API. Offline: Shows coordinates and grid locator for radio contact."
     },
     "troubleshooting": {
       "title": "Troubleshooting",

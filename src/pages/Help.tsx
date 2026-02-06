@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { sotaDatabase } from '../utils/sotaDatabase'
 
 export function Help() {
   const { t } = useTranslation()
@@ -10,9 +11,9 @@ export function Help() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sotaResponse = await fetch('/offline-qth/data/sota-data.json')
-        const sotaJson = await sotaResponse.json()
-        setSotaCount(sotaJson.summits.length)
+        await sotaDatabase.init()
+        const stats = await sotaDatabase.getStats()
+        setSotaCount(stats.totalSummits)
       } catch (error) {
         console.error("Failed to fetch SOTA data:", error)
       }

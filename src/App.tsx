@@ -27,10 +27,12 @@ function App() {
         setJccJcgCount(locationJson.locations.length)
         setLocationDataLastUpdate(locationJson.lastUpdate)
 
-        const sotaResponse = await fetch('/offline-qth/data/sota-data.json')
-        const sotaJson = await sotaResponse.json()
-        setSotaCount(sotaJson.summits.length)
-        setSotaDataLastUpdate(sotaJson.lastUpdate)
+        // Import sotaDatabase dynamically to avoid circular dependencies
+        const { sotaDatabase } = await import('./utils/sotaDatabase')
+        await sotaDatabase.init()
+        const stats = await sotaDatabase.getStats()
+        setSotaCount(stats.totalSummits)
+        setSotaDataLastUpdate(new Date().toISOString().split('T')[0])
       } catch (error) {
         console.error("Failed to fetch data:", error)
       }
@@ -66,11 +68,11 @@ function App() {
           <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-5 corner-accent">
             <div className="flex justify-between items-center">
               <div>
-                <div className="text-xs font-mono-data glow-teal mb-1 tracking-wider">SYSTEM_ID: QTH-LOCATOR-v{__APP_VERSION__}</div>
+                <div className="text-xs font-mono-data glow-teal mb-1 tracking-wider">SOTA_ACTIVATOR_MAP v{__APP_VERSION__}</div>
                 <h1 className="text-4xl md:text-5xl font-display glow-amber">
-                  OFFLINE QTH
+                  {t('app.title')}
                 </h1>
-                <div className="text-xs font-mono text-teal-400/60 mt-1">GPS // JCC/JCG // GRID LOCATOR // SOTA</div>
+                <div className="text-xs font-mono text-teal-400/60 mt-1">SOTA // GPS // GRID // OFFLINE</div>
               </div>
               <div className="flex items-center gap-2">
                 <Link
@@ -135,13 +137,13 @@ function App() {
                 </div>
               </div>
 
-              {/* Amateur Radio Data Section */}
+              {/* Radio Data Section */}
               <div className="px-5 py-4 border-l-4 border-l-amber-500">
-                <div className="text-[10px] font-mono-data glow-amber tracking-wider mb-3">[ AMATEUR RADIO DATA ]</div>
+                <div className="text-[10px] font-mono-data glow-amber tracking-wider mb-3">[ RADIO DATA ]</div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <ResultItem label={t('label.gridLocator')} value={location.gridLocator} highlight />
-                  <ResultItem label={t('label.jcc')} value={location.jcc} highlight />
-                  <ResultItem label={t('label.jcg')} value={location.jcg} highlight />
+                  <ResultItem label={t('label.jcc')} value={location.jcc} />
+                  <ResultItem label={t('label.jcg')} value={location.jcg} />
                 </div>
               </div>
             </div>
