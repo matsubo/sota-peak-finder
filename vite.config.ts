@@ -72,6 +72,33 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60 * 24 * 7
               }
             }
+          },
+          {
+            // OpenStreetMap tiles - cache for offline map viewing
+            urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/\d+\/\d+\/\d+\.png$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles-cache',
+              expiration: {
+                maxEntries: 500, // Cache up to 500 tiles
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // Leaflet marker icons from CDN
+            urlPattern: /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/leaflet\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'leaflet-icons-cache',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
           }
         ]
       }

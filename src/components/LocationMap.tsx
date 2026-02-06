@@ -106,6 +106,11 @@ function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
 export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = true }: LocationMapProps) {
   return (
     <div className="card-technical rounded-none overflow-hidden corner-accent border-l-4 border-l-teal-500" style={{ height: '400px' }}>
+      {!isOnline && (
+        <div className="absolute top-2 left-2 z-[1000] bg-amber-500/90 text-black px-3 py-1 rounded text-xs font-mono-data">
+          ⚠️ OFFLINE - Showing cached tiles only
+        </div>
+      )}
       <MapContainer
         center={[latitude, longitude]}
         zoom={13}
@@ -115,6 +120,7 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          errorTileUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         />
 
         <MapBounds latitude={latitude} longitude={longitude} sotaSummits={sotaSummits} />
