@@ -51,6 +51,7 @@ class SotaDatabase {
 
       // Initialize SQLite WASM
       const basePath = import.meta.env.BASE_URL || '/';
+      // @ts-expect-error - sqlite3InitModule type definition is incorrect, it does accept config
       this.sqlite3 = await sqlite3InitModule({
         print: console.log,
         printErr: console.error,
@@ -76,7 +77,7 @@ class SotaDatabase {
       const flags = this.sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE
         | this.sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
       const rc = this.sqlite3.capi.sqlite3_deserialize(
-        this.db.pointer, 'main', ptrSource,
+        (this.db as Record<string, unknown>).pointer as number, 'main', ptrSource,
         dbData.byteLength, dbData.byteLength, flags
       );
       if (rc !== 0) {
@@ -143,7 +144,7 @@ class SotaDatabase {
       bind: [maxLat, minLat, maxLon, minLon],
       rowMode: 'object',
       callback: (row) => {
-        candidates.push(row as SotaSummit);
+        candidates.push(row as unknown as SotaSummit);
       },
     });
 
@@ -190,7 +191,7 @@ class SotaDatabase {
       bind: [ref],
       rowMode: 'object',
       callback: (row) => {
-        result = row as SotaSummit;
+        result = row as unknown as SotaSummit;
       },
     });
 
@@ -477,7 +478,7 @@ class SotaDatabase {
       bind: [...bindings, limit, offset],
       rowMode: 'object',
       callback: (row) => {
-        summits.push(row as SotaSummit);
+        summits.push(row as unknown as SotaSummit);
       },
     });
 

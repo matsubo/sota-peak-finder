@@ -316,9 +316,8 @@ export function SummitPage() {
                       distance: 0,
                       bearing: 0,
                       cardinalBearing: 'N',
-                      isActivationZone: true,
-                      verticalDistance: 0
-                    },
+                      isActivationZone: true
+                    } as unknown as typeof summit,
                     // Nearby summits
                     ...nearbySummits
                   ]}
@@ -358,9 +357,9 @@ export function SummitPage() {
                 <section>
                   <h3 className="text-lg font-display text-amber-400 mb-2">Activity Statistics</h3>
                   <p>
-                    This summit has been activated <strong className="text-cyan-400">{summit.activations} times</strong> by ham radio operators.
+                    This summit has been activated <strong className="text-cyan-400">{summit.activations ?? 0} times</strong> by ham radio operators.
                     {summit.activations === 0 && <> This is an <strong className="text-green-400">unactivated summit</strong> - be the first!</>}
-                    {summit.activations > 100 && <> This is a <strong className="text-amber-400">popular summit</strong> with frequent activations.</>}
+                    {(summit.activations ?? 0) > 100 && <> This is a <strong className="text-amber-400">popular summit</strong> with frequent activations.</>}
                   </p>
                 </section>
               </div>

@@ -14,9 +14,9 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'SOTA Activator Map - Offline SOTA Summit Finder',
-        short_name: 'SOTA Map',
-        description: 'Offline map for SOTA activators with worldwide summit database',
+        name: 'SOTA Peak Finder - Find Summits Worldwide',
+        short_name: 'SOTA Peak Finder',
+        description: 'Find nearby SOTA summits worldwide with GPS. 179,000+ summits. Works offline.',
         theme_color: '#2196F3',
         background_color: '#ffffff',
         display: 'standalone',
@@ -39,7 +39,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,wasm,db}'],
-        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50 MB for SQLite database
+        maximumFileSizeToCacheInBytes: 60 * 1024 * 1024, // 60 MB for SQLite database
         runtimeCaching: [
           {
             // SQLite database - cache first with long expiration
@@ -119,5 +119,5 @@ export default defineConfig({
       }
     })
   ],
-  base: '/offline-qth/'
+  base: '/sota-peak-finder/'
 })

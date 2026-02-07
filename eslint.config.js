@@ -3,6 +3,7 @@ import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
+import unusedImports from 'eslint-plugin-unused-imports'
 
 export default [
   {
@@ -43,14 +44,32 @@ export default [
     plugins: {
       '@typescript-eslint': typescript,
       'react': react,
-      'react-hooks': reactHooks
+      'react-hooks': reactHooks,
+      'unused-imports': unusedImports
     },
     rules: {
       ...typescript.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+
+      // Disable base rules that are handled by unused-imports plugin
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+
+      // Use unused-imports plugin to auto-remove unused imports
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          vars: 'all',
+          args: 'after-used',
+          ignoreRestSiblings: true
+        }
+      ]
     },
     settings: {
       react: {
