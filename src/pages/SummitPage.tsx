@@ -227,7 +227,7 @@ export function SummitPage() {
                 <span className={`${difficulty.color} font-bold`}>{difficulty.label}</span>
               </div>
               <h1
-                className="text-4xl md:text-5xl font-display glow-amber mb-2 cursor-pointer hover:text-amber-300 transition-colors"
+                className="text-2xl sm:text-3xl md:text-5xl font-display glow-amber mb-2 cursor-pointer hover:text-amber-300 transition-colors break-all"
                 onClick={scrollToTop}
                 title="Click to scroll to top"
               >
