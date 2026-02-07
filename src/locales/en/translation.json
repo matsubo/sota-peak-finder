@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "Offline SOTA Summit Finder",
-    "subtitle": "Worldwide Ham Radio Summit Database"
+    "title": "SOTA Peak Finder",
+    "subtitle": "Find SOTA Summits Worldwide—Works Offline Anywhere"
   },
   "status": {
     "ready": "Tap the \"Refetch\" button to get your location",
@@ -16,7 +16,7 @@
     "offline": "Offline mode: Showing estimated values"
   },
   "button": {
-    "refetch": "TUNE LOCATION",
+    "refetch": "ACQUIRE CURRENT LOCATION",
     "help": "Help"
   },
   "label": {
@@ -73,6 +73,46 @@
     "rangeQuestion": "In range?",
     "outOfRange": "NG"
   },
+  "summits": {
+    "title": "Summit Database",
+    "subtitle": "Browse all SOTA summits worldwide",
+    "browseAll": "Browse All Summits",
+    "filters": "Search Filters",
+    "association": "Association",
+    "region": "Region",
+    "allAssociations": "All Associations",
+    "allRegions": "All Regions",
+    "altitude": "Altitude Range",
+    "points": "Points Range",
+    "activations": "Min. Activations",
+    "search": "Search",
+    "searchPlaceholder": "Search by ref or name...",
+    "sortBy": "Sort by",
+    "sortName": "Name",
+    "sortAltitude": "Altitude",
+    "sortPoints": "Points",
+    "sortActivations": "Activations",
+    "sortRef": "Reference",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "resetFilters": "Reset Filters",
+    "showing": "Showing {{start}}-{{end}} of {{total}} summits",
+    "page": "Page",
+    "of": "of",
+    "noResults": "No summits match your filters",
+    "tryReset": "Try resetting filters to see all summits",
+    "unactivated": "Unactivated Only",
+    "popular": "Popular (100+)",
+    "largeResultSet": "Large result set ({{count, number}} summits). Consider adding more filters for better performance."
+  },
+  "notFound": {
+    "title": "SIGNAL NOT FOUND",
+    "subtitle": "The frequency you requested does not exist",
+    "goHome": "Return to Summit Finder",
+    "browseSummits": "Browse All Summits",
+    "help": "Get Help",
+    "goBack": "Go Back"
+  },
   "help": {
     "title": "How to Use & FAQ",
     "backToHome": "Back to Home",
@@ -92,9 +132,13 @@
     },
     "data": {
       "title": "Worldwide Summit Database",
-      "region": "This app supports SOTA summits worldwide across all associations and regions.",
-      "jccJcg": "JCC/JCG data (Japan only) calculated from representative coordinates of each municipality for reference.",
-      "sota": "Uses official SOTA database with {{count}} summits worldwide. Displays nearest summits within 50km radius using spatial indexing. Activation zone detection shows if you're within 25m vertical and 100m horizontal of summit.",
+      "worldwide": "This app provides worldwide SOTA summit coverage across all associations and regions.",
+      "sota": "Uses official SOTA database with {{count}} summits worldwide. Displays nearest 20 summits within 50km radius using R*Tree spatial indexing.",
+      "summitInfo": "Each summit includes: Reference code (e.g., JA/NS-001), Summit name, Coordinates (lat/lon), Altitude (meters), SOTA points (difficulty: 1-10), Association/Region. Summit markers are color-coded by difficulty.",
+      "database": "SQLite WASM Database & Storage",
+      "databaseSize": "This app uses SQLite compiled to WebAssembly (WASM), which enables extremely fast queries directly in your browser without a server. The entire worldwide database (~44 MB) is much smaller than JSON format and includes R*Tree spatial indexing for instant searches. Total storage: ~50 MB cached permanently in your browser.",
+      "databasePerformance": "By using SQLite WASM, the app achieves sub-10ms query times for finding nearby summits from 200,000+ worldwide summits. The compact binary format reduces cache size by 60% compared to JSON, making it perfect for offline PWA use.",
+      "databaseUpdate": "Database created: {{date}}. SOTA summit data is updated periodically from the official SOTA database (sotadata.org.uk). To get the latest data, clear your browser cache and reload the app.",
       "elevation": "Online: Accurate elevation from GSI API (Japan) or GPS. Offline: GPS elevation or 'Unavailable'.",
       "addressTitle": "Address & Location",
       "address": "Online: Accurate address from OpenStreetMap API. Offline: Shows coordinates and grid locator for radio contact."

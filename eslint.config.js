@@ -12,7 +12,8 @@ export default [
       'node_modules/**',
       'playwright.config.ts',
       'scripts/**',
-      '**/*.cjs'
+      '**/*.cjs',
+      'public/wasm/**'
     ]
   },
   js.configs.recommended,

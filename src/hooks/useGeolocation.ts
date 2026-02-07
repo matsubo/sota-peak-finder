@@ -72,7 +72,8 @@ export function useGeolocation(locationData: LocationData | null) {
                 setStatus('status.fetchingDetails')
 
                 // SOTA 山頂を非同期で取得
-                findNearbySotaSummits(lat, lon, sotaData, 20).then(summits => {
+                // 5000km radius to always find 20 nearest summits regardless of distance
+                findNearbySotaSummits(lat, lon, sotaData, 20, 5000).then(summits => {
                   initialData.sotaSummits = summits
                   setLocation({ ...initialData })
                 }).catch(err => {

@@ -1,45 +1,52 @@
-import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain, BookOpen, MessageCircle, MapPin, ExternalLink } from 'lucide-react'
+import { RefreshCw, Navigation, Mountain, MapPin, ExternalLink, Database } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useLocationData } from './hooks/useLocationData'
 import { useGeolocation } from './hooks/useGeolocation'
 import { cn } from './lib/utils'
 import { useState, useEffect } from 'react'
-import { trackLanguageChange, trackSotaSummitView } from './utils/analytics'
+import { trackSotaSummitView } from './utils/analytics'
 import { LocationMap } from './components/LocationMap'
+import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 
 function App() {
   const { t, i18n } = useTranslation()
   const locationData = useLocationData()
   const { status, location, isOnline, refetch } = useGeolocation(locationData)
 
-  const [jccJcgCount, setJccJcgCount] = useState<number | null>(null)
   const [sotaCount, setSotaCount] = useState<number | null>(null)
-  const [locationDataLastUpdate, setLocationDataLastUpdate] = useState<string | null>(null)
-  const [sotaDataLastUpdate, setSotaDataLastUpdate] = useState<string | null>(null)
+  const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lon: number } | null>(null)
   const [overrideSummits, setOverrideSummits] = useState<typeof location.sotaSummits | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const locationResponse = await fetch('/offline-qth/data/location-data.json')
-        const locationJson = await locationResponse.json()
-        setJccJcgCount(locationJson.locations.length)
-        setLocationDataLastUpdate(locationJson.lastUpdate)
 
         // Import sotaDatabase dynamically to avoid circular dependencies
         const { sotaDatabase } = await import('./utils/sotaDatabase')
         await sotaDatabase.init()
         const stats = await sotaDatabase.getStats()
+        const metadata = await sotaDatabase.getMetadata()
         setSotaCount(stats.totalSummits)
-        setSotaDataLastUpdate(new Date().toISOString().split('T')[0])
+
+        // Format SOTA build date
+        if (metadata.buildDate) {
+          const date = new Date(metadata.buildDate)
+          const formatted = new Intl.DateTimeFormat(i18n.language, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }).format(date)
+          setSotaBuildDate(formatted)
+        }
       } catch (error) {
         console.error("Failed to fetch data:", error)
       }
     }
     fetchData()
-  }, [])
+  }, [i18n.language])
 
   // Track SOTA summit view
   useEffect(() => {
@@ -53,15 +60,6 @@ function App() {
     }
   }, [location])
 
-  const toggleLanguage = () => {
-    const currentLang = i18n.language
-    const newLang = currentLang === 'ja' ? 'en' : 'ja'
-    i18n.changeLanguage(newLang)
-
-    // Track language change
-    trackLanguageChange(currentLang, newLang)
-  }
-
   // Handle map click to find summits at clicked location
   const handleMapClick = async (lat: number, lon: number) => {
     if (!location) return
@@ -69,8 +67,9 @@ function App() {
     setClickedLocation({ lat, lon })
 
     // Fetch summits near clicked location
+    // Use very large radius (5000km) to always find 20 nearest summits regardless of distance
     const { findNearbySotaSummits } = await import('./utils/api')
-    const summits = await findNearbySotaSummits(lat, lon, null, 20)
+    const summits = await findNearbySotaSummits(lat, lon, null, 20, 5000)
 
     // Override summits with clicked location results
     setOverrideSummits(summits)
@@ -79,62 +78,7 @@ function App() {
   return (
     <div className="min-h-screen p-3 sm:p-4 md:p-5 relative z-10">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-4 animate-fade-in">
-          {/* Compact control panel header */}
-          <div className="radio-panel rounded-sm p-3 relative overflow-hidden">
-            <div className="flex items-center justify-between gap-4">
-              {/* Left: Title */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="tx-indicator"></div>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-radio-dial vfd-display leading-none">
-                  OFFLINE SOTA
-                </h1>
-                <h2 className="text-sm md:text-base font-display text-amber-400 tracking-wider" style={{textShadow: '0 0 8px rgba(255,185,40,0.4)'}}>
-                  SUMMIT FINDER
-                </h2>
-              </div>
-
-              {/* Center: Signal meter */}
-              <div className="hidden sm:flex items-center gap-2">
-                <div className="signal-meter w-20">
-                  <div className="signal-bar"></div>
-                  <div className="signal-bar"></div>
-                  <div className="signal-bar"></div>
-                  <div className="signal-bar"></div>
-                  <div className="signal-bar"></div>
-                </div>
-                <div className="text-[8px] font-mono-data text-teal-400/70 tracking-widest whitespace-nowrap">
-                  179.5K
-                </div>
-              </div>
-
-              {/* Right: Controls */}
-              <div className="flex items-center gap-1.5">
-                <Link
-                  to="/help"
-                  className="p-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 transition-all"
-                >
-                  <HelpCircle className="w-3.5 h-3.5 text-teal-400" />
-                </Link>
-                <button
-                  onClick={toggleLanguage}
-                  className="p-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 transition-all"
-                  aria-label="Toggle language"
-                >
-                  <Languages className="w-3.5 h-3.5 text-teal-400" />
-                </button>
-                {isOnline && (
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-400 status-indicator"></div>
-                    <span className="text-[8px] font-mono-data text-green-400 tracking-wider">RX</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </header>
+        <Header isOnline={isOnline} />
 
         <main className="space-y-4">
           {/* Status display */}
@@ -159,10 +103,38 @@ function App() {
             <span className="tracking-widest">{t('button.refetch')}</span>
           </button>
 
+          {/* Summit Database Feature Card */}
+          <Link
+            to="/summits"
+            className="block animate-fade-in group"
+          >
+            <div className="card-technical rounded-none p-4 border-l-4 border-l-amber-500 hover:bg-amber-500/5 transition-all">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30">
+                    <Database className="w-6 h-6 text-amber-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg text-amber-400 tracking-wider mb-1">
+                      {t('summits.title')}
+                    </h3>
+                    <p className="text-xs text-teal-300/70 font-mono-data">
+                      {sotaCount ? `${sotaCount.toLocaleString()} ${t('summits.subtitle')}` : t('summits.subtitle')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-amber-400/60 group-hover:text-amber-400 transition-colors">
+                  <span className="text-xs font-mono-data hidden sm:inline">{t('summits.browseAll')}</span>
+                  <ExternalLink className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+          </Link>
+
           {location && (
             <div className="card-technical rounded-none animate-fade-in overflow-hidden corner-accent">
               {/* GPS Coordinates Section */}
-              <div className="border-b border-teal-500/20 bg-black/20">
+              <div className="bg-black/20">
                 <div className="px-5 py-3 border-l-4 border-l-green-500">
                   <div className="text-[10px] font-mono-data glow-green tracking-wider mb-2">[ GPS COORDINATES ]</div>
                   <div className="grid grid-cols-2 gap-4">
@@ -173,15 +145,6 @@ function App() {
                     {location.accuracy && <ResultItem label={t('label.accuracy')} value={`±${Math.round(location.accuracy)}m`} />}
                     <ResultItem label={t('label.elevation')} value={t(location.elevation)} />
                   </div>
-                </div>
-              </div>
-
-              {/* Location Section */}
-              <div className="px-5 py-3 border-l-4 border-l-teal-500 relative z-10">
-                <div className="text-[10px] font-mono-data glow-teal tracking-wider mb-2">[ LOCATION DATA ]</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-                  <ResultItem label={t('label.prefecture')} value={location.prefecture} />
-                  <ResultItem label={t('label.city')} value={location.city} />
                 </div>
               </div>
             </div>
@@ -229,13 +192,13 @@ function App() {
 
                 {/* Summit Rows */}
                 {(overrideSummits || location.sotaSummits)!.map((summit, index) => (
-                  <div
+                  <Link
                     key={summit.ref}
+                    to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
                     className={cn(
                       "grid grid-cols-10 gap-2 px-3 py-2.5 border-b border-teal-500/10 hover:bg-teal-500/5 transition-colors group cursor-pointer",
                       index % 2 === 0 ? "bg-black/20" : "bg-black/10"
                     )}
-                    onClick={() => isOnline && window.open(`https://www.sotamaps.org/index.php?smt=${summit.ref}`, '_blank')}
                   >
                     {/* Number */}
                     <div className="col-span-1 flex items-center">
@@ -244,11 +207,8 @@ function App() {
 
                     {/* Reference & Name */}
                     <div className="col-span-3 flex flex-col justify-center">
-                      <div className="font-mono-data text-amber-400 text-sm tracking-wide flex items-center gap-1.5">
+                      <div className="font-mono-data text-amber-400 text-sm tracking-wide">
                         {summit.ref}
-                        {isOnline && (
-                          <ExternalLink className="w-3 h-3 text-teal-400/50 group-hover:text-teal-400 transition-colors" />
-                        )}
                       </div>
                       <div className="text-teal-100/80 text-xs truncate">
                         {summit.name}
@@ -278,100 +238,14 @@ function App() {
                       <div className="text-teal-100/80">{summit.altitude}m</div>
                       <div className="text-teal-400/60">{summit.points} pts</div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
           )}
         </main>
 
-        <footer className="mt-12 animate-fade-in">
-          <div className="card-technical rounded-none border-l-4 border-l-teal-500/40 p-5">
-            <div className="space-y-4">
-              {/* Status Bar */}
-              <div className="flex items-center justify-between border-b border-teal-500/10 pb-3">
-                <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "w-2 h-2 rounded-full",
-                    isOnline ? "bg-green-500 status-indicator" : "bg-orange-500"
-                  )}></div>
-                  <span className="font-mono-data text-xs tracking-wider text-teal-400/80">
-                    {isOnline ? t('footer.online') : t('footer.offline')}
-                  </span>
-                </div>
-                <div className="freq-display text-[9px] px-2 py-0.5">
-                  v{__APP_VERSION__}
-                </div>
-              </div>
-
-              {/* Creator Info */}
-              <div className="text-center">
-                <div className="text-[10px] font-mono-data text-teal-500/60 tracking-wider mb-1">SYSTEM OPERATOR</div>
-                <div className="text-sm font-mono">
-                  <span className="text-teal-400/60">{t('footer.createdBy')}</span>{' '}
-                  <a
-                    href="https://x.com/je1wfv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold glow-amber hover:text-amber-400 transition-colors"
-                  >
-                    JE1WFV
-                  </a>
-                </div>
-              </div>
-
-              {/* Links */}
-              <div className="flex items-center justify-center gap-5 border-t border-teal-500/10 pt-3">
-                <a
-                  href="https://je1wfv.teraren.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-teal-500/60 hover:text-teal-400 transition-colors"
-                >
-                  <BookOpen className="w-4 h-4" />
-                  <span className="text-xs font-mono-data">{t('footer.blog')}</span>
-                </a>
-                <div className="w-px h-4 bg-teal-500/20"></div>
-                <a
-                  href="https://discord.gg/Fztt8jwr6A"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-teal-500/60 hover:text-teal-400 transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="text-xs font-mono-data">{t('footer.discord')}</span>
-                </a>
-                <div className="w-px h-4 bg-teal-500/20"></div>
-                <a
-                  href="https://github.com/matsubo/offline-qth"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-teal-500/60 hover:text-teal-400 transition-colors"
-                >
-                  <Github className="w-4 h-4" />
-                  <span className="text-xs font-mono-data">{t('footer.github')}</span>
-                </a>
-              </div>
-
-              {/* Database Stats */}
-              <div className="text-center border-t border-teal-500/10 pt-3">
-                <div className="text-[9px] font-mono-data text-teal-500/50 tracking-wider">
-                  {jccJcgCount && sotaCount && (
-                    <span>DATABASE: {t('footer.jccJcgData', { count: jccJcgCount })} / {t('footer.sotaData', { count: sotaCount })}</span>
-                  )}
-                  {(locationDataLastUpdate || sotaDataLastUpdate) && (
-                    <span> {'// '}{t('footer.lastUpdated', { date: locationDataLastUpdate || sotaDataLastUpdate })}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* 73 Sign-off */}
-              <div className="text-center border-t border-teal-500/10 pt-3">
-                <div className="font-display text-sm glow-green tracking-wider">73 DE JE1WFV</div>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer isOnline={isOnline} sotaCount={sotaCount} sotaBuildDate={sotaBuildDate} />
       </div>
     </div>
   )

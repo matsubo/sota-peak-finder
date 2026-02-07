@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Homepage -->
-  <url>
-    <loc>https://matsubo.github.io/offline-qth/</loc>
-    <lastmod>2026-02-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/offline-qth/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/offline-qth/" />
-  </url>
+  <!-- Static Pages Sitemap -->
+  <sitemap>
+    <loc>https://matsubo.github.io/offline-qth/sitemap-static.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
 
-  <!-- Help Page -->
-  <url>
-    <loc>https://matsubo.github.io/offline-qth/help</loc>
-    <lastmod>2026-02-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/offline-qth/help" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/offline-qth/help" />
-  </url>
+  <!-- Summit Pages Sitemaps -->
+  <sitemap>
+    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-1.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-2.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-3.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-4.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
 
-</urlset>
+</sitemapindex>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -132,6 +133,7 @@ function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
     }
 
     hasInitialized.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map]) // Only depend on map, not on data changes
 
   return null
@@ -262,16 +264,12 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
                     {summit.isActivationZone && (
                       <div className="text-green-600 font-bold">✓ In Activation Zone</div>
                     )}
-                    {isOnline && (
-                      <a
-                        href={`https://www.sotamaps.org/index.php?smt=${summit.ref}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs"
-                      >
-                        <span>View on SOTAmaps →</span>
-                      </a>
-                    )}
+                    <Link
+                      to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
+                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs font-semibold"
+                    >
+                      <span>View Summit Details →</span>
+                    </Link>
                   </div>
                 </Popup>
               </Marker>

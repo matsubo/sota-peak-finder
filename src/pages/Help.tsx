@@ -5,21 +5,34 @@ import { useState, useEffect } from 'react'
 import { sotaDatabase } from '../utils/sotaDatabase'
 
 export function Help() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [sotaCount, setSotaCount] = useState<number | null>(null)
+  const [buildDate, setBuildDate] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         await sotaDatabase.init()
         const stats = await sotaDatabase.getStats()
+        const metadata = await sotaDatabase.getMetadata()
         setSotaCount(stats.totalSummits)
+
+        // Format build date based on locale
+        if (metadata.buildDate) {
+          const date = new Date(metadata.buildDate)
+          const formatted = new Intl.DateTimeFormat(i18n.language, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }).format(date)
+          setBuildDate(formatted)
+        }
       } catch (error) {
         console.error("Failed to fetch SOTA data:", error)
       }
     }
     fetchData()
-  }, [])
+  }, [i18n.language])
 
   return (
     <div className="min-h-screen p-4 md:p-8 lg:p-10 relative z-10">
@@ -86,23 +99,34 @@ export function Help() {
             </div>
           </section>
 
-          {/* Section 3: データの精度 */}
+          {/* Section 3: SOTA Database Coverage */}
           <section className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
             <h2 className="text-2xl font-display glow-amber mb-4 flex items-center gap-3">
-              <span className="text-3xl">📊</span>
+              <span className="text-3xl">🌍</span>
               {t('help.data.title')}
             </h2>
             <div className="space-y-5 text-teal-100/90 font-body leading-relaxed">
-              <div className="data-panel rounded border-l-4 border-l-blue-400 p-4">
-                <p className="font-bold text-blue-300">🗾 {t('help.data.region')}</p>
+              <div className="data-panel rounded border-l-4 border-l-green-400 p-4">
+                <p className="font-bold text-green-300">🏔️ {t('help.data.worldwide')}</p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">JCC/JCG</h3>
-                <p className="text-sm">{t('help.data.jccJcg')}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">SOTA Summit Database</h3>
+                <p className="text-sm">{sotaCount ? t('help.data.sota', { count: sotaCount.toLocaleString() }) : '...'}</p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">SOTA</h3>
-                <p className="text-sm">{sotaCount ? t('help.data.sota', { count: sotaCount }) : '...'}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">Summit Information</h3>
+                <p className="text-sm">{t('help.data.summitInfo')}</p>
+              </div>
+              <div>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">{t('help.data.database')}</h3>
+                <p className="text-sm mb-3">{t('help.data.databaseSize')}</p>
+                <div className="data-panel rounded p-3 border-l-2 border-l-cyan-400">
+                  <p className="text-xs text-cyan-200">⚡ {t('help.data.databasePerformance')}</p>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">Database Updates</h3>
+                <p className="text-sm">{buildDate ? t('help.data.databaseUpdate', { date: buildDate }) : '...'}</p>
               </div>
               <div>
                 <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">{t('label.elevation')}</h3>

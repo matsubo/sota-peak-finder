@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "オフラインSOTA山頂検索",
-    "subtitle": "世界中のハムラジオ山頂データベース"
+    "title": "SOTA Peak Finder",
+    "subtitle": "世界中のSOTA山頂を検索—オフラインでどこでも"
   },
   "status": {
     "ready": "「再取得」ボタンをタップして位置情報を取得してください",
@@ -16,7 +16,7 @@
     "offline": "オフラインモード：推定値を表示"
   },
   "button": {
-    "refetch": "周波数調整",
+    "refetch": "現在地を取得",
     "help": "ヘルプ"
   },
   "label": {
@@ -73,6 +73,46 @@
     "rangeQuestion": "範囲内か？",
     "outOfRange": "NG"
   },
+  "summits": {
+    "title": "山頂データベース",
+    "subtitle": "全世界のSOTA山頂を検索",
+    "browseAll": "全山頂を見る",
+    "filters": "検索フィルタ",
+    "association": "Association",
+    "region": "Region",
+    "allAssociations": "すべてのAssociation",
+    "allRegions": "すべてのRegion",
+    "altitude": "標高範囲",
+    "points": "ポイント範囲",
+    "activations": "最小アクティベーション数",
+    "search": "検索",
+    "searchPlaceholder": "参照番号または山名で検索...",
+    "sortBy": "並び替え",
+    "sortName": "山名",
+    "sortAltitude": "標高",
+    "sortPoints": "ポイント",
+    "sortActivations": "アクティベーション数",
+    "sortRef": "参照番号",
+    "ascending": "昇順",
+    "descending": "降順",
+    "resetFilters": "フィルタをリセット",
+    "showing": "{{total}}山中 {{start}}-{{end}}山を表示",
+    "page": "ページ",
+    "of": "/",
+    "noResults": "該当する山頂がありません",
+    "tryReset": "フィルタをリセットしてすべての山頂を表示してください",
+    "unactivated": "未アクティベートのみ",
+    "popular": "人気(100回以上)",
+    "largeResultSet": "検索結果が多数（{{count, number}}山）あります。フィルタを追加するとパフォーマンスが向上します。"
+  },
+  "notFound": {
+    "title": "信号が見つかりません",
+    "subtitle": "要求された周波数は存在しません",
+    "goHome": "山頂検索に戻る",
+    "browseSummits": "全山頂を見る",
+    "help": "ヘルプを見る",
+    "goBack": "戻る"
+  },
   "help": {
     "title": "使い方・よくある質問",
     "backToHome": "ホームに戻る",
@@ -92,9 +132,13 @@
     },
     "data": {
       "title": "全世界山頂データベース",
-      "region": "このアプリは全世界のSOTA山頂に対応しています（すべてのAssociation・Region）。",
-      "jccJcg": "JCC/JCGデータ（日本のみ）は市区町村の代表地点から計算され、参考情報として表示されます。",
-      "sota": "SOTA公式データベースの全世界{{count}}山頂を収録。半径50km以内の最寄り山頂を空間インデックスで検索します。アクティベーションゾーン判定は山頂から垂直25m・水平100m以内を表示します。",
+      "worldwide": "このアプリは全世界のSOTA山頂に対応しています（すべてのAssociation・Region）。",
+      "sota": "SOTA公式データベースの全世界{{count}}山頂を収録。半径50km以内の最寄り20山頂をR*Tree空間インデックスで検索します。",
+      "summitInfo": "各山頂の情報：参照コード（例：JA/NS-001）、山名、座標（緯度経度）、標高（メートル）、SOTAポイント（難易度：1-10）、Association/Region。マーカーは難易度で色分けされています。",
+      "database": "SQLite WASMデータベース・ストレージ",
+      "databaseSize": "このアプリはWebAssembly（WASM）にコンパイルされたSQLiteを使用しており、サーバー不要でブラウザ内で超高速クエリを実行できます。全世界のデータベース（約44MB）はJSON形式よりもはるかに小さく、R*Tree空間インデックスで瞬時に検索できます。合計ストレージ：約50MBがブラウザに永続的にキャッシュされます。",
+      "databasePerformance": "SQLite WASMを使用することで、20万以上の世界中の山頂から最寄りの山を検索する際、10ミリ秒以下のクエリ速度を実現。コンパクトなバイナリ形式はJSON比で60%のキャッシュサイズ削減を実現し、オフラインPWAに最適です。",
+      "databaseUpdate": "データベース作成日：{{date}}。SOTA山頂データは公式SOTAデータベース（sotadata.org.uk）から定期的に更新されます。最新データを取得するには、ブラウザキャッシュをクリアしてアプリを再読み込みしてください。",
       "elevation": "オンライン時は国土地理院API（日本）またはGPSで正確な標高を取得します。オフライン時はGPS標高または「取得不可」と表示されます。",
       "addressTitle": "住所・位置情報",
       "address": "オンライン時はOpenStreetMap APIで正確な住所を取得します。オフライン時は座標とグリッドロケーターを表示し、無線交信に使用できます。"

@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Single Page Apps for GitHub Pages -->
+  <!-- https://github.com/rafgraph/spa-github-pages -->
+  <script type="text/javascript">
+    // Single Page Apps for GitHub Pages
+    // MIT License
+    // This script checks to see if a redirect is present in the query string,
+    // converts it back into the correct url and adds it to the
+    // browser's history using window.history.replaceState(...),
+    // which won't cause the browser to attempt to load the new url.
+    // When the single page app is loaded further down in this file,
+    // the correct url will be waiting in the browser's history for
+    // the single page app to route accordingly.
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) {
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
+  <!-- End Single Page Apps for GitHub Pages -->
+
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -13,23 +38,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#2196F3">
 
-  <title>SOTA Activator Map - Offline Summit Finder for SOTA Activators</title>
-  <meta name="description" content="Offline map for SOTA (Summits On The Air) activators. Find nearby summits worldwide with GPS, view summit references, points, altitude, and distance. Works offline as a PWA with 179,000+ summits.">
-  <meta name="keywords" content="SOTA,Summits On The Air,ham radio,amateur radio,mountain,summit,activator,offline,PWA,GPS,worldwide,summit finder">
+  <title>SOTA Peak Finder - Find Summits Worldwide | Works Offline</title>
+  <meta name="description" content="SOTA Peak Finder: Find nearby summits worldwide with GPS. 179,000+ SOTA summits with references, points, altitude, and distance. Fully offline PWA for activators.">
+  <meta name="keywords" content="SOTA,Summits On The Air,Peak Finder,ham radio,amateur radio,mountain,summit,activator,offline,PWA,GPS,worldwide,summit finder">
   <meta name="author" content="JE1WFV">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://matsubo.github.io/offline-qth/">
-  <meta property="og:title" content="SOTA Activator Map - Offline Summit Finder">
-  <meta property="og:description" content="Offline map for SOTA activators. Find nearby summits worldwide with GPS. 179,000+ summits with references, points, altitude, and distance. Works offline.">
+  <meta property="og:title" content="SOTA Peak Finder - Find Summits Worldwide">
+  <meta property="og:description" content="Find nearby SOTA summits worldwide with GPS. 179,000+ summits with references, points, altitude, and distance. Fully offline PWA for activators.">
   <meta property="og:image" content="https://matsubo.github.io/offline-qth/icon-512.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary">
   <meta property="twitter:url" content="https://matsubo.github.io/offline-qth/">
-  <meta property="twitter:title" content="SOTA Activator Map - Offline Summit Finder">
-  <meta property="twitter:description" content="Find nearby SOTA summits worldwide. 179,000+ summits with GPS, offline PWA support.">
+  <meta property="twitter:title" content="SOTA Peak Finder - Find Summits Worldwide">
+  <meta property="twitter:description" content="Find nearby SOTA summits worldwide with GPS. 179,000+ summits with references, points, altitude, and distance. Fully offline PWA.">
   <meta property="twitter:image" content="https://matsubo.github.io/offline-qth/icon-512.png">
 
   <link rel="canonical" href="https://matsubo.github.io/offline-qth/">

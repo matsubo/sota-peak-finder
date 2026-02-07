@@ -80,6 +80,15 @@ db.exec(`
   CREATE INDEX idx_summits_ref ON summits(ref);
   CREATE INDEX idx_summits_coords ON summits(lat, lon);
   CREATE INDEX idx_summits_association ON summits(association);
+  CREATE INDEX idx_summits_region ON summits(region);
+  CREATE INDEX idx_summits_points ON summits(points);
+  CREATE INDEX idx_summits_activations ON summits(activations);
+  CREATE INDEX idx_summits_altitude ON summits(altitude);
+
+  CREATE TABLE metadata (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
 `);
 
 // Create R*Tree spatial index
@@ -259,6 +268,16 @@ if (batch.length > 0) {
 
 console.log(`\r   Processed: ${processed.toLocaleString()} summits    `);
 console.log('\n✅ Import complete\n');
+
+// Add metadata
+console.log('📝 Adding metadata...');
+const buildDate = new Date().toISOString();
+db.exec(`
+  INSERT INTO metadata (key, value) VALUES
+    ('build_date', '${buildDate}'),
+    ('sota_version', '1.0.0'),
+    ('source', 'https://www.sotadata.org.uk/')
+`);
 
 // Optimize database
 console.log('🔧 Optimizing database...');

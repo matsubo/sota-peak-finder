@@ -1,11 +1,14 @@
 {
-  "name": "offline-qth",
+  "name": "sota-peak-finder",
   "version": "2.3.2",
   "type": "module",
+  "description": "SOTA Peak Finder: Find nearby summits worldwide with GPS. 179,000+ SOTA summits with references, points, altitude, and distance. Fully offline PWA for activators.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "build:sota": "bun run scripts/build-sota-database.mjs",
+    "build:sitemaps": "bun run scripts/generate-summit-sitemap.mjs",
+    "build:all": "bun run build:sota && bun run build:sitemaps && bun run build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "lint:fix": "eslint . --ext ts,tsx --fix",

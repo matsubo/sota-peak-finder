@@ -229,6 +229,42 @@ class SotaDatabase {
   }
 
   /**
+   * Get database metadata (build date, version, etc.)
+   */
+  async getMetadata(): Promise<{
+    buildDate: string | null;
+    version: string | null;
+    source: string | null;
+  }> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const metadata = {
+      buildDate: null as string | null,
+      version: null as string | null,
+      source: null as string | null,
+    };
+
+    try {
+      this.db!.exec({
+        sql: 'SELECT key, value FROM metadata',
+        rowMode: 'object',
+        callback: (row) => {
+          const { key, value } = row as { key: string; value: string };
+          if (key === 'build_date') metadata.buildDate = value;
+          if (key === 'sota_version') metadata.version = value;
+          if (key === 'source') metadata.source = value;
+        },
+      });
+    } catch {
+      console.warn('⚠️  Metadata table not found (older database version)');
+    }
+
+    return metadata;
+  }
+
+  /**
    * Clear OPFS cache (useful for updates)
    */
   async clearCache(): Promise<void> {
@@ -241,6 +277,211 @@ class SotaDatabase {
     } catch (error) {
       console.warn('⚠️  Failed to clear OPFS cache:', error);
     }
+  }
+
+  /**
+   * Get distinct associations for filter dropdown
+   * Returns sorted list of association names
+   */
+  async getAssociations(): Promise<string[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const associations: string[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT DISTINCT association
+        FROM summits
+        WHERE association IS NOT NULL AND association != ''
+        ORDER BY association
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        associations.push((row as { association: string }).association);
+      },
+    });
+
+    return associations;
+  }
+
+  /**
+   * Get regions for a specific association
+   */
+  async getRegionsByAssociation(association: string): Promise<string[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const regions: string[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT DISTINCT region
+        FROM summits
+        WHERE association = ? AND region IS NOT NULL AND region != ''
+        ORDER BY region
+      `,
+      bind: [association],
+      rowMode: 'object',
+      callback: (row) => {
+        regions.push((row as { region: string }).region);
+      },
+    });
+
+    return regions;
+  }
+
+  /**
+   * Get min/max values for filter sliders
+   */
+  async getFilterRanges(): Promise<{
+    minAltitude: number;
+    maxAltitude: number;
+    maxActivations: number;
+  }> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const ranges = this.db!.exec({
+      sql: `
+        SELECT
+          MIN(altitude) as minAltitude,
+          MAX(altitude) as maxAltitude,
+          MAX(activations) as maxActivations
+        FROM summits
+      `,
+      rowMode: 'object',
+      returnValue: 'resultRows',
+    });
+
+    return ranges[0] as {
+      minAltitude: number;
+      maxAltitude: number;
+      maxActivations: number;
+    };
+  }
+
+  /**
+   * Advanced filtered search with pagination
+   */
+  async searchSummits(filters: {
+    association?: string;
+    region?: string;
+    minAltitude?: number;
+    maxAltitude?: number;
+    minPoints?: number;
+    maxPoints?: number;
+    minActivations?: number;
+    searchText?: string;
+    sortBy?: 'name' | 'altitude' | 'points' | 'activations' | 'ref';
+    sortOrder?: 'asc' | 'desc';
+    offset?: number;
+    limit?: number;
+  }): Promise<{ summits: SotaSummit[]; total: number }> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const {
+      association,
+      region,
+      minAltitude,
+      maxAltitude,
+      minPoints,
+      maxPoints,
+      minActivations,
+      searchText,
+      sortBy = 'name',
+      sortOrder = 'asc',
+      offset = 0,
+      limit = 20,
+    } = filters;
+
+    // Build WHERE clause dynamically
+    const whereClauses: string[] = [];
+    const bindings: (string | number)[] = [];
+
+    if (association) {
+      whereClauses.push('association = ?');
+      bindings.push(association);
+    }
+
+    if (region) {
+      whereClauses.push('region = ?');
+      bindings.push(region);
+    }
+
+    if (minAltitude !== undefined) {
+      whereClauses.push('altitude >= ?');
+      bindings.push(minAltitude);
+    }
+
+    if (maxAltitude !== undefined) {
+      whereClauses.push('altitude <= ?');
+      bindings.push(maxAltitude);
+    }
+
+    if (minPoints !== undefined) {
+      whereClauses.push('points >= ?');
+      bindings.push(minPoints);
+    }
+
+    if (maxPoints !== undefined) {
+      whereClauses.push('points <= ?');
+      bindings.push(maxPoints);
+    }
+
+    if (minActivations !== undefined) {
+      whereClauses.push('activations >= ?');
+      bindings.push(minActivations);
+    }
+
+    if (searchText && searchText.trim()) {
+      whereClauses.push('(ref LIKE ? OR name LIKE ?)');
+      const searchPattern = `%${searchText.trim()}%`;
+      bindings.push(searchPattern, searchPattern);
+    }
+
+    const whereClause = whereClauses.length > 0
+      ? `WHERE ${whereClauses.join(' AND ')}`
+      : '';
+
+    // Build ORDER BY clause
+    const orderByClause = `ORDER BY ${sortBy} ${sortOrder.toUpperCase()}`;
+
+    // Count total results
+    const countQuery = `SELECT COUNT(*) as total FROM summits ${whereClause}`;
+    const countResult = this.db!.exec({
+      sql: countQuery,
+      bind: bindings,
+      rowMode: 'object',
+      returnValue: 'resultRows',
+    });
+    const total = (countResult[0] as { total: number }).total;
+
+    // Get paginated results
+    const query = `
+      SELECT
+        id, ref, name, lat, lon, altitude, points, activations,
+        bonus, association, region
+      FROM summits
+      ${whereClause}
+      ${orderByClause}
+      LIMIT ? OFFSET ?
+    `;
+
+    const summits: SotaSummit[] = [];
+    this.db!.exec({
+      sql: query,
+      bind: [...bindings, limit, offset],
+      rowMode: 'object',
+      callback: (row) => {
+        summits.push(row as SotaSummit);
+      },
+    });
+
+    return { summits, total };
   }
 
   /**
