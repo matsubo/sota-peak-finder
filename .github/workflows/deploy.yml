@@ -38,6 +38,8 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-PLFT9JFX' }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
