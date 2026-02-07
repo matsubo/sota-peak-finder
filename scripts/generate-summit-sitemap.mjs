@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DB_PATH = path.join(__dirname, '../public/data/sota.db');
-const BASE_URL = 'https://matsubo.github.io/offline-qth';
+const BASE_URL = 'https://matsubo.github.io/sota-peak-finder';
 const MAX_URLS_PER_SITEMAP = 50000; // Google's limit
 
 console.log('🗺️  Generating SOTA Summit Sitemaps');

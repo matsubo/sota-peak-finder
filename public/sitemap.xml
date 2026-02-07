@@ -3,25 +3,25 @@
 
   <!-- Static Pages Sitemap -->
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-static.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-static.xml</loc>
     <lastmod>2026-02-07</lastmod>
   </sitemap>
 
   <!-- Summit Pages Sitemaps -->
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-1.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-summits-1.xml</loc>
     <lastmod>2026-02-07</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-2.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-summits-2.xml</loc>
     <lastmod>2026-02-07</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-3.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-summits-3.xml</loc>
     <lastmod>2026-02-07</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-summits-4.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-summits-4.xml</loc>
     <lastmod>2026-02-07</lastmod>
   </sitemap>
 

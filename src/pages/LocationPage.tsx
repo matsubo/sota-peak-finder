@@ -25,7 +25,7 @@ export function LocationPage() {
     async function loadLocationData() {
       try {
         // Load location data
-        const locationResponse = await fetch('/offline-qth/data/location-data.json')
+        const locationResponse = await fetch('/sota-peak-finder/data/location-data.json')
         const locationJson = await locationResponse.json()
         const foundLocation = locationJson.locations.find((loc: LocationData) => loc.jcc === jcc)
 
@@ -41,7 +41,7 @@ export function LocationPage() {
         setGridLocator(grid)
 
         // Load SOTA data and find nearby summits
-        const sotaResponse = await fetch('/offline-qth/data/sota-data.json')
+        const sotaResponse = await fetch('/sota-peak-finder/data/sota-data.json')
         const sotaJson = await sotaResponse.json()
 
         // Calculate distances and find nearby summits (within 50km)
@@ -166,7 +166,7 @@ export function LocationPage() {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={`https://matsubo.github.io/offline-qth/location/${jcc}`} />
+        <link rel="canonical" href={`https://matsubo.github.io/sota-peak-finder/location/${jcc}`} />
 
         {/* Schema.org structured data */}
         <script type="application/ld+json">

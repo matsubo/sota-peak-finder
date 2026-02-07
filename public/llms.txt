@@ -3,7 +3,7 @@
 ## Project Overview
 Offline QTH is a Progressive Web App (PWA) for amateur radio operators in Japan. It helps users find their QTH information (JCC/JCG codes, grid locator, and nearby SOTA summits) using GPS location data. The app works completely offline after the first visit.
 
-**Live Demo:** https://matsubo.github.io/offline-qth/
+**Live Demo:** https://matsubo.github.io/sota-peak-finder/
 
 ## Target Audience
 Amateur radio operators in Japan who need to quickly find:
@@ -51,7 +51,7 @@ Amateur radio operators in Japan who need to quickly find:
 ### Deployment
 - **Platform**: GitHub Pages
 - **CI/CD**: GitHub Actions
-- **Base URL**: /offline-qth/
+- **Base URL**: /sota-peak-finder/
 
 ## Project Structure
 
@@ -185,7 +185,7 @@ bun run preview
    - SOTA summits: 7,211 (fetch from sota-data.json dynamically)
    - JCC/JCG locations: 1,892 (fetch from location-data.json dynamically)
 
-2. **Base URL**: Always use `/offline-qth/` as base path for GitHub Pages
+2. **Base URL**: Always use `/sota-peak-finder/` as base path for GitHub Pages
 
 3. **Japan-only**: All features and data are Japan-specific
 
@@ -202,10 +202,10 @@ MIT License
 ## Author
 **JE1WFV**
 - X (Twitter): @je1wfv
-- GitHub: matsubo/offline-qth
+- GitHub: matsubo/sota-peak-finder
 - Blog: https://je1wfv.teraren.com/
 
 ## Related Links
-- Demo: https://matsubo.github.io/offline-qth/
-- Repository: https://github.com/matsubo/offline-qth
+- Demo: https://matsubo.github.io/sota-peak-finder/
+- Repository: https://github.com/matsubo/sota-peak-finder
 - Discord: https://discord.gg/Fztt8jwr6A

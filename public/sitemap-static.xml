@@ -4,22 +4,22 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://matsubo.github.io/offline-qth/</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/offline-qth/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/offline-qth/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/sota-peak-finder/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/sota-peak-finder/" />
   </url>
 
   <!-- Help Page -->
   <url>
-    <loc>https://matsubo.github.io/offline-qth/help</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/help</loc>
     <lastmod>2026-02-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/offline-qth/help" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/offline-qth/help" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://matsubo.github.io/sota-peak-finder/help" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://matsubo.github.io/sota-peak-finder/help" />
   </url>
 
 </urlset>
