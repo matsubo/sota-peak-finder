@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "SOTA Activator Map",
-    "subtitle": "Offline Summit Finder"
+    "title": "Offline SOTA Summit Finder",
+    "subtitle": "Worldwide Ham Radio Summit Database"
   },
   "status": {
     "ready": "Tap the \"Refetch\" button to get your location",
@@ -16,7 +16,7 @@
     "offline": "Offline mode: Showing estimated values"
   },
   "button": {
-    "refetch": "Get Location",
+    "refetch": "TUNE LOCATION",
     "help": "Help"
   },
   "label": {

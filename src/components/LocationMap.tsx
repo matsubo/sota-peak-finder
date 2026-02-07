@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -54,8 +54,22 @@ const createCurrentLocationIcon = () => {
   })
 }
 
-const createSummitIcon = (isInRange: boolean) => {
-  const color = isInRange ? 'rgb(102, 255, 153)' : 'rgb(255, 169, 51)'
+const createSummitIcon = (isInRange: boolean, points: number) => {
+  // Color based on SOTA points (difficulty/altitude)
+  let color = 'rgb(255, 169, 51)' // 1-3 points (amber)
+  if (points >= 10) {
+    color = 'rgb(255, 20, 20)' // 10+ points (red - hardest)
+  } else if (points >= 8) {
+    color = 'rgb(255, 100, 0)' // 8-9 points (orange-red)
+  } else if (points >= 4) {
+    color = 'rgb(0, 255, 255)' // 4-7 points (cyan)
+  }
+
+  // Override with green if in activation zone
+  if (isInRange) {
+    color = 'rgb(57, 255, 20)' // VFD green for activation zone
+  }
+
   return L.divIcon({
     className: 'summit-marker',
     html: `
@@ -98,11 +112,15 @@ function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lon: numbe
   return null
 }
 
-// Component to auto-fit bounds
+// Component to auto-fit bounds (only on initial load)
 function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
   const map = useMap()
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
+    // Only fit bounds once on initial load
+    if (hasInitialized.current) return
+
     if (sotaSummits && sotaSummits.length > 0) {
       const bounds = L.latLngBounds([
         [latitude, longitude],
@@ -112,7 +130,9 @@ function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
     } else {
       map.setView([latitude, longitude], 13)
     }
-  }, [map, latitude, longitude, sotaSummits])
+
+    hasInitialized.current = true
+  }, [map]) // Only depend on map, not on data changes
 
   return null
 }
@@ -224,7 +244,7 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
               {/* Summit marker */}
               <Marker
                 position={[summit.lat, summit.lon]}
-                icon={createSummitIcon(summit.isActivationZone)}
+                icon={createSummitIcon(summit.isActivationZone, summit.points)}
               >
                 <Popup>
                   <div className="font-mono-data text-xs space-y-1">

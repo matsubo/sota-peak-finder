@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "SOTA Activator Map",
-    "subtitle": "オフライン山頂検索"
+    "title": "オフラインSOTA山頂検索",
+    "subtitle": "世界中のハムラジオ山頂データベース"
   },
   "status": {
     "ready": "「再取得」ボタンをタップして位置情報を取得してください",
@@ -16,7 +16,7 @@
     "offline": "オフラインモード：推定値を表示"
   },
   "button": {
-    "refetch": "位置情報を取得",
+    "refetch": "周波数調整",
     "help": "ヘルプ"
   },
   "label": {

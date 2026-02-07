@@ -77,51 +77,99 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 md:p-8 relative z-10">
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-8 animate-fade-in">
-          <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-5 corner-accent">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-xs font-mono-data glow-teal mb-1 tracking-wider">SOTA_ACTIVATOR_MAP v{__APP_VERSION__}</div>
-                <h1 className="text-4xl md:text-5xl font-display glow-amber">
-                  {t('app.title')}
-                </h1>
-                <div className="text-xs font-mono text-teal-400/60 mt-1">SOTA // GPS // GRID // OFFLINE</div>
+    <div className="min-h-screen p-3 sm:p-5 md:p-6 relative z-10">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-6 animate-fade-in">
+          {/* Main control panel header */}
+          <div className="radio-panel rounded-sm p-5 relative overflow-hidden">
+            {/* TX indicator LED */}
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <div className="tx-indicator"></div>
+              <span className="text-[10px] font-mono-data text-teal-300 tracking-wider">ON AIR</span>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              {/* Frequency display style title */}
+              <div className="flex items-center gap-3">
+                <div className="freq-display text-[11px]">
+                  OFFLINE_v{__APP_VERSION__}
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-teal-500/50 to-transparent"></div>
               </div>
-              <div className="flex items-center gap-2">
+
+              {/* Main title with VFD display effect */}
+              <div>
+                <h1 className="text-3xl md:text-5xl font-radio-dial vfd-display leading-tight">
+                  OFFLINE SOTA
+                </h1>
+                <h2 className="text-xl md:text-2xl font-display text-amber-400 mt-1 tracking-wider" style={{textShadow: '0 0 10px rgba(255,185,40,0.5)'}}>
+                  SUMMIT FINDER
+                </h2>
+              </div>
+
+              {/* Signal strength meter */}
+              <div className="flex items-center gap-3 mt-2">
+                <div className="signal-meter w-32">
+                  <div className="signal-bar"></div>
+                  <div className="signal-bar"></div>
+                  <div className="signal-bar"></div>
+                  <div className="signal-bar"></div>
+                  <div className="signal-bar"></div>
+                </div>
+                <div className="text-[9px] font-mono-data text-teal-400/70 tracking-widest">
+                  SIGNAL: 179.5K PEAKS
+                </div>
+              </div>
+
+              {/* Control buttons row */}
+              <div className="flex items-center gap-2 mt-3">
                 <Link
                   to="/help"
-                  className="p-2.5 rounded border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/60 transition-all"
+                  className="p-2 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 hover:border-teal-500/60 transition-all"
                 >
-                  <HelpCircle className="w-5 h-5 text-teal-400" />
+                  <HelpCircle className="w-4 h-4 text-teal-400" />
                 </Link>
                 <button
                   onClick={toggleLanguage}
-                  className="p-2.5 rounded border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/60 transition-all"
+                  className="p-2 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 hover:border-teal-500/60 transition-all"
                   aria-label="Toggle language"
                 >
-                  <Languages className="w-5 h-5 text-teal-400" />
+                  <Languages className="w-4 h-4 text-teal-400" />
                 </button>
+                <div className="flex-1"></div>
+                {isOnline && (
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30">
+                    <div className="w-2 h-2 rounded-full bg-green-400 status-indicator"></div>
+                    <span className="text-[10px] font-mono-data text-green-400 tracking-wider">RX</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </header>
 
-        <main className="space-y-6">
-          <div className="card-technical rounded p-4 animate-fade-in">
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-teal-400 status-indicator"></div>
-              <div className="text-center font-mono-data text-sm tracking-wider text-teal-300">{t(status)}</div>
+        <main className="space-y-4">
+          {/* Status display */}
+          <div className="radio-panel rounded-sm p-3 animate-fade-in">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-teal-400 status-indicator"></div>
+                <div className="font-mono-data text-xs tracking-widest text-teal-300">{t(status)}</div>
+              </div>
+              <div className="freq-display text-[10px] py-1">
+                {new Date().toISOString().slice(0,10)} UTC
+              </div>
             </div>
           </div>
 
+          {/* Tuning button */}
           <button
             onClick={refetch}
-            className="w-full btn-primary text-slate-900 font-display text-lg py-4 px-8 rounded flex items-center justify-center gap-3 animate-fade-in"
+            className="w-full radio-btn font-radio-dial text-base py-4 px-8 rounded-sm flex items-center justify-center gap-3 animate-fade-in relative overflow-hidden group"
           >
-            <RefreshCw className="w-5 h-5" />
-            <span className="tracking-wide">{t('button.refetch')}</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            <RefreshCw className="w-5 h-5 relative z-10" />
+            <span className="tracking-widest relative z-10">{t('button.refetch')}</span>
           </button>
 
           {location && (
