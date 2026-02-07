@@ -242,6 +242,30 @@ function App() {
                   </Link>
                 ))}
               </div>
+
+              {/* Share on X */}
+              <button
+                onClick={() => {
+                  const summits = (overrideSummits || location.sotaSummits)!
+                  const nearest = summits[0]
+                  const dist = nearest.distance < 1000
+                    ? `${Math.round(nearest.distance)}m`
+                    : `${(nearest.distance / 1000).toFixed(1)}km`
+                  const text = `${nearest.name} (${nearest.ref}) まで${dist}！周辺に${summits.length}座のSOTAサミットを発見 #SOTA #HamRadio`
+                  const url = 'https://matsubo.github.io/sota-peak-finder/'
+                  window.open(
+                    `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                  )
+                }}
+                className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-sm border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/50 transition-all text-sm font-mono-data text-teal-300 tracking-wide"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                Post on X
+              </button>
             </div>
           )}
         </main>

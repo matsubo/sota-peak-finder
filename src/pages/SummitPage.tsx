@@ -239,6 +239,23 @@ export function SummitPage() {
               <div className="text-xs font-mono text-teal-400/60 mt-2">
                 {summit.altitude}m {'// '}{summit.points} pts {'// '}GRID {gridLocator}
               </div>
+              <button
+                onClick={() => {
+                  const text = `${summit.name} (${summit.ref}) ${summit.altitude}m - ${summit.points}pts SOTA Summit! #SOTA #HamRadio`
+                  const url = `https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`
+                  window.open(
+                    `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                  )
+                }}
+                className="mt-4 flex items-center gap-2 px-4 py-2 rounded border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/50 transition-all text-sm font-mono-data text-teal-300 tracking-wide"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                Post on X
+              </button>
             </div>
           </div>
 
