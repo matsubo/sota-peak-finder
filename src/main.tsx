@@ -27,7 +27,7 @@ function PageViewTracker() {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
-      <BrowserRouter basename="/offline-qth">
+      <BrowserRouter basename="/sota-peak-finder">
         <PageViewTracker />
         <Routes>
           <Route path="/" element={<App />} />

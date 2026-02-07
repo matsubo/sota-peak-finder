@@ -77,6 +77,6 @@ test.describe('オフラインQTH アプリケーション', () => {
 
     // GitHubリンクを確認
     await expect(page.locator('a:has-text("GitHub")')).toBeVisible()
-    await expect(page.locator('a:has-text("GitHub")')).toHaveAttribute('href', 'https://github.com/matsubo/offline-qth')
+    await expect(page.locator('a:has-text("GitHub")')).toHaveAttribute('href', 'https://github.com/matsubo/sota-peak-finder')
   })
 })

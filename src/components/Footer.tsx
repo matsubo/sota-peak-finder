@@ -111,7 +111,7 @@ export function Footer({ isOnline = false, sotaCount = null, sotaBuildDate = nul
                 </a>
                 <div className="w-px h-4 bg-teal-500/20"></div>
                 <a
-                  href="https://github.com/matsubo/offline-qth"
+                  href="https://github.com/matsubo/sota-peak-finder"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-teal-500/60 hover:text-teal-400 transition-colors"

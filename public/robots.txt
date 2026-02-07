@@ -1,11 +1,11 @@
 # Robots.txt for Offline QTH - JCC/JCG Finder
-# https://matsubo.github.io/offline-qth/
+# https://matsubo.github.io/sota-peak-finder/
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://matsubo.github.io/offline-qth/sitemap.xml
+Sitemap: https://matsubo.github.io/sota-peak-finder/sitemap.xml
 
 # Prevent indexing of data files
 Disallow: /data/

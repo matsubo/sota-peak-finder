@@ -161,7 +161,7 @@ export function SummitPage() {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={`https://matsubo.github.io/offline-qth/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`} />
+        <link rel="canonical" href={`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`} />
 
         {/* Schema.org structured data */}
         <script type="application/ld+json">
