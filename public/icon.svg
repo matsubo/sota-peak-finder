@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Background gradient matching app theme -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1923"/>
+      <stop offset="100%" stop-color="#0c1018"/>
+    </linearGradient>
+    <!-- Mountain gradient -->
+    <linearGradient id="mountain1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a4a"/>
+      <stop offset="100%" stop-color="#0f2030"/>
+    </linearGradient>
+    <linearGradient id="mountain2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e4555"/>
+      <stop offset="100%" stop-color="#142a38"/>
+    </linearGradient>
+    <!-- Peak glow -->
+    <radialGradient id="peakGlow" cx="0.5" cy="0.3" r="0.5">
+      <stop offset="0%" stop-color="#ffa933" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ffa933" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Radio wave gradient -->
+    <linearGradient id="radioWave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#33cccc" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#33cccc" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#33cccc" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded rectangle background -->
+  <rect width="512" height="512" rx="96" ry="96" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.06" stroke="#33cccc" stroke-width="1" fill="none">
+    <line x1="128" y1="40" x2="128" y2="472"/>
+    <line x1="256" y1="40" x2="256" y2="472"/>
+    <line x1="384" y1="40" x2="384" y2="472"/>
+    <line x1="40" y1="128" x2="472" y2="128"/>
+    <line x1="40" y1="256" x2="472" y2="256"/>
+    <line x1="40" y1="384" x2="472" y2="384"/>
+  </g>
+
+  <!-- Peak glow effect behind mountain -->
+  <circle cx="256" cy="160" r="200" fill="url(#peakGlow)"/>
+
+  <!-- Back mountain range (darker) -->
+  <polygon points="30,440 100,280 150,320 220,230 260,270 320,200 380,300 420,260 500,440"
+           fill="url(#mountain1)" opacity="0.6"/>
+
+  <!-- Main mountain (prominent peak) -->
+  <polygon points="60,440 180,260 256,140 332,260 452,440"
+           fill="url(#mountain2)"/>
+
+  <!-- Snow cap on main peak -->
+  <polygon points="232,180 256,140 280,180 268,178 256,162 244,178"
+           fill="#e8f0f8" opacity="0.9"/>
+
+  <!-- Front mountain range -->
+  <polygon points="0,440 60,360 120,400 180,340 240,380 300,350 360,390 420,340 480,380 512,440"
+           fill="#0f2535" opacity="0.8"/>
+
+  <!-- Radio waves emanating from peak -->
+  <g fill="none" stroke="#33cccc" stroke-linecap="round">
+    <path d="M 216,155 Q 200,130 210,100" stroke-width="3" opacity="0.5"/>
+    <path d="M 200,140 Q 175,105 190,65" stroke-width="2.5" opacity="0.35"/>
+    <path d="M 186,128 Q 155,85 175,38" stroke-width="2" opacity="0.2"/>
+    <path d="M 296,155 Q 312,130 302,100" stroke-width="3" opacity="0.5"/>
+    <path d="M 312,140 Q 337,105 322,65" stroke-width="2.5" opacity="0.35"/>
+    <path d="M 326,128 Q 357,85 337,38" stroke-width="2" opacity="0.2"/>
+  </g>
+
+  <!-- Small antenna on peak -->
+  <line x1="256" y1="140" x2="256" y2="95" stroke="#ffa933" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="256" cy="90" r="6" fill="#ffa933"/>
+  <circle cx="256" cy="90" r="3" fill="#ffcc66"/>
+
+  <!-- Location pin marker on the mountain -->
+  <g transform="translate(256, 310)">
+    <!-- Pin shadow -->
+    <ellipse cx="0" cy="45" rx="20" ry="6" fill="black" opacity="0.3"/>
+    <!-- Pin body -->
+    <path d="M 0,40 C -5,30 -28,5 -28,-15 C -28,-30 -15,-48 0,-48 C 15,-48 28,-30 28,-15 C 28,5 5,30 0,40 Z"
+          fill="#33cccc"/>
+    <path d="M 0,40 C -5,30 -28,5 -28,-15 C -28,-30 -15,-48 0,-48 C 0,-48 -10,-30 -10,-15 C -10,5 -2,30 0,40 Z"
+          fill="#44dddd" opacity="0.4"/>
+    <!-- Pin circle -->
+    <circle cx="0" cy="-15" r="12" fill="#0c1018"/>
+    <circle cx="0" cy="-15" r="8" fill="#33cccc" opacity="0.5"/>
+  </g>
+
+  <!-- SOTA text at bottom -->
+  <text x="256" y="470" text-anchor="middle" font-family="'Courier New', monospace"
+        font-size="36" font-weight="bold" fill="#33cccc" letter-spacing="8" opacity="0.7">
+    SOTA
+  </text>
+</svg>
