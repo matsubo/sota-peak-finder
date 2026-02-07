@@ -70,12 +70,18 @@ class SotaDatabase {
       const dbData = new Uint8Array(arrayBuffer);
       console.log(`✅ Downloaded database (${(dbData.length / 1024 / 1024).toFixed(2)} MB)`);
 
-      // Write database to the in-memory VFS filesystem, then open it
-      const vfsFilename = '/sota.db';
-      this.sqlite3.capi.sqlite3_js_vfs_create_file(
-        '', vfsFilename, dbData
+      // Load database into memory using sqlite3_deserialize
+      this.db = new this.sqlite3.oo1.DB(':memory:');
+      const ptrSource = this.sqlite3.wasm.allocFromTypedArray(dbData);
+      const flags = this.sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE
+        | this.sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
+      const rc = this.sqlite3.capi.sqlite3_deserialize(
+        this.db.pointer, 'main', ptrSource,
+        dbData.byteLength, dbData.byteLength, flags
       );
-      this.db = new this.sqlite3.oo1.DB(vfsFilename, 'r');
+      if (rc !== 0) {
+        throw new Error(`sqlite3_deserialize failed with code ${rc}`);
+      }
 
       // Verify database integrity
       const count = this.db.selectValue('SELECT COUNT(*) FROM summits');
@@ -118,35 +124,46 @@ class SotaDatabase {
     const minLon = lon - lonDelta;
     const maxLon = lon + lonDelta;
 
-    // Query using R*Tree spatial index
+    // Query using R*Tree spatial index (bounding box only)
+    // Distance calculation done in JavaScript since SQLite lacks trig functions
     const query = `
       SELECT
         s.id, s.ref, s.name, s.lat, s.lon, s.altitude,
-        s.points, s.activations, s.bonus, s.association, s.region,
-        (6371 * acos(
-          cos(radians(?)) * cos(radians(s.lat)) * cos(radians(s.lon) - radians(?)) +
-          sin(radians(?)) * sin(radians(s.lat))
-        )) AS distance
+        s.points, s.activations, s.bonus, s.association, s.region
       FROM summits s
       JOIN summits_idx i ON s.id = i.id
       WHERE i.minLat <= ? AND i.maxLat >= ?
         AND i.minLon <= ? AND i.maxLon >= ?
-      ORDER BY distance
-      LIMIT ?
     `;
 
-    const results: SotaSummitWithDistance[] = [];
+    const candidates: SotaSummit[] = [];
 
     this.db!.exec({
       sql: query,
-      bind: [lat, lon, lat, maxLat, minLat, maxLon, minLon, limit],
+      bind: [maxLat, minLat, maxLon, minLon],
       rowMode: 'object',
       callback: (row) => {
-        results.push(row as SotaSummitWithDistance);
+        candidates.push(row as SotaSummit);
       },
     });
 
-    return results;
+    // Calculate Haversine distance in JavaScript
+    const toRad = (deg: number) => deg * Math.PI / 180;
+    const results: SotaSummitWithDistance[] = candidates.map(summit => {
+      const dLat = toRad(summit.lat - lat);
+      const dLon = toRad(summit.lon - lon);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat)) * Math.cos(toRad(summit.lat)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = 6371 * c; // km
+
+      return { ...summit, distance };
+    });
+
+    // Sort by distance and return top N
+    results.sort((a, b) => a.distance - b.distance);
+    return results.slice(0, limit);
   }
 
   /**

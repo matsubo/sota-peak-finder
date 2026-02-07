@@ -262,6 +262,9 @@ console.log('\n✅ Import complete\n');
 
 // Optimize database
 console.log('🔧 Optimizing database...');
+// Switch from WAL to DELETE journal mode for portable single-file database
+// WAL mode requires separate -wal/-shm files which don't work with sqlite3_deserialize
+db.exec('PRAGMA journal_mode = DELETE');
 db.exec('VACUUM');
 db.exec('ANALYZE');
 

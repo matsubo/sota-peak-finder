@@ -207,7 +207,7 @@ function App() {
                         )}
                       </div>
                       <div className="text-teal-100/80 text-xs truncate">
-                        {i18n.language === 'ja' ? summit.name : summit.nameEn}
+                        {summit.name}
                       </div>
                     </div>
 
