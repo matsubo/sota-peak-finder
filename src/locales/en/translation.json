@@ -105,6 +105,11 @@
     "popular": "Popular (100+)",
     "largeResultSet": "Large result set ({{count, number}} summits). Consider adding more filters for better performance."
   },
+  "share": {
+    "postOnX": "Post on X",
+    "topMessage": "SOTA Peak Finder - Find SOTA Summits Worldwide! Offline summit database for ham radio operators. #SOTA #HamRadio #AmateurRadio",
+    "summitMessage": "{{name}} ({{ref}}) {{altitude}}m - {{points}}pts SOTA Summit! #SOTA #HamRadio"
+  },
   "notFound": {
     "title": "SIGNAL NOT FOUND",
     "subtitle": "The frequency you requested does not exist",

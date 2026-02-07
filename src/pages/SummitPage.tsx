@@ -13,7 +13,7 @@ import { getAssociationFlag } from '../utils/countryFlags'
 
 export function SummitPage() {
   const { ref } = useParams<{ ref: string }>()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [summit, setSummit] = useState<SotaSummit | null>(null)
   const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([])
   const [gridLocator, setGridLocator] = useState<string>('')
@@ -240,7 +240,7 @@ export function SummitPage() {
                 {summit.altitude}m {'// '}{summit.points} pts {'// '}GRID {gridLocator}
               </div>
               <a
-                href={`https://x.com/intent/tweet?text=${encodeURIComponent(`${summit.name} (${summit.ref}) ${summit.altitude}m - ${summit.points}pts SOTA Summit! #SOTA #HamRadio`)}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`)}`}
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(t('share.summitMessage', { name: summit.name, ref: summit.ref, altitude: summit.altitude, points: summit.points }))}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 flex items-center gap-2 px-4 py-2 rounded border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/50 transition-all text-sm font-mono-data text-teal-300 tracking-wide"
@@ -248,7 +248,7 @@ export function SummitPage() {
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-                Post on X
+                {t('share.postOnX')}
               </a>
             </div>
           </div>
