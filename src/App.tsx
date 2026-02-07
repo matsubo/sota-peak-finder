@@ -255,8 +255,7 @@ function App() {
                   const url = 'https://matsubo.github.io/sota-peak-finder/'
                   window.open(
                     `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-                    '_blank',
-                    'noopener,noreferrer'
+                    '_blank'
                   )
                 }}
                 className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-sm border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/50 transition-all text-sm font-mono-data text-teal-300 tracking-wide"
