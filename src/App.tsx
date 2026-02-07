@@ -1,4 +1,4 @@
-import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain, BookOpen, MessageCircle, MapPin, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { RefreshCw, Github, Languages, HelpCircle, Navigation, Mountain, BookOpen, MessageCircle, MapPin, ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useLocationData } from './hooks/useLocationData'
@@ -17,7 +17,8 @@ function App() {
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [locationDataLastUpdate, setLocationDataLastUpdate] = useState<string | null>(null)
   const [sotaDataLastUpdate, setSotaDataLastUpdate] = useState<string | null>(null)
-  const [showMap, setShowMap] = useState<boolean>(true)
+  const [clickedLocation, setClickedLocation] = useState<{ lat: number; lon: number } | null>(null)
+  const [overrideSummits, setOverrideSummits] = useState<typeof location.sotaSummits | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +60,20 @@ function App() {
 
     // Track language change
     trackLanguageChange(currentLang, newLang)
+  }
+
+  // Handle map click to find summits at clicked location
+  const handleMapClick = async (lat: number, lon: number) => {
+    if (!location) return
+
+    setClickedLocation({ lat, lon })
+
+    // Fetch summits near clicked location
+    const { findNearbySotaSummits } = await import('./utils/api')
+    const summits = await findNearbySotaSummits(lat, lon, null, 10)
+
+    // Override summits with clicked location results
+    setOverrideSummits(summits)
   }
 
   return (
@@ -140,36 +155,30 @@ function App() {
           {/* Map Section */}
           {location && (
             <div className="animate-fade-in space-y-3">
-              <button
-                onClick={() => setShowMap(!showMap)}
-                className="w-full card-technical rounded-none p-4 border-l-4 border-l-blue-500 flex items-center justify-between hover:bg-white/5 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-6 h-6 text-blue-400" />
-                  <h2 className="font-display text-xl text-blue-400 tracking-wider">
-                    MAP VIEW
-                  </h2>
-                </div>
-                {showMap ? <ChevronUp className="w-5 h-5 text-blue-400" /> : <ChevronDown className="w-5 h-5 text-blue-400" />}
-              </button>
+              <div className="card-technical rounded-none p-3 border-l-4 border-l-blue-500">
+                <h2 className="font-display text-lg text-blue-400 flex items-center gap-2 tracking-wider">
+                  <MapPin className="w-5 h-5" />
+                  MAP VIEW
+                </h2>
+              </div>
 
-              {showMap && (
-                <LocationMap
-                  latitude={location.latRaw}
-                  longitude={location.lonRaw}
-                  sotaSummits={location.sotaSummits}
-                  isOnline={isOnline}
-                />
-              )}
+              <LocationMap
+                latitude={location.latRaw}
+                longitude={location.lonRaw}
+                sotaSummits={overrideSummits || location.sotaSummits}
+                isOnline={isOnline}
+                onMapClick={handleMapClick}
+                clickedLocation={clickedLocation}
+              />
             </div>
           )}
 
-          {location && location.sotaSummits && location.sotaSummits.length > 0 && (
+          {location && (overrideSummits || location.sotaSummits) && (overrideSummits || location.sotaSummits)!.length > 0 && (
             <div className="animate-fade-in space-y-3">
               <div className="card-technical rounded-none p-3 border-l-4 border-l-green-500">
                 <h2 className="font-display text-lg glow-green flex items-center gap-2 tracking-wider">
                   <Mountain className="w-5 h-5" />
-                  {t('sota.nearby')} ({location.sotaSummits.length})
+                  {t('sota.nearby')} ({(overrideSummits || location.sotaSummits)!.length})
                 </h2>
               </div>
 
@@ -184,7 +193,7 @@ function App() {
                 </div>
 
                 {/* Summit Rows */}
-                {location.sotaSummits.map((summit, index) => (
+                {(overrideSummits || location.sotaSummits)!.map((summit, index) => (
                   <div
                     key={summit.ref}
                     className={cn(

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -31,6 +31,8 @@ interface LocationMapProps {
   longitude: number
   sotaSummits?: SotaSummit[]
   isOnline?: boolean
+  onMapClick?: (lat: number, lon: number) => void
+  clickedLocation?: { lat: number; lon: number } | null
 }
 
 // Custom marker icons
@@ -84,6 +86,18 @@ const createSummitIcon = (isInRange: boolean) => {
   })
 }
 
+// Component to handle map clicks
+function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lon: number) => void }) {
+  useMapEvents({
+    click: (e) => {
+      if (onMapClick) {
+        onMapClick(e.latlng.lat, e.latlng.lng)
+      }
+    },
+  })
+  return null
+}
+
 // Component to auto-fit bounds
 function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
   const map = useMap()
@@ -103,12 +117,35 @@ function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
   return null
 }
 
-export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = true }: LocationMapProps) {
+const createClickedLocationIcon = () => {
+  return L.divIcon({
+    className: 'clicked-location-marker',
+    html: `
+      <div style="
+        width: 20px;
+        height: 20px;
+        background: rgb(251, 191, 36);
+        border: 3px solid white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(251, 191, 36, 0.6), 0 0 20px rgba(251, 191, 36, 0.3);
+      "></div>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  })
+}
+
+export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = true, onMapClick, clickedLocation }: LocationMapProps) {
   return (
     <div className="card-technical rounded-none overflow-hidden corner-accent border-l-4 border-l-teal-500" style={{ height: '400px' }}>
       {!isOnline && (
         <div className="absolute top-2 left-2 z-[1000] bg-amber-500/90 text-black px-3 py-1 rounded text-xs font-mono-data">
           ⚠️ OFFLINE - Showing cached tiles only
+        </div>
+      )}
+      {onMapClick && (
+        <div className="absolute top-2 right-2 z-[1000] bg-blue-500/90 text-white px-3 py-1 rounded text-xs font-mono-data">
+          💡 Click map to find summits at that location
         </div>
       )}
       <MapContainer
@@ -124,85 +161,103 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
         />
 
         <MapBounds latitude={latitude} longitude={longitude} sotaSummits={sotaSummits} />
+        <MapClickHandler onMapClick={onMapClick} />
 
-        {/* Current location marker */}
+        {/* Current location marker (user's GPS location) */}
         <Marker position={[latitude, longitude]} icon={createCurrentLocationIcon()}>
           <Popup>
             <div className="font-mono-data text-xs">
-              <div className="font-bold text-teal-600">Your Location</div>
+              <div className="font-bold text-teal-600">Your GPS Location</div>
               <div>{latitude.toFixed(6)}, {longitude.toFixed(6)}</div>
             </div>
           </Popup>
         </Marker>
 
+        {/* Clicked location marker (where user clicked) */}
+        {clickedLocation && (
+          <Marker position={[clickedLocation.lat, clickedLocation.lon]} icon={createClickedLocationIcon()}>
+            <Popup>
+              <div className="font-mono-data text-xs">
+                <div className="font-bold text-amber-600">Selected Location</div>
+                <div>{clickedLocation.lat.toFixed(6)}, {clickedLocation.lon.toFixed(6)}</div>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
         {/* SOTA summit markers */}
-        {sotaSummits.map((summit) => (
-          <div key={summit.ref}>
-            {/* Activation zone circle (25m radius) */}
-            {summit.isActivationZone && (
-              <Circle
-                center={[summit.lat, summit.lon]}
-                radius={25}
+        {sotaSummits.map((summit) => {
+          // Use clicked location if available, otherwise use GPS location
+          const referencePoint = clickedLocation || { lat: latitude, lon: longitude }
+
+          return (
+            <div key={summit.ref}>
+              {/* Activation zone circle (25m radius) */}
+              {summit.isActivationZone && (
+                <Circle
+                  center={[summit.lat, summit.lon]}
+                  radius={25}
+                  pathOptions={{
+                    color: 'rgb(102, 255, 153)',
+                    fillColor: 'rgb(102, 255, 153)',
+                    fillOpacity: 0.1,
+                    weight: 2,
+                    dashArray: '5, 5'
+                  }}
+                />
+              )}
+
+              {/* Line from reference point to summit */}
+              <Polyline
+                positions={[
+                  [referencePoint.lat, referencePoint.lon],
+                  [summit.lat, summit.lon]
+                ]}
                 pathOptions={{
-                  color: 'rgb(102, 255, 153)',
-                  fillColor: 'rgb(102, 255, 153)',
-                  fillOpacity: 0.1,
+                  color: summit.isActivationZone ? 'rgb(102, 255, 153)' : 'rgb(255, 169, 51)',
                   weight: 2,
-                  dashArray: '5, 5'
+                  opacity: 0.6,
+                  dashArray: '10, 5'
                 }}
               />
-            )}
 
-            {/* Line from current location to summit */}
-            <Polyline
-              positions={[
-                [latitude, longitude],
-                [summit.lat, summit.lon]
-              ]}
-              pathOptions={{
-                color: summit.isActivationZone ? 'rgb(102, 255, 153)' : 'rgb(255, 169, 51)',
-                weight: 2,
-                opacity: 0.6,
-                dashArray: '10, 5'
-              }}
-            />
-
-            {/* Summit marker */}
-            <Marker
-              position={[summit.lat, summit.lon]}
-              icon={createSummitIcon(summit.isActivationZone)}
-            >
-              <Popup>
-                <div className="font-mono-data text-xs space-y-1">
-                  <div className="font-bold text-amber-600">{summit.ref}</div>
-                  <div>{summit.name}</div>
-                  <div className="text-gray-600">
-                    {summit.distance < 1000
-                      ? `${Math.round(summit.distance)}m`
-                      : `${(summit.distance / 1000).toFixed(1)}km`
-                    } {summit.cardinalBearing}
+              {/* Summit marker */}
+              <Marker
+                position={[summit.lat, summit.lon]}
+                icon={createSummitIcon(summit.isActivationZone)}
+              >
+                <Popup>
+                  <div className="font-mono-data text-xs space-y-1">
+                    <div className="font-bold text-amber-600">{summit.ref}</div>
+                    <div>{summit.name}</div>
+                    <div className="text-gray-600">
+                      {summit.distance < 1000
+                        ? `${Math.round(summit.distance)}m`
+                        : `${(summit.distance / 1000).toFixed(1)}km`
+                      } {summit.cardinalBearing}
+                    </div>
+                    <div className="text-gray-600">
+                      {summit.altitude}m / {summit.points} pts
+                    </div>
+                    {summit.isActivationZone && (
+                      <div className="text-green-600 font-bold">✓ In Activation Zone</div>
+                    )}
+                    {isOnline && (
+                      <a
+                        href={`https://www.sotamaps.org/index.php?smt=${summit.ref}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs"
+                      >
+                        <span>View on SOTAmaps →</span>
+                      </a>
+                    )}
                   </div>
-                  <div className="text-gray-600">
-                    {summit.altitude}m / {summit.points} pts
-                  </div>
-                  {summit.isActivationZone && (
-                    <div className="text-green-600 font-bold">✓ In Activation Zone</div>
-                  )}
-                  {isOnline && (
-                    <a
-                      href={`https://www.sotamaps.org/index.php?smt=${summit.ref}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs"
-                    >
-                      <span>View on SOTAmaps →</span>
-                    </a>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          </div>
-        ))}
+                </Popup>
+              </Marker>
+            </div>
+          )
+        })}
       </MapContainer>
     </div>
   )
