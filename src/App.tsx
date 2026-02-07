@@ -83,12 +83,9 @@ function App() {
           {/* Compact control panel header */}
           <div className="radio-panel rounded-sm p-3 relative overflow-hidden">
             <div className="flex items-center justify-between gap-4">
-              {/* Left: Title and version */}
+              {/* Left: Title */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="freq-display text-[9px] px-2 py-0.5">
-                    v{__APP_VERSION__}
-                  </div>
                   <div className="tx-indicator"></div>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-radio-dial vfd-display leading-none">
@@ -303,8 +300,8 @@ function App() {
                     {isOnline ? t('footer.online') : t('footer.offline')}
                   </span>
                 </div>
-                <div className="font-mono-data text-[10px] text-teal-500/60 tracking-wider">
-                  SYS_v{__APP_VERSION__}
+                <div className="freq-display text-[9px] px-2 py-0.5">
+                  v{__APP_VERSION__}
                 </div>
               </div>
 
