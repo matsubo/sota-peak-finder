@@ -18,7 +18,8 @@ function App() {
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lon: number } | null>(null)
-  const [overrideSummits, setOverrideSummits] = useState<Array<Record<string, unknown>> | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [overrideSummits, setOverrideSummits] = useState<any[] | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {

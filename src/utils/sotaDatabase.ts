@@ -77,7 +77,7 @@ class SotaDatabase {
       const flags = this.sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE
         | this.sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
       const rc = this.sqlite3.capi.sqlite3_deserialize(
-        (this.db as Record<string, unknown>).pointer as number, 'main', ptrSource,
+        (this.db as unknown as Record<string, unknown>).pointer as number, 'main', ptrSource,
         dbData.byteLength, dbData.byteLength, flags
       );
       if (rc !== 0) {

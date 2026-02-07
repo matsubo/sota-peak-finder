@@ -278,7 +278,7 @@ export function LocationPage() {
                 <LocationMap
                   latitude={location.lat}
                   longitude={location.lon}
-                  sotaSummits={nearbySota as unknown as typeof nearbySota}
+                  sotaSummits={nearbySota as never}
                 />
               </div>
             </div>

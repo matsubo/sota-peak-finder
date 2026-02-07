@@ -315,12 +315,12 @@ export function SummitPage() {
                       ...summit,
                       distance: 0,
                       bearing: 0,
-                      cardinalBearing: 'N',
+                      cardinalBearing: 'N' as const,
                       isActivationZone: true
-                    } as unknown as typeof summit,
+                    },
                     // Nearby summits
                     ...nearbySummits
-                  ]}
+                  ] as never}
                 />
               </div>
             </div>
