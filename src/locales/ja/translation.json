@@ -105,6 +105,11 @@
     "popular": "人気(100回以上)",
     "largeResultSet": "検索結果が多数（{{count, number}}山）あります。フィルタを追加するとパフォーマンスが向上します。"
   },
+  "share": {
+    "postOnX": "Xでポストする",
+    "topMessage": "SOTA Peak Finder - 世界中のSOTA山頂をオフラインで検索！ #SOTA #HamRadio #アマチュア無線",
+    "summitMessage": "{{name}} ({{ref}}) {{altitude}}m - {{points}}pts SOTAサミット！ #SOTA #HamRadio"
+  },
   "notFound": {
     "title": "信号が見つかりません",
     "subtitle": "要求された周波数は存在しません",
