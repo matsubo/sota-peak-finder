@@ -214,7 +214,11 @@ export function SummitPage() {
 
       <div className="min-h-screen p-3 sm:p-4 md:p-5 relative z-10">
         <div className="mx-auto max-w-6xl">
-          <Header isOnline={isOnline} />
+          <Header
+            isOnline={isOnline}
+            shareText={`${summit.name} (${summit.ref}) ${summit.altitude}m - ${summit.points}pts SOTA Summit! #SOTA #HamRadio`}
+            shareUrl={`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
+          />
 
           {/* Summit Title Card */}
           <div className="mb-8 animate-fade-in">
