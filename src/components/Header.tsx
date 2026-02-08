@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { HelpCircle, Database } from 'lucide-react'
+import { HelpCircle, Database, Navigation } from 'lucide-react'
+import { cn } from '../lib/utils'
 
 interface HeaderProps {
   isOnline?: boolean
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 export function Header({ isOnline = false }: HeaderProps) {
   const { t } = useTranslation()
+  const location = useLocation()
 
   return (
     <header className="mb-4 animate-fade-in">
@@ -26,28 +28,40 @@ export function Header({ isOnline = false }: HeaderProps) {
             </Link>
           </div>
 
-          {/* Center: Signal meter */}
-          <div className="hidden sm:flex items-center gap-2">
-            <div className="signal-meter w-20">
-              <div className="signal-bar"></div>
-              <div className="signal-bar"></div>
-              <div className="signal-bar"></div>
-              <div className="signal-bar"></div>
-              <div className="signal-bar"></div>
-            </div>
-            <div className="text-[8px] font-mono-data text-teal-400/70 tracking-widest whitespace-nowrap">
-              179.5K
-            </div>
-          </div>
-
           {/* Right: Controls */}
           <div className="flex items-center gap-1.5">
+            {/* Online/Offline Status */}
+            <div className="hidden sm:flex items-center gap-2 px-2 py-1">
+              <div className={cn(
+                "w-2 h-2 rounded-full",
+                isOnline ? "bg-green-500 status-indicator" : "bg-orange-500"
+              )}></div>
+              <span className="font-mono-data text-xs tracking-wider text-teal-400/80">
+                {isOnline ? t('footer.online') : t('footer.offline')}
+              </span>
+            </div>
+
             <Link
               to="/summits"
-              className="p-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 transition-all"
-              title={t('summits.title')}
+              className={`p-1.5 rounded border transition-all ${
+                location.pathname === '/summits'
+                  ? 'border-amber-500/60 bg-amber-500/20'
+                  : 'border-teal-500/40 bg-black/40 hover:bg-amber-500/20'
+              }`}
+              title="Browse All Summits"
             >
-              <Database className="w-3.5 h-3.5 text-teal-400" />
+              <Database className={`w-3.5 h-3.5 ${location.pathname === '/summits' ? 'text-amber-400' : 'text-teal-400'}`} />
+            </Link>
+            <Link
+              to="/nearby"
+              className={`p-1.5 rounded border transition-all ${
+                location.pathname === '/nearby'
+                  ? 'border-blue-500/60 bg-blue-500/20'
+                  : 'border-teal-500/40 bg-black/40 hover:bg-blue-500/20'
+              }`}
+              title="Find Nearest Summits"
+            >
+              <Navigation className={`w-3.5 h-3.5 ${location.pathname === '/nearby' ? 'text-blue-400' : 'text-teal-400'}`} />
             </Link>
             <Link
               to="/help"
@@ -55,12 +69,6 @@ export function Header({ isOnline = false }: HeaderProps) {
             >
               <HelpCircle className="w-3.5 h-3.5 text-teal-400" />
             </Link>
-            {isOnline && (
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-400 status-indicator"></div>
-                <span className="text-[8px] font-mono-data text-green-400 tracking-wider">RX</span>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { Help } from './pages/Help.tsx'
 import { SummitPage } from './pages/SummitPage.tsx'
 import { SummitsListPage } from './pages/SummitsListPage.tsx'
+import { NearbyPage } from './pages/NearbyPage.tsx'
 import { NotFound } from './pages/NotFound.tsx'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
@@ -17,8 +18,14 @@ function PageViewTracker() {
   const location = useLocation()
 
   useEffect(() => {
-    const pageTitle = location.pathname === '/help' ? 'Help' : 'Home'
-    trackPageView(location.pathname, pageTitle)
+    const getPageTitle = () => {
+      if (location.pathname === '/help') return 'Help'
+      if (location.pathname === '/nearby') return 'Nearby Summits'
+      if (location.pathname === '/summits') return 'Browse Summits'
+      if (location.pathname.startsWith('/summit/')) return 'Summit Detail'
+      return 'Home'
+    }
+    trackPageView(location.pathname, getPageTitle())
   }, [location])
 
   return null
@@ -31,6 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <PageViewTracker />
         <Routes>
           <Route path="/" element={<App />} />
+          <Route path="/nearby" element={<NearbyPage />} />
           <Route path="/help" element={<Help />} />
           <Route path="/summits" element={<SummitsListPage />} />
           <Route path="/summit/:ref" element={<SummitPage />} />

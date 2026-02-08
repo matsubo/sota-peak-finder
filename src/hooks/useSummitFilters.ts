@@ -15,6 +15,7 @@ export interface FilterState {
   minPoints: number;
   maxPoints: number;
   minActivations: number;
+  maxActivations: number | undefined;
   searchText: string;
   sortBy: 'name' | 'altitude' | 'points' | 'activations' | 'ref';
   sortOrder: 'asc' | 'desc';
@@ -35,6 +36,7 @@ const DEFAULT_FILTERS: FilterState = {
   minPoints: 1,
   maxPoints: 10,
   minActivations: 0,
+  maxActivations: undefined,
   searchText: '',
   sortBy: 'name',
   sortOrder: 'asc',
@@ -87,6 +89,15 @@ export function useSummitFilters() {
   useEffect(() => {
     const urlFilters: Partial<FilterState> = {};
 
+    // Handle "unactivated" shortcut parameter
+    const unactivated = searchParams.get('unactivated');
+    if (unactivated === 'true') {
+      urlFilters.minActivations = 0;
+      urlFilters.maxActivations = 0;
+      urlFilters.sortBy = 'points';
+      urlFilters.sortOrder = 'desc';
+    }
+
     const association = searchParams.get('association');
     if (association) urlFilters.association = association;
 
@@ -107,6 +118,9 @@ export function useSummitFilters() {
 
     const minActivations = searchParams.get('minActivations');
     if (minActivations) urlFilters.minActivations = parseInt(minActivations, 10);
+
+    const maxActivations = searchParams.get('maxActivations');
+    if (maxActivations) urlFilters.maxActivations = parseInt(maxActivations, 10);
 
     const searchText = searchParams.get('search');
     if (searchText) urlFilters.searchText = searchText;
@@ -166,6 +180,7 @@ export function useSummitFilters() {
         minPoints: currentFilters.minPoints,
         maxPoints: currentFilters.maxPoints,
         minActivations: currentFilters.minActivations,
+        maxActivations: currentFilters.maxActivations,
         searchText: currentFilters.searchText || undefined,
         sortBy: currentFilters.sortBy,
         sortOrder: currentFilters.sortOrder,
@@ -224,6 +239,9 @@ export function useSummitFilters() {
     }
     if (filters.minActivations !== DEFAULT_FILTERS.minActivations) {
       params.set('minActivations', filters.minActivations.toString());
+    }
+    if (filters.maxActivations !== undefined) {
+      params.set('maxActivations', filters.maxActivations.toString());
     }
     if (filters.searchText) params.set('search', filters.searchText);
     if (filters.sortBy !== DEFAULT_FILTERS.sortBy) params.set('sortBy', filters.sortBy);
