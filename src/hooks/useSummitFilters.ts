@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { sotaDatabase, type SotaSummit } from '../utils/sotaDatabase';
 
 export interface FilterState {
+  country: string;
   association: string;
   region: string;
   minAltitude: number;
@@ -29,6 +30,7 @@ export interface FilterRanges {
 }
 
 const DEFAULT_FILTERS: FilterState = {
+  country: '',
   association: '',
   region: '',
   minAltitude: 0,
@@ -50,6 +52,7 @@ export function useSummitFilters() {
   const [totalSummits, setTotalSummits] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
   const [associations, setAssociations] = useState<string[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
   const [filterRanges, setFilterRanges] = useState<FilterRanges>({
@@ -60,15 +63,17 @@ export function useSummitFilters() {
   const searchDebounceTimer = useRef<number | null>(null);
   const initialUrlReadRef = useRef(false);
 
-  // Load initial data (associations and filter ranges)
+  // Load initial data (countries, associations and filter ranges)
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         await sotaDatabase.init();
-        const [assocs, ranges] = await Promise.all([
+        const [countriesList, assocs, ranges] = await Promise.all([
+          sotaDatabase.getCountries(),
           sotaDatabase.getAssociations(),
           sotaDatabase.getFilterRanges(),
         ]);
+        setCountries(countriesList);
         setAssociations(assocs);
         setFilterRanges(ranges);
 
@@ -101,6 +106,9 @@ export function useSummitFilters() {
       urlFilters.sortBy = 'points';
       urlFilters.sortOrder = 'desc';
     }
+
+    const country = searchParams.get('country');
+    if (country) urlFilters.country = country;
 
     const association = searchParams.get('association');
     if (association) urlFilters.association = association;
@@ -178,6 +186,7 @@ export function useSummitFilters() {
     try {
       const offset = (currentFilters.page - 1) * 20;
       const result = await sotaDatabase.searchSummits({
+        country: currentFilters.country || undefined,
         association: currentFilters.association || undefined,
         region: currentFilters.region || undefined,
         minAltitude: currentFilters.minAltitude,
@@ -228,6 +237,7 @@ export function useSummitFilters() {
   useEffect(() => {
     const params = new window.URLSearchParams();
 
+    if (filters.country) params.set('country', filters.country);
     if (filters.association) params.set('association', filters.association);
     if (filters.region) params.set('region', filters.region);
     if (filters.minAltitude !== DEFAULT_FILTERS.minAltitude) {
@@ -284,6 +294,7 @@ export function useSummitFilters() {
     totalSummits,
     loading,
     error,
+    countries,
     associations,
     regions,
     filterRanges,

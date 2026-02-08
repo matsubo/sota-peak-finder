@@ -1,6 +1,6 @@
 {
   "name": "sota-peak-finder",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "type": "module",
   "description": "SOTA Peak Finder: Find nearby summits worldwide with GPS. 179,000+ SOTA summits with references, points, altitude, and distance. Fully offline PWA for activators.",
   "scripts": {

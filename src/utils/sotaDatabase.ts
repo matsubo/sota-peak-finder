@@ -307,6 +307,39 @@ class SotaDatabase {
   }
 
   /**
+   * Get distinct countries for filter dropdown
+   * Returns sorted list of country names extracted from associations
+   */
+  async getCountries(): Promise<string[]> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    const associations: string[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT DISTINCT association
+        FROM summits
+        WHERE association IS NOT NULL AND association != ''
+        ORDER BY association
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        associations.push((row as { association: string }).association);
+      },
+    });
+
+    // Extract unique countries from associations
+    const countrySet = new Set<string>();
+    associations.forEach(association => {
+      const country = association.split(' - ')[0].trim();
+      countrySet.add(country);
+    });
+
+    return Array.from(countrySet).sort();
+  }
+
+  /**
    * Get regions for a specific association
    */
   async getRegionsByAssociation(association: string): Promise<string[]> {
@@ -369,6 +402,7 @@ class SotaDatabase {
   async searchSummits(filters: {
     association?: string;
     region?: string;
+    country?: string;
     minAltitude?: number;
     maxAltitude?: number;
     minPoints?: number;
@@ -388,6 +422,7 @@ class SotaDatabase {
     const {
       association,
       region,
+      country,
       minAltitude,
       maxAltitude,
       minPoints,
@@ -404,6 +439,12 @@ class SotaDatabase {
     // Build WHERE clause dynamically
     const whereClauses: string[] = [];
     const bindings: (string | number)[] = [];
+
+    if (country) {
+      // Filter by country: association must start with country name
+      whereClauses.push('(association = ? OR association LIKE ?)');
+      bindings.push(country, `${country} - %`);
+    }
 
     if (association) {
       whereClauses.push('association = ?');
@@ -502,7 +543,7 @@ class SotaDatabase {
     mostActivated: SotaSummit[];
     unactivatedCount: number;
     unactivatedSummits: SotaSummit[];
-    associationStats: Array<{ association: string; count: number }>;
+    countryStats: Array<{ country: string; count: number }>;
     pointsDistribution: Array<{ points: number; count: number }>;
   }> {
     if (!this.db) {
@@ -590,21 +631,34 @@ class SotaDatabase {
       },
     });
 
-    // Association statistics (top 10)
-    const associationStats: Array<{ association: string; count: number }> = [];
+    // Get all associations with counts, then group by country
+    const associationsWithCounts: Array<{ association: string; count: number }> = [];
     this.db!.exec({
       sql: `
         SELECT association, COUNT(*) as count
         FROM summits
         GROUP BY association
         ORDER BY count DESC
-        LIMIT 10
       `,
       rowMode: 'object',
       callback: (row) => {
-        associationStats.push(row as { association: string; count: number });
+        associationsWithCounts.push(row as { association: string; count: number });
       },
     });
+
+    // Group by country (extract country from association name)
+    const countryMap = new Map<string, number>();
+    associationsWithCounts.forEach(({ association, count }) => {
+      // Extract country name (part before " - " if present)
+      const country = association.split(' - ')[0].trim();
+      countryMap.set(country, (countryMap.get(country) || 0) + count);
+    });
+
+    // Convert to array and sort by count
+    const countryStats = Array.from(countryMap.entries())
+      .map(([country, count]) => ({ country, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
 
     // Points distribution
     const pointsDistribution: Array<{ points: number; count: number }> = [];
@@ -628,7 +682,7 @@ class SotaDatabase {
       mostActivated,
       unactivatedCount,
       unactivatedSummits,
-      associationStats,
+      countryStats,
       pointsDistribution,
     };
   }

@@ -51,6 +51,7 @@ export function SummitsListPage() {
     totalSummits,
     loading,
     error,
+    countries,
     associations,
     regions,
     filterRanges,
@@ -87,6 +88,7 @@ export function SummitsListPage() {
           filters={filters}
           setFilters={setFilters}
           resetFilters={resetFilters}
+          countries={countries}
           associations={associations}
           regions={regions}
           filterRanges={filterRanges}

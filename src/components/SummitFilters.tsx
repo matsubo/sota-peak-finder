@@ -15,6 +15,7 @@ interface SummitFiltersProps {
   filters: FilterState;
   setFilters: (updates: Partial<FilterState>) => void;
   resetFilters: () => void;
+  countries: string[];
   associations: string[];
   regions: string[];
   filterRanges: FilterRanges;
@@ -24,6 +25,7 @@ export function SummitFilters({
   filters,
   setFilters,
   resetFilters,
+  countries,
   associations,
   regions,
   filterRanges,
@@ -38,6 +40,25 @@ export function SummitFilters({
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Country */}
+        <div>
+          <label className="block text-xs text-gray-400 mb-1 font-mono-data">
+            {t('summits.country')}
+          </label>
+          <select
+            value={filters.country}
+            onChange={(e) => setFilters({ country: e.target.value, association: '', region: '' })}
+            className="w-full bg-black/60 border border-teal-500/40 rounded px-2 py-1.5 text-sm text-gray-100 font-mono-data focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/50"
+          >
+            <option value="">{t('summits.allCountries')}</option>
+            {countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Association */}
         <div>
           <label className="block text-xs text-gray-400 mb-1 font-mono-data">
@@ -77,6 +98,25 @@ export function SummitFilters({
           </select>
         </div>
 
+        {/* Search */}
+        <div>
+          <label className="block text-xs text-gray-400 mb-1 font-mono-data">
+            {t('summits.search')}
+          </label>
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              value={filters.searchText}
+              onChange={(e) => setFilters({ searchText: e.target.value })}
+              placeholder={t('summits.searchPlaceholder')}
+              className="w-full bg-black/60 border border-teal-500/40 rounded pl-8 pr-2 py-1.5 text-sm text-gray-100 font-mono-data placeholder:text-gray-600 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Sort By */}
         <div>
           <label className="block text-xs text-gray-400 mb-1 font-mono-data">
@@ -101,23 +141,6 @@ export function SummitFilters({
             >
               <ArrowUpDown className={`w-4 h-4 text-teal-400 transition-transform ${filters.sortOrder === 'desc' ? 'rotate-180' : ''}`} />
             </button>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div>
-          <label className="block text-xs text-gray-400 mb-1 font-mono-data">
-            {t('summits.search')}
-          </label>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input
-              type="text"
-              value={filters.searchText}
-              onChange={(e) => setFilters({ searchText: e.target.value })}
-              placeholder={t('summits.searchPlaceholder')}
-              className="w-full bg-black/60 border border-teal-500/40 rounded pl-8 pr-2 py-1.5 text-sm text-gray-100 font-mono-data placeholder:text-gray-600 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/50"
-            />
           </div>
         </div>
       </div>

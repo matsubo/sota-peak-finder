@@ -1,9 +1,9 @@
 import {
   FlagIcon as Mountain,
   ArrowTrendingUpIcon as TrendingUp,
-  UsersIcon as Users,
   CircleStackIcon as DatabaseIcon,
-  MapPinIcon as MapPin
+  MapPinIcon as MapPin,
+  GlobeAltIcon as Globe
 } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
@@ -13,6 +13,7 @@ import { StatsCard, SummitListCard } from './components/StatsCard'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { sotaDatabase, SotaSummit } from './utils/sotaDatabase'
+import { getFlagEmoji, getCountryCode } from './utils/countryFlags'
 
 function App() {
   const { t, i18n } = useTranslation()
@@ -26,7 +27,7 @@ function App() {
   const [mostActivated, setMostActivated] = useState<SotaSummit[]>([])
   const [unactivatedCount, setUnactivatedCount] = useState<number>(0)
   const [unactivatedSummits, setUnactivatedSummits] = useState<SotaSummit[]>([])
-  const [associationStats, setAssociationStats] = useState<Array<{ association: string; count: number }>>([])
+  const [countryStats, setCountryStats] = useState<Array<{ country: string; count: number }>>([])
 
   // Monitor online/offline status
   useEffect(() => {
@@ -69,7 +70,7 @@ function App() {
         setMostActivated(dashboardStats.mostActivated)
         setUnactivatedCount(dashboardStats.unactivatedCount)
         setUnactivatedSummits(dashboardStats.unactivatedSummits)
-        setAssociationStats(dashboardStats.associationStats)
+        setCountryStats(dashboardStats.countryStats)
       } catch (error) {
         console.error('Failed to load dashboard data:', error)
       } finally {
@@ -148,10 +149,10 @@ function App() {
                 />
 
                 <StatsCard
-                  title={t('dashboard.associations')}
-                  value={associationStats.length}
+                  title={t('dashboard.countries')}
+                  value={countryStats.length}
                   subtitle={t('dashboard.worldwideCoverage')}
-                  icon={Users}
+                  icon={Globe}
                   color="green"
                   linkTo="/summits"
                 />
@@ -184,24 +185,26 @@ function App() {
                 />
               </div>
 
-              {/* Association Distribution */}
+              {/* Country Distribution */}
               <div className="card-technical rounded-none border-l-4 border-l-teal-500 p-4 animate-fade-in">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 rounded bg-teal-500/10 border border-teal-500/30">
-                    <Users className="w-5 h-5 text-teal-400" />
+                    <Globe className="w-5 h-5 text-teal-400" />
                   </div>
                   <h3 className="font-display text-lg tracking-wider text-teal-300">
-                    {t('dashboard.topAssociations')}
+                    {t('dashboard.topCountries')}
                   </h3>
                 </div>
 
                 <div className="space-y-2">
-                  {associationStats.slice(0, 10).map((stat, index) => {
+                  {countryStats.slice(0, 10).map((stat, index) => {
                     const percentage = ((stat.count / (totalSummits || 1)) * 100).toFixed(1)
+                    const countryCode = getCountryCode(stat.country)
+                    const flagEmoji = getFlagEmoji(countryCode)
                     return (
                       <Link
-                        key={stat.association}
-                        to={`/summits?association=${encodeURIComponent(stat.association)}`}
+                        key={stat.country}
+                        to={`/summits?country=${encodeURIComponent(stat.country)}`}
                         className="block data-panel rounded p-3 hover:bg-teal-500/10 transition-colors group"
                       >
                         <div className="flex items-center justify-between gap-4">
@@ -209,8 +212,11 @@ function App() {
                             <span className="text-xs font-mono-data text-teal-400/60 w-6">
                               #{index + 1}
                             </span>
+                            <span className="text-lg" title={stat.country}>
+                              {flagEmoji}
+                            </span>
                             <span className="text-sm font-mono-data text-amber-400 group-hover:text-amber-300 transition-colors">
-                              {stat.association}
+                              {stat.country}
                             </span>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">

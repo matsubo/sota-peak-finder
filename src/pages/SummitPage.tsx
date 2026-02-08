@@ -16,7 +16,7 @@ import { Footer } from '../components/Footer'
 import { sotaDatabase } from '../utils/sotaDatabase'
 import type { SotaSummit, SotaSummitWithDistance } from '../types/location'
 import { calculateGridLocator } from '../utils/coordinate'
-import { getAssociationFlag } from '../utils/countryFlags'
+import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
 
 export function SummitPage() {
   const { ref } = useParams<{ ref: string }>()
@@ -226,10 +226,27 @@ export function SummitPage() {
           {/* Summit Title Card */}
           <div className="mb-8 animate-fade-in">
             <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
-              <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
+              <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-sm">{getAssociationFlag(summit.association || '')}</span>
-                  <span>{t('summitPage.summitLabel', { association: summit.association, region: summit.region })}</span>
+                  <span className="flex items-center gap-1">
+                    SOTA_SUMMIT //
+                    <Link
+                      to={`/summits?association=${encodeURIComponent(summit.association || '')}`}
+                      className="hover:text-amber-400 transition-colors underline decoration-dotted"
+                      title={`View all summits in ${summit.association}`}
+                    >
+                      {summit.association}
+                    </Link>
+                    /
+                    <Link
+                      to={`/summits?association=${encodeURIComponent(summit.association || '')}&region=${encodeURIComponent(summit.region || '')}`}
+                      className="hover:text-green-400 transition-colors underline decoration-dotted"
+                      title={`View all summits in ${summit.region}`}
+                    >
+                      {summit.region}
+                    </Link>
+                  </span>
                 </span>
                 <span className={`${difficulty.color} font-bold`}>{difficulty.label}</span>
               </div>
@@ -306,9 +323,31 @@ export function SummitPage() {
 
                 <div className="data-panel p-4 rounded">
                   <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.associationRegion')}</div>
-                  <div className="text-lg font-sans-clean text-gray-200 flex items-center gap-2">
+                  <div className="text-lg font-sans-clean text-gray-200 flex items-center gap-2 flex-wrap">
                     <span className="text-2xl">{getAssociationFlag(summit.association || '')}</span>
-                    <span>{summit.association} / {summit.region}</span>
+                    <Link
+                      to={`/summits?country=${encodeURIComponent(getCountryName(summit.association || ''))}`}
+                      className="text-amber-400 hover:text-amber-300 transition-colors underline decoration-dotted"
+                      title={`View all summits in ${getCountryName(summit.association || '')}`}
+                    >
+                      {getCountryName(summit.association || '')}
+                    </Link>
+                    <span className="text-teal-400/60">/</span>
+                    <Link
+                      to={`/summits?association=${encodeURIComponent(summit.association || '')}`}
+                      className="text-green-400 hover:text-green-300 transition-colors underline decoration-dotted"
+                      title={`View all summits in ${summit.association}`}
+                    >
+                      {summit.association}
+                    </Link>
+                    <span className="text-teal-400/60">/</span>
+                    <Link
+                      to={`/summits?association=${encodeURIComponent(summit.association || '')}&region=${encodeURIComponent(summit.region || '')}`}
+                      className="text-blue-400 hover:text-blue-300 transition-colors underline decoration-dotted"
+                      title={`View all summits in ${summit.region}`}
+                    >
+                      {summit.region}
+                    </Link>
                   </div>
                 </div>
               </div>

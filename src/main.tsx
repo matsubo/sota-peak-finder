@@ -13,11 +13,14 @@ import 'leaflet/dist/leaflet.css'
 import './i18n'
 import { trackPageView } from './utils/analytics'
 
-// Page view tracker component
+// Page view tracker and scroll restoration component
 function PageViewTracker() {
   const location = useLocation()
 
   useEffect(() => {
+    // Scroll to top on route change or search param change
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+
     const getPageTitle = () => {
       if (location.pathname === '/help') return 'Help'
       if (location.pathname === '/nearby') return 'Nearby Summits'
@@ -26,7 +29,7 @@ function PageViewTracker() {
       return 'Home'
     }
     trackPageView(location.pathname, getPageTitle())
-  }, [location])
+  }, [location.pathname, location.search])
 
   return null
 }
