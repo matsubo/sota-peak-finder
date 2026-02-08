@@ -58,6 +58,7 @@ export function useSummitFilters() {
     maxActivations: 500,
   });
   const searchDebounceTimer = useRef<number | null>(null);
+  const initialUrlReadRef = useRef(false);
 
   // Load initial data (associations and filter ranges)
   useEffect(() => {
@@ -85,8 +86,11 @@ export function useSummitFilters() {
     loadInitialData();
   }, []);
 
-  // Read filters from URL on mount
+  // Read filters from URL on mount only
   useEffect(() => {
+    if (initialUrlReadRef.current) return;
+    initialUrlReadRef.current = true;
+
     const urlFilters: Partial<FilterState> = {};
 
     // Handle "unactivated" shortcut parameter
@@ -141,7 +145,8 @@ export function useSummitFilters() {
     if (Object.keys(urlFilters).length > 0) {
       setFiltersState(prev => ({ ...prev, ...urlFilters }));
     }
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load regions when association changes
   useEffect(() => {
@@ -200,17 +205,17 @@ export function useSummitFilters() {
     }
   }, []);
 
-  // Trigger search when filters change (with debounce for search text)
+  // Trigger search when filters change (with debounce)
   useEffect(() => {
     // Clear existing debounce timer
     if (searchDebounceTimer.current) {
       window.clearTimeout(searchDebounceTimer.current);
     }
 
-    // Debounce search text changes
+    // Debounce all filter changes to avoid excessive queries during slider drag
     const timer = window.setTimeout(() => {
       performSearch(filters);
-    }, filters.searchText ? 300 : 0);
+    }, 300);
 
     searchDebounceTimer.current = timer;
 

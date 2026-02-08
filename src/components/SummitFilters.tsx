@@ -145,7 +145,7 @@ export function SummitFilters({
             className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
           />
         </div>
-        <div className="flex gap-2 mt-1">
+        <div className="flex flex-wrap gap-2 mt-1">
           <button
             onClick={() => setFilters({ minAltitude: 0, maxAltitude: 500 })}
             className="px-2 py-0.5 text-xs bg-black/60 border border-teal-500/40 rounded hover:bg-teal-500/20 transition-colors text-gray-300 font-mono-data"
@@ -203,7 +203,7 @@ export function SummitFilters({
         <label className="block text-xs text-gray-400 mb-1 font-mono-data">
           {t('summits.activations')}: {filters.minActivations}+
         </label>
-        <div className="flex gap-2 items-center">
+        <div className="space-y-2">
           <input
             type="range"
             min={0}
@@ -211,9 +211,9 @@ export function SummitFilters({
             step={10}
             value={filters.minActivations}
             onChange={(e) => setFilters({ minActivations: parseInt(e.target.value, 10) })}
-            className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+            className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilters({ minActivations: 0 })}
               className="px-2 py-0.5 text-xs bg-black/60 border border-teal-500/40 rounded hover:bg-teal-500/20 transition-colors text-gray-300 font-mono-data whitespace-nowrap"
