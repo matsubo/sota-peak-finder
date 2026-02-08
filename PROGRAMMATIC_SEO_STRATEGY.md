@@ -453,7 +453,7 @@ Home > SOTA Summits > {Association} > {Summit Name}
    User-agent: *
    Allow: /
 
-   Sitemap: https://matsubo.github.io/offline-qth/sitemap-index.xml
+   Sitemap: https://matsubo.github.io/sota-peak-finder/sitemap-index.xml
    ```
 
 4. **Submit to Search Engines** (Priority: HIGH)

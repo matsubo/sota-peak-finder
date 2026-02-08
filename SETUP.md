@@ -51,7 +51,7 @@ git add .
 git commit -m "Initial commit: Offline QTH PWA"
 
 # GitHubリポジトリと接続（あなたのリポジトリURLに置き換えてください）
-git remote add origin https://github.com/あなたのユーザー名/offline-qth.git
+git remote add origin https://github.com/あなたのユーザー名/sota-peak-finder.git
 
 # プッシュ
 git branch -M main
@@ -66,7 +66,7 @@ git push -u origin main
 4. `Source` で `main` ブランチを選択
 5. `Save` をクリック
 
-数分後、`https://あなたのユーザー名.github.io/offline-qth/` でアクセス可能になります。
+数分後、`https://あなたのユーザー名.github.io/sota-peak-finder/` でアクセス可能になります。
 
 ## 4. manifest.json の設定確認
 
@@ -74,7 +74,7 @@ git push -u origin main
 
 ```json
 {
-  "start_url": "/offline-qth/"  // リポジトリ名と一致させる
+  "start_url": "/sota-peak-finder/"  // リポジトリ名と一致させる
 }
 ```
 
