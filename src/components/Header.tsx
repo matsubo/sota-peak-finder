@@ -48,7 +48,7 @@ export function Header({ isOnline = false }: HeaderProps) {
                   ? 'border-amber-500/60 bg-amber-500/20'
                   : 'border-teal-500/40 bg-black/40 hover:bg-amber-500/20'
               }`}
-              title="Browse All Summits"
+              title={t('header.browseAllSummits')}
             >
               <CircleStackIcon className={`w-3.5 h-3.5 ${location.pathname === '/summits' ? 'text-amber-400' : 'text-teal-400'}`} />
             </Link>
@@ -59,7 +59,7 @@ export function Header({ isOnline = false }: HeaderProps) {
                   ? 'border-blue-500/60 bg-blue-500/20'
                   : 'border-teal-500/40 bg-black/40 hover:bg-blue-500/20'
               }`}
-              title="Find Nearest Summits"
+              title={t('header.findNearestSummits')}
             >
               <MapIcon className={`w-3.5 h-3.5 ${location.pathname === '/nearby' ? 'text-blue-400' : 'text-teal-400'}`} />
             </Link>

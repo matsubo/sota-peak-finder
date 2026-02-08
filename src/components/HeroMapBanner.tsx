@@ -1,6 +1,7 @@
 import { MapPinIcon as MapPin, CursorArrowRaysIcon as Navigation, ArrowTrendingUpIcon as TrendingUp } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import { useEffect, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface HeroMapBannerProps {
   totalSummits?: number | null
@@ -16,6 +17,7 @@ interface DotPosition {
 }
 
 export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
+  const { t } = useTranslation()
   const [animatedCount, setAnimatedCount] = useState(0)
 
   // Pre-generate random positions for dots to avoid impure calls during render
@@ -183,23 +185,22 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-blue-400/60 text-xs font-mono-data tracking-wider">
                   <MapPin className="w-4 h-4" />
-                  <span>GPS LOCATION FINDER</span>
+                  <span>{t('hero.gpsLocationFinder')}</span>
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-display leading-tight">
-                  <span className="glow-blue">Find Nearest</span>
+                  <span className="glow-blue">{t('hero.findNearest')}</span>
                   <br />
-                  <span className="glow-amber">SOTA Summits</span>
+                  <span className="glow-amber">{t('hero.sotaSummits')}</span>
                 </h2>
 
                 <p className="text-teal-200/70 text-sm sm:text-base font-mono-data leading-relaxed">
-                  Use your device&apos;s GPS to discover nearby peaks.
-                  Interactive map with click-to-search anywhere in the world.
+                  {t('hero.description')}
                 </p>
 
                 <div className="flex items-center gap-4 pt-2">
                   <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-sm">
-                    <div className="text-xs font-mono-data text-blue-400/60 mb-1">WORLDWIDE</div>
+                    <div className="text-xs font-mono-data text-blue-400/60 mb-1">{t('hero.worldwide')}</div>
                     <div className="text-2xl font-mono-data glow-blue">
                       {totalSummits ? animatedCount.toLocaleString() : '---'}
                     </div>
@@ -207,7 +208,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
                   <div className="text-xs font-mono-data text-teal-400/60 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
-                    {isOnline ? 'ONLINE' : 'OFFLINE MODE'}
+                    {isOnline ? t('hero.onlineMode') : t('hero.offlineMode')}
                   </div>
                 </div>
 
@@ -215,7 +216,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
                   <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-teal-500/20 border border-blue-500/40 rounded-sm group-hover:border-blue-400/60 group-hover:bg-gradient-to-r group-hover:from-blue-500/30 group-hover:to-teal-500/30 transition-all duration-300">
                     <Navigation className="w-5 h-5 text-blue-400 group-hover:rotate-45 transition-transform duration-500" />
                     <span className="font-display text-lg tracking-wider text-blue-300">
-                      Activate GPS Finder
+                      {t('hero.activateGPS')}
                     </span>
                     <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                   </div>
@@ -232,7 +233,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
                   <div className="relative">
                     <img
                       src={`${import.meta.env.BASE_URL}images/mountain-seeker-screenshot.png`}
-                      alt="Mountain Seeker Feature - Interactive map showing nearby SOTA summits"
+                      alt={t('hero.imageAlt')}
                       className="relative rounded-lg border-2 border-blue-500/40 shadow-2xl group-hover:border-blue-400/60 transition-all duration-300"
                       loading="lazy"
                       width="600"

@@ -97,10 +97,10 @@ function App() {
                 </div>
                 <div>
                   <h2 className="font-display text-xl text-amber-400 tracking-wider">
-                    SOTA DATABASE INSIGHTS
+                    {t('dashboard.title')}
                   </h2>
                   <p className="text-xs text-teal-300/70 font-mono-data mt-1">
-                    Global statistics and highlights from {totalSummits?.toLocaleString() || '...'} summits
+                    {t('dashboard.subtitle', { count: totalSummits?.toLocaleString() || '...' })}
                   </p>
                 </div>
               </div>
@@ -108,29 +108,29 @@ function App() {
                 to="/summits"
                 className="hidden sm:flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-sm hover:bg-amber-500/20 transition-all text-amber-400 font-mono-data text-sm"
               >
-                Browse All →
+                {t('dashboard.browseAll')}
               </Link>
             </div>
           </div>
 
           {loading ? (
             <div className="card-technical rounded-none p-8 text-center">
-              <div className="text-teal-400 font-mono-data">Loading statistics...</div>
+              <div className="text-teal-400 font-mono-data">{t('dashboard.loadingStats')}</div>
             </div>
           ) : (
             <>
               {/* Key Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
                 <StatsCard
-                  title="Total Summits"
+                  title={t('dashboard.totalSummits')}
                   value={totalSummits?.toLocaleString() || '0'}
-                  subtitle="Worldwide"
+                  subtitle={t('dashboard.worldwide')}
                   icon={Mountain}
                   color="teal"
                 />
 
                 <StatsCard
-                  title="Highest Peak"
+                  title={t('dashboard.highestPeak')}
                   value={highestSummit ? `${highestSummit.altitude}m` : '---'}
                   subtitle={highestSummit?.name || '...'}
                   icon={TrendingUp}
@@ -139,18 +139,18 @@ function App() {
                 />
 
                 <StatsCard
-                  title="Unactivated"
+                  title={t('dashboard.unactivated')}
                   value={unactivatedCount.toLocaleString()}
-                  subtitle={`${((unactivatedCount / (totalSummits || 1)) * 100).toFixed(1)}% of total`}
+                  subtitle={t('dashboard.unactivatedPercent', { percent: ((unactivatedCount / (totalSummits || 1)) * 100).toFixed(1) })}
                   icon={MapPin}
                   color="blue"
                   linkTo="/summits?unactivated=true"
                 />
 
                 <StatsCard
-                  title="Associations"
+                  title={t('dashboard.associations')}
                   value={associationStats.length}
-                  subtitle="Worldwide coverage"
+                  subtitle={t('dashboard.worldwideCoverage')}
                   icon={Users}
                   color="green"
                   linkTo="/summits"
@@ -160,26 +160,26 @@ function App() {
               {/* Summit Lists Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in">
                 <SummitListCard
-                  title="Most Activated Summits"
+                  title={t('dashboard.mostActivated')}
                   icon={TrendingUp}
                   color="green"
                   summits={mostActivated.map(s => ({
                     ref: s.ref,
                     name: s.name,
                     value: s.activations.toLocaleString(),
-                    valueLabel: 'activations'
+                    valueLabel: t('dashboard.activations')
                   }))}
                 />
 
                 <SummitListCard
-                  title="High-Value Unactivated Summits"
+                  title={t('dashboard.highValueUnactivated')}
                   icon={MapPin}
                   color="blue"
                   summits={unactivatedSummits.map(s => ({
                     ref: s.ref,
                     name: s.name,
                     value: `${s.points}pt • ${s.altitude}m`,
-                    valueLabel: 'untouched'
+                    valueLabel: t('dashboard.untouched')
                   }))}
                 />
               </div>
@@ -191,7 +191,7 @@ function App() {
                     <Users className="w-5 h-5 text-teal-400" />
                   </div>
                   <h3 className="font-display text-lg tracking-wider text-teal-300">
-                    Top Associations by Summit Count
+                    {t('dashboard.topAssociations')}
                   </h3>
                 </div>
 
@@ -245,10 +245,10 @@ function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-display text-lg text-amber-400 mb-2 tracking-wider">
-                        Browse All Summits
+                        {t('dashboard.browseAllSummits')}
                       </h3>
                       <p className="text-xs text-teal-300/70 font-mono-data">
-                        Filter and search the complete database
+                        {t('dashboard.browseAllDesc')}
                       </p>
                     </div>
                     <DatabaseIcon className="w-8 h-8 text-amber-400/60 group-hover:text-amber-400 transition-colors" />
@@ -262,10 +262,10 @@ function App() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-display text-lg text-blue-400 mb-2 tracking-wider">
-                        Find Nearby Summits
+                        {t('dashboard.findNearby')}
                       </h3>
                       <p className="text-xs text-teal-300/70 font-mono-data">
-                        Use GPS to discover peaks around you
+                        {t('dashboard.findNearbyDesc')}
                       </p>
                     </div>
                     <MapPin className="w-8 h-8 text-blue-400/60 group-hover:text-blue-400 transition-colors" />

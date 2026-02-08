@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -158,16 +159,18 @@ const createClickedLocationIcon = () => {
 }
 
 export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = true, onMapClick, clickedLocation }: LocationMapProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="card-technical rounded-none overflow-hidden corner-accent border-l-4 border-l-teal-500" style={{ height: '400px' }}>
       {!isOnline && (
         <div className="absolute top-2 left-2 z-[1000] bg-amber-500/90 text-black px-3 py-1 rounded text-xs font-mono-data">
-          ⚠️ OFFLINE - Showing cached tiles only
+          {t('map.offlineNotice')}
         </div>
       )}
       {onMapClick && (
         <div className="absolute top-2 right-2 z-[1000] bg-blue-500/90 text-white px-3 py-1 rounded text-xs font-mono-data">
-          💡 Click map to find summits at that location
+          {t('map.clickToFind')}
         </div>
       )}
       <MapContainer
@@ -189,7 +192,7 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
         <Marker position={[latitude, longitude]} icon={createCurrentLocationIcon()}>
           <Popup>
             <div className="font-mono-data text-xs">
-              <div className="font-bold text-teal-600">Your GPS Location</div>
+              <div className="font-bold text-teal-600">{t('map.yourLocation')}</div>
               <div>{latitude.toFixed(6)}, {longitude.toFixed(6)}</div>
             </div>
           </Popup>
@@ -200,7 +203,7 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
           <Marker position={[clickedLocation.lat, clickedLocation.lon]} icon={createClickedLocationIcon()}>
             <Popup>
               <div className="font-mono-data text-xs">
-                <div className="font-bold text-amber-600">Selected Location</div>
+                <div className="font-bold text-amber-600">{t('map.selectedLocation')}</div>
                 <div>{clickedLocation.lat.toFixed(6)}, {clickedLocation.lon.toFixed(6)}</div>
               </div>
             </Popup>
@@ -262,13 +265,13 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
                       {summit.altitude}m / {summit.points} pts
                     </div>
                     {summit.isActivationZone && (
-                      <div className="text-green-600 font-bold">✓ In Activation Zone</div>
+                      <div className="text-green-600 font-bold">{t('map.inActivationZone')}</div>
                     )}
                     <Link
                       to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
                       className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs font-semibold"
                     >
-                      <span>View Summit Details →</span>
+                      <span>{t('map.viewDetails')}</span>
                     </Link>
                   </div>
                 </Popup>

@@ -125,7 +125,7 @@ export function SummitPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-4 sm:p-6 md:p-8 flex items-center justify-center">
-        <div className="text-teal-400 font-mono-data">Loading summit data...</div>
+        <div className="text-teal-400 font-mono-data">{t('summitPage.loading')}</div>
       </div>
     )
   }
@@ -135,11 +135,11 @@ export function SummitPage() {
       <div className="min-h-screen p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-4xl">
           <div className="card-technical rounded p-8 text-center">
-            <h1 className="text-2xl font-display glow-amber mb-4">Summit Not Found</h1>
-            <p className="text-gray-400 mb-6">SOTA reference {ref?.toUpperCase().replace(/-/g, '/')} was not found in the database.</p>
+            <h1 className="text-2xl font-display glow-amber mb-4">{t('summitPage.notFound')}</h1>
+            <p className="text-gray-400 mb-6">{t('summitPage.notFoundDesc', { ref: ref?.toUpperCase().replace(/-/g, '/') })}</p>
             <Link to="/" className="btn-primary inline-flex items-center">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
+              {t('common.backToHome')}
             </Link>
           </div>
         </div>
@@ -152,10 +152,10 @@ export function SummitPage() {
 
   // Difficulty badge based on points
   const getDifficultyLabel = (points: number) => {
-    if (points >= 10) return { label: 'Extreme', color: 'text-red-400' }
-    if (points >= 8) return { label: 'Very Hard', color: 'text-orange-400' }
-    if (points >= 4) return { label: 'Moderate', color: 'text-cyan-400' }
-    return { label: 'Easy', color: 'text-amber-400' }
+    if (points >= 10) return { label: t('summitPage.difficulty.extreme'), color: 'text-red-400' }
+    if (points >= 8) return { label: t('summitPage.difficulty.veryHard'), color: 'text-orange-400' }
+    if (points >= 4) return { label: t('summitPage.difficulty.moderate'), color: 'text-cyan-400' }
+    return { label: t('summitPage.difficulty.easy'), color: 'text-amber-400' }
   }
 
   const difficulty = getDifficultyLabel(summit.points)
@@ -229,7 +229,7 @@ export function SummitPage() {
               <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <span className="text-sm">{getAssociationFlag(summit.association || '')}</span>
-                  <span>SOTA_SUMMIT // {summit.association}/{summit.region}</span>
+                  <span>{t('summitPage.summitLabel', { association: summit.association, region: summit.region })}</span>
                 </span>
                 <span className={`${difficulty.color} font-bold`}>{difficulty.label}</span>
               </div>
@@ -264,22 +264,22 @@ export function SummitPage() {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">ALTITUDE</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.altitude')}</div>
                 <div className="text-2xl font-mono-data glow-green">{summit.altitude}m</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">SOTA POINTS</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.sotaPoints')}</div>
                 <div className="text-2xl font-mono-data glow-amber">{summit.points} pt</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">ACTIVATIONS</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.activations')}</div>
                 <div className="text-2xl font-mono-data text-cyan-400">{summit.activations}</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">GRID</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.grid')}</div>
                 <div className="text-xl font-mono-data glow-green">{gridLocator}</div>
               </div>
             </div>
@@ -288,24 +288,24 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
-                GPS Coordinates
+                {t('summitPage.gpsCoordinates')}
               </h2>
 
               <div className="space-y-3">
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">DECIMAL DEGREES</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.decimalDegrees')}</div>
                   <div className="text-lg font-mono-data glow-green">
                     {summit.lat.toFixed(6)}°N, {summit.lon.toFixed(6)}°E
                   </div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">MAIDENHEAD LOCATOR</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.maidenheadLocator')}</div>
                   <div className="text-lg font-mono-data glow-green">{gridLocator}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">ASSOCIATION / REGION</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.associationRegion')}</div>
                   <div className="text-lg font-sans-clean text-gray-200 flex items-center gap-2">
                     <span className="text-2xl">{getAssociationFlag(summit.association || '')}</span>
                     <span>{summit.association} / {summit.region}</span>
@@ -318,10 +318,10 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <Navigation className="w-5 h-5 mr-2" />
-                Summit Location & Nearby Peaks
+                {t('summitPage.locationAndNearby')}
               </h2>
               <p className="text-sm text-gray-400 mb-4 font-mono-data">
-                Shows this summit (center) and nearest 10 SOTA summits within 50km
+                {t('summitPage.locationDesc')}
               </p>
               <div className="h-96 rounded overflow-hidden">
                 <LocationMap
@@ -347,7 +347,7 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <Award className="w-5 h-5 mr-2" />
-                Activation Information
+                {t('summitPage.activationInfo')}
               </h2>
 
               <div className="space-y-4 text-gray-300">
@@ -388,9 +388,9 @@ export function SummitPage() {
               <div className="card-technical rounded p-6 animate-fade-in">
                 <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                   <Mountain className="w-5 h-5 mr-2" />
-                  Nearby SOTA Summits
+                  {t('summitPage.nearbySummits')}
                   <span className="ml-2 text-sm text-gray-400 font-mono-data">
-                    (within 50km)
+                    {t('summitPage.within50km')}
                   </span>
                 </h2>
 
@@ -398,11 +398,11 @@ export function SummitPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-teal-500/30">
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">REF</th>
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">NAME</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">DISTANCE</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">ALTITUDE</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">POINTS</th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.ref')}</th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.name')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.distance')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.altitude')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.points')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -436,16 +436,15 @@ export function SummitPage() {
 
             {/* Offline Access Note */}
             <div className="card-technical rounded p-6 animate-fade-in border-l-4 border-l-green-500">
-              <h2 className="text-xl font-display text-green-400 mb-3">📱 Offline Access Available</h2>
+              <h2 className="text-xl font-display text-green-400 mb-3">{t('summitPage.offlineAvailable')}</h2>
               <p className="text-gray-300">
-                This summit information is cached in your browser for offline access. Install this app as a PWA
-                to access all {summit.association} SOTA summits even without internet connection during field operations.
+                {t('summitPage.offlineDesc')}
               </p>
             </div>
 
             {/* External Resources */}
             <div className="card-technical rounded p-4 animate-fade-in">
-              <h3 className="text-sm font-mono-data text-teal-400/60 mb-3 tracking-wider">EXTERNAL RESOURCES</h3>
+              <h3 className="text-sm font-mono-data text-teal-400/60 mb-3 tracking-wider">{t('summitPage.externalResources')}</h3>
 
               <div className="space-y-2">
                 <a
@@ -456,8 +455,8 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">Google Maps</div>
-                    <div className="text-[10px] text-gray-500">Navigation and satellite imagery</div>
+                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnGoogleMaps')}</div>
+                    <div className="text-[10px] text-gray-500">{t('summitPage.googleMapsDesc')}</div>
                   </div>
                 </a>
 
@@ -469,8 +468,8 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">OpenStreetMap</div>
-                    <div className="text-[10px] text-gray-500">Open source trail and terrain maps</div>
+                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnOSM')}</div>
+                    <div className="text-[10px] text-gray-500">{t('summitPage.osmDesc')}</div>
                   </div>
                 </a>
 
@@ -482,8 +481,8 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">SOTAmaps</div>
-                    <div className="text-[10px] text-gray-500">Official SOTA activation history</div>
+                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnSOTAMaps')}</div>
+                    <div className="text-[10px] text-gray-500">{t('summitPage.sotaMapsDesc')}</div>
                   </div>
                 </a>
               </div>

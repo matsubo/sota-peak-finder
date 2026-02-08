@@ -113,7 +113,7 @@ export function NearbyPage() {
               {/* GPS Coordinates Section */}
               <div className="bg-black/20">
                 <div className="px-5 py-3 border-l-4 border-l-green-500">
-                  <div className="text-[10px] font-mono-data glow-green tracking-wider mb-2">[ GPS COORDINATES ]</div>
+                  <div className="text-[10px] font-mono-data glow-green tracking-wider mb-2">{t('nearbyPage.gpsCoordinates')}</div>
                   <div className="grid grid-cols-2 gap-4">
                     <ResultItem label={t('label.latitude')} value={location.latitude} />
                     <ResultItem label={t('label.longitude')} value={location.longitude} />
@@ -133,7 +133,7 @@ export function NearbyPage() {
               <div className="card-technical rounded-none p-3 border-l-4 border-l-blue-500">
                 <h2 className="font-display text-lg text-blue-400 flex items-center gap-2 tracking-wider">
                   <MapPin className="w-5 h-5" />
-                  MAP VIEW
+                  {t('nearbyPage.mapView')}
                 </h2>
               </div>
 

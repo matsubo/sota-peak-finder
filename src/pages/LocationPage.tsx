@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   MapPinIcon as MapPin,
   FlagIcon as Mountain,
@@ -21,6 +22,7 @@ interface LocationData {
 }
 
 export function LocationPage() {
+  const { t } = useTranslation()
   const { jcc } = useParams<{ jcc: string }>()
   const [location, setLocation] = useState<LocationData | null>(null)
   const [nearbySota, setNearbySota] = useState<SotaSummitWithDistance[]>([])
@@ -139,7 +141,7 @@ export function LocationPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-4 sm:p-6 md:p-8 flex items-center justify-center">
-        <div className="text-teal-400 font-mono-data">Loading...</div>
+        <div className="text-teal-400 font-mono-data">{t('common.loading')}</div>
       </div>
     )
   }
@@ -149,11 +151,11 @@ export function LocationPage() {
       <div className="min-h-screen p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-4xl">
           <div className="card-technical rounded p-8 text-center">
-            <h1 className="text-2xl font-display glow-amber mb-4">Location Not Found</h1>
-            <p className="text-gray-400 mb-6">JCC {jcc} was not found in the database.</p>
+            <h1 className="text-2xl font-display glow-amber mb-4">{t('locationPage.notFound')}</h1>
+            <p className="text-gray-400 mb-6">{t('locationPage.notFoundDesc', { jcc })}</p>
             <Link to="/" className="btn-primary">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
+              {t('common.backToHome')}
             </Link>
           </div>
         </div>
@@ -217,7 +219,7 @@ export function LocationPage() {
           <div className="mb-6">
             <Link to="/" className="inline-flex items-center text-teal-400 hover:text-teal-300 font-mono-data text-sm mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to QTH Locator
+              {t('locationPage.backToQTH')}
             </Link>
           </div>
 
@@ -225,7 +227,7 @@ export function LocationPage() {
           <header className="mb-8 animate-fade-in">
             <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
               <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider">
-                LOCATION_DATA // {location.prefecture}
+                {t('locationPage.locationData', { prefecture: location.prefecture })}
               </div>
               <h1 className="text-4xl md:text-5xl font-display glow-amber mb-2">
                 {location.city}
@@ -241,32 +243,32 @@ export function LocationPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
-                Quick Reference
+                {t('locationPage.quickReference')}
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">JCC NUMBER</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('locationPage.jccNumber')}</div>
                   <div className="text-2xl font-mono-data glow-amber">{location.jcc}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">JCG NUMBER</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('locationPage.jcgNumber')}</div>
                   <div className="text-2xl font-mono-data glow-amber">{location.jcg}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">GRID LOCATOR</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('locationPage.gridLocator')}</div>
                   <div className="text-2xl font-mono-data glow-green">{gridLocator}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">PREFECTURE</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('locationPage.prefecture')}</div>
                   <div className="text-xl font-sans-clean text-gray-200">{location.prefecture}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded md:col-span-2">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">COORDINATES</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('locationPage.coordinates')}</div>
                   <div className="text-lg font-mono-data glow-green">
                     {location.lat.toFixed(6)}°N, {location.lon.toFixed(6)}°E
                   </div>
@@ -278,7 +280,7 @@ export function LocationPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <Navigation className="w-5 h-5 mr-2" />
-                Location Map
+                {t('locationPage.locationMap')}
               </h2>
               <div className="h-80 rounded overflow-hidden">
                 <LocationMap
@@ -294,9 +296,9 @@ export function LocationPage() {
               <div className="card-technical rounded p-6 animate-fade-in">
                 <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                   <Mountain className="w-5 h-5 mr-2" />
-                  Nearby SOTA Summits
+                  {t('locationPage.nearbySummits')}
                   <span className="ml-2 text-sm text-gray-400 font-mono-data">
-                    (within 50km)
+                    {t('locationPage.within50km')}
                   </span>
                 </h2>
 
@@ -304,11 +306,11 @@ export function LocationPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-teal-500/30">
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">REF</th>
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">NAME</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">DISTANCE</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">ALTITUDE</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">POINTS</th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.ref')}</th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.name')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.distance')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.altitude')}</th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.points')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -342,54 +344,42 @@ export function LocationPage() {
 
             {/* Operating Information */}
             <div className="card-technical rounded p-6 animate-fade-in">
-              <h2 className="text-xl font-display glow-teal mb-4">Operating from {location.city}</h2>
+              <h2 className="text-xl font-display glow-teal mb-4">{t('locationPage.operatingFrom', { city: location.city })}</h2>
 
               <div className="space-y-4 text-gray-300 font-sans-clean">
                 <section>
-                  <h3 className="text-lg font-display text-amber-400 mb-2">QSO Logging</h3>
+                  <h3 className="text-lg font-display text-amber-400 mb-2">{t('locationPage.qsoLogging')}</h3>
                   <p className="mb-2">
-                    When operating from {location.city}, use the following information for your log entries:
+                    {t('locationPage.qsoLoggingDesc')}
                   </p>
                   <ul className="list-disc list-inside space-y-1 ml-4">
-                    <li><strong>JCC:</strong> {location.jcc} (Japan Century City)</li>
-                    <li><strong>JCG:</strong> {location.jcg} (Japan Century Gun)</li>
-                    <li><strong>Grid:</strong> {gridLocator} (Maidenhead Locator)</li>
+                    <li><strong>JCC:</strong> {location.jcc}</li>
+                    <li><strong>JCG:</strong> {location.jcg}</li>
+                    <li><strong>Grid:</strong> {gridLocator}</li>
                     <li><strong>Prefecture:</strong> {location.prefecture}</li>
                   </ul>
                 </section>
 
                 <section>
-                  <h3 className="text-lg font-display text-amber-400 mb-2">Award Programs</h3>
+                  <h3 className="text-lg font-display text-amber-400 mb-2">{t('locationPage.awardPrograms')}</h3>
                   <p>
-                    This location counts toward JCC and JCG award programs.
-                    {nearbySota.length > 0 && (
-                      <>{' '}Additionally, there {nearbySota.length === 1 ? 'is' : 'are'} {nearbySota.length} SOTA summit{nearbySota.length !== 1 ? 's' : ''} within 50km for mountain activation opportunities.</>
-                    )}
+                    {t('locationPage.awardProgramsDesc')}
                   </p>
                 </section>
 
                 {nearbySota.length > 0 && (
                   <section>
-                    <h3 className="text-lg font-display text-amber-400 mb-2">Mountain Operations</h3>
+                    <h3 className="text-lg font-display text-amber-400 mb-2">{t('locationPage.mountainOps')}</h3>
                     <p>
-                      For SOTA activations near {location.city}, the nearest summit is{' '}
-                      <Link
-                        to={`/sota/${nearbySota[0].ref.toLowerCase().replace('/', '-')}`}
-                        className="text-green-400 hover:text-green-300 underline"
-                      >
-                        {nearbySota[0].name} ({nearbySota[0].ref})
-                      </Link>
-                      , located {nearbySota[0].distance.toFixed(1)}km away at {nearbySota[0].altitude}m altitude
-                      and worth {nearbySota[0].points} points.
+                      {t('locationPage.mountainOpsDesc')}
                     </p>
                   </section>
                 )}
 
                 <section>
-                  <h3 className="text-lg font-display text-amber-400 mb-2">Offline Access</h3>
+                  <h3 className="text-lg font-display text-amber-400 mb-2">{t('locationPage.offlineAccess')}</h3>
                   <p>
-                    This page is available offline through our PWA. Install the app on your device
-                    to access JCC/JCG/SOTA information even without internet connection during field operations.
+                    {t('locationPage.offlineAccessDesc')}
                   </p>
                 </section>
               </div>
@@ -397,7 +387,7 @@ export function LocationPage() {
 
             {/* External Resources */}
             <div className="card-technical rounded p-6 animate-fade-in">
-              <h2 className="text-xl font-display glow-teal mb-4">External Resources</h2>
+              <h2 className="text-xl font-display glow-teal mb-4">{t('locationPage.externalResources')}</h2>
 
               <div className="space-y-3">
                 <a
@@ -408,8 +398,8 @@ export function LocationPage() {
                 >
                   <ExternalLink className="w-5 h-5 text-teal-400 mr-3" />
                   <div>
-                    <div className="font-mono-data text-sm text-gray-200">View on Google Maps</div>
-                    <div className="text-xs text-gray-400">External navigation and street view</div>
+                    <div className="font-mono-data text-sm text-gray-200">{t('locationPage.viewOnGoogleMaps')}</div>
+                    <div className="text-xs text-gray-400">{t('locationPage.googleMapsDesc')}</div>
                   </div>
                 </a>
 
@@ -421,8 +411,8 @@ export function LocationPage() {
                 >
                   <ExternalLink className="w-5 h-5 text-teal-400 mr-3" />
                   <div>
-                    <div className="font-mono-data text-sm text-gray-200">View on OpenStreetMap</div>
-                    <div className="text-xs text-gray-400">Open source mapping data</div>
+                    <div className="font-mono-data text-sm text-gray-200">{t('locationPage.viewOnOSM')}</div>
+                    <div className="text-xs text-gray-400">{t('locationPage.osmDesc')}</div>
                   </div>
                 </a>
               </div>
@@ -432,11 +422,11 @@ export function LocationPage() {
           {/* Footer */}
           <footer className="mt-8 text-center text-gray-500 text-sm font-mono-data">
             <div className="mb-2">
-              Data Last Updated: {new Date().toISOString().split('T')[0]}
+              {t('locationPage.dataLastUpdated', { date: new Date().toISOString().split('T')[0] })}
             </div>
             <div>
               <Link to="/" className="text-teal-400 hover:text-teal-300">
-                ← Back to QTH Locator Home
+                {t('locationPage.backToQTHHome')}
               </Link>
             </div>
           </footer>
