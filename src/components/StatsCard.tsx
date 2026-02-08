@@ -1,11 +1,14 @@
-import { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import React from 'react'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type IconComponent = React.ComponentType<any>
 
 interface StatsCardProps {
   title: string
   value: string | number
   subtitle?: string
-  icon?: LucideIcon
+  icon?: IconComponent
   trend?: {
     value: string
     positive?: boolean
@@ -98,7 +101,7 @@ interface SummitListCardProps {
     value: string | number
     valueLabel: string
   }>
-  icon?: LucideIcon
+  icon?: IconComponent
   color?: 'amber' | 'teal' | 'green' | 'blue' | 'red'
   emptyMessage?: string
 }

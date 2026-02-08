@@ -1,6 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { MapPin, Mountain, Navigation, ArrowLeft, ExternalLink } from 'lucide-react'
+import {
+  MapPinIcon as MapPin,
+  FlagIcon as Mountain,
+  CursorArrowRaysIcon as Navigation,
+  ArrowLeftIcon as ArrowLeft,
+  ArrowTopRightOnSquareIcon as ExternalLink
+} from '@heroicons/react/24/outline'
 import { Helmet } from 'react-helmet-async'
 import { LocationMap } from '../components/LocationMap'
 import type { SotaSummit, SotaSummitWithDistance } from '../types/location'

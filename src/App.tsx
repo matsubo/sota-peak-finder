@@ -1,4 +1,10 @@
-import { Mountain, TrendingUp, Users, Database as DatabaseIcon, MapPin } from 'lucide-react'
+import {
+  FlagIcon as Mountain,
+  ArrowTrendingUpIcon as TrendingUp,
+  UsersIcon as Users,
+  CircleStackIcon as DatabaseIcon,
+  MapPinIcon as MapPin
+} from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -9,7 +15,7 @@ import { Footer } from './components/Footer'
 import { sotaDatabase, SotaSummit } from './utils/sotaDatabase'
 
 function App() {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)

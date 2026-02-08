@@ -4,7 +4,11 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Search, RotateCcw, ArrowUpDown } from 'lucide-react';
+import {
+  MagnifyingGlassIcon as Search,
+  ArrowPathIcon as RotateCcw,
+  ArrowsUpDownIcon as ArrowUpDown
+} from '@heroicons/react/24/outline';
 import type { FilterState, FilterRanges } from '../hooks/useSummitFilters';
 
 interface SummitFiltersProps {

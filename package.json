@@ -39,7 +39,6 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "lucide-react": "^0.563.0",
     "postcss": "^8.5.6",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
@@ -51,6 +50,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@sqlite.org/sqlite-wasm": "^3.51.2-build6",
     "esbuild": "^0.27.3",
     "i18next": "^25.8.1",

@@ -1,4 +1,9 @@
-import { RefreshCw, Navigation, Mountain, MapPin } from 'lucide-react'
+import {
+  ArrowPathIcon as RefreshCw,
+  CursorArrowRaysIcon as Navigation,
+  FlagIcon as Mountain,
+  MapPinIcon as MapPin
+} from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useLocationData } from '../hooks/useLocationData'
