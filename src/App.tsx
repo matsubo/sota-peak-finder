@@ -101,7 +101,7 @@ function App() {
                     {t('dashboard.title')}
                   </h2>
                   <p className="text-xs text-teal-300/70 font-mono-data mt-1">
-                    {t('dashboard.subtitle', { count: totalSummits?.toLocaleString() || '...' })}
+                    {t('dashboard.subtitle', { count: totalSummits || 0 })}
                   </p>
                 </div>
               </div>
