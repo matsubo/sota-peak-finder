@@ -14,11 +14,13 @@ A Progressive Web App (PWA) for SOTA (Summits On The Air) activators to find nea
 ## 🌟 Features
 
 - **Worldwide Coverage**: Access to 179,000+ SOTA summits across all associations and regions
+- **Browse & Filter**: Search summits by association, region, altitude, points, and more
+- **GPS-Powered Search**: Automatically finds nearest summits (up to 20 within 50km)
 - **Fully Offline**: Works without internet after first visit - perfect for mountain activations
 - **PWA Support**: Install as an app on your home screen
-- **GPS-Powered Search**: Automatically finds nearest summits (up to 20 within 50km)
 - **Detailed Summit Information**: Reference codes, names, coordinates, altitude, points, distance, bearing, and activation zone detection
 - **Fast Search**: SQLite WASM + R*Tree spatial indexing for sub-10ms query speed
+- **Interactive Maps**: Click anywhere on the map to find nearby summits at that location
 - **Grid Locator**: Automatic Maidenhead Locator System (6-digit) calculation
 - **JCC/JCG Support**: Japanese location reference codes included
 - **Lightweight**: 44MB compact database with efficient caching
@@ -31,7 +33,33 @@ All files are cached on first visit for complete offline access.
 
 ## 📱 How to Use
 
+### Homepage - Dashboard & Insights
+
 1. Visit [https://matsubo.github.io/sota-peak-finder/](https://matsubo.github.io/sota-peak-finder/)
+2. Explore global SOTA statistics:
+   - **Highest/Lowest Peaks**: Discover extreme summits
+   - **Most Valuable Summits**: See top point-value targets
+   - **Most Activated**: Popular summits by activation count
+   - **Unactivated Gems**: Find virgin peaks to activate
+   - **Association Distribution**: See worldwide SOTA coverage
+3. Click the **"Activate GPS Finder"** hero banner for location-based search
+4. Or click **"Browse All Summits"** to filter the complete database
+
+### Browse All Summits
+
+1. Navigate to **Browse** page via header or homepage link
+2. Filter summits by:
+   - Association (e.g., JA, W, G)
+   - Region (e.g., Kanto, California)
+   - Altitude range
+   - Points value
+   - Search by reference or name
+3. Sort by name, altitude, points, or activations
+4. Click any summit for detailed information
+
+### Find Nearest Summits (GPS Mode)
+
+1. Click the hero banner or navigate to **Nearby Summits** via the header
 2. Tap "ACQUIRE CURRENT LOCATION" button
 3. Allow location access when prompted
 4. View summit information:
@@ -40,6 +68,7 @@ All files are cached on first visit for complete offline access.
    - Grid Locator (Maidenhead 6-digit)
    - JCC/JCG codes (Japan only)
    - Nearest 20 SOTA summits with reference, distance, altitude, points, bearing, and activation zone status
+5. Click anywhere on the map to find summits at that location
 
 ### Install as PWA (Recommended)
 

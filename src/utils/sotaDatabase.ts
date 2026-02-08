@@ -374,6 +374,7 @@ class SotaDatabase {
     minPoints?: number;
     maxPoints?: number;
     minActivations?: number;
+    maxActivations?: number;
     searchText?: string;
     sortBy?: 'name' | 'altitude' | 'points' | 'activations' | 'ref';
     sortOrder?: 'asc' | 'desc';
@@ -392,6 +393,7 @@ class SotaDatabase {
       minPoints,
       maxPoints,
       minActivations,
+      maxActivations,
       searchText,
       sortBy = 'name',
       sortOrder = 'asc',
@@ -436,6 +438,11 @@ class SotaDatabase {
     if (minActivations !== undefined) {
       whereClauses.push('activations >= ?');
       bindings.push(minActivations);
+    }
+
+    if (maxActivations !== undefined) {
+      whereClauses.push('activations <= ?');
+      bindings.push(maxActivations);
     }
 
     if (searchText && searchText.trim()) {
@@ -483,6 +490,147 @@ class SotaDatabase {
     });
 
     return { summits, total };
+  }
+
+  /**
+   * Get dashboard statistics
+   */
+  async getDashboardStats(): Promise<{
+    highestSummit: SotaSummit | null;
+    lowestSummit: SotaSummit | null;
+    mostValuable: SotaSummit[];
+    mostActivated: SotaSummit[];
+    unactivatedCount: number;
+    unactivatedSummits: SotaSummit[];
+    associationStats: Array<{ association: string; count: number }>;
+    pointsDistribution: Array<{ points: number; count: number }>;
+  }> {
+    if (!this.db) {
+      await this.init();
+    }
+
+    // Highest altitude summit
+    let highestSummit: SotaSummit | null = null;
+    this.db!.exec({
+      sql: `
+        SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
+        FROM summits
+        ORDER BY altitude DESC
+        LIMIT 1
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        highestSummit = row as unknown as SotaSummit;
+      },
+    });
+
+    // Lowest altitude summit
+    let lowestSummit: SotaSummit | null = null;
+    this.db!.exec({
+      sql: `
+        SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
+        FROM summits
+        ORDER BY altitude ASC
+        LIMIT 1
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        lowestSummit = row as unknown as SotaSummit;
+      },
+    });
+
+    // Most valuable summits (by points)
+    const mostValuable: SotaSummit[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
+        FROM summits
+        ORDER BY points DESC, altitude DESC
+        LIMIT 5
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        mostValuable.push(row as unknown as SotaSummit);
+      },
+    });
+
+    // Most activated summits
+    const mostActivated: SotaSummit[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
+        FROM summits
+        ORDER BY activations DESC
+        LIMIT 5
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        mostActivated.push(row as unknown as SotaSummit);
+      },
+    });
+
+    // Count of unactivated summits
+    const unactivatedCount = this.db!.selectValue(
+      'SELECT COUNT(*) FROM summits WHERE activations = 0'
+    ) as number;
+
+    // Sample of unactivated summits (random 5)
+    const unactivatedSummits: SotaSummit[] = [];
+    this.db!.exec({
+      sql: `
+        SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
+        FROM summits
+        WHERE activations = 0
+        ORDER BY points DESC, altitude DESC
+        LIMIT 5
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        unactivatedSummits.push(row as unknown as SotaSummit);
+      },
+    });
+
+    // Association statistics (top 10)
+    const associationStats: Array<{ association: string; count: number }> = [];
+    this.db!.exec({
+      sql: `
+        SELECT association, COUNT(*) as count
+        FROM summits
+        GROUP BY association
+        ORDER BY count DESC
+        LIMIT 10
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        associationStats.push(row as { association: string; count: number });
+      },
+    });
+
+    // Points distribution
+    const pointsDistribution: Array<{ points: number; count: number }> = [];
+    this.db!.exec({
+      sql: `
+        SELECT points, COUNT(*) as count
+        FROM summits
+        GROUP BY points
+        ORDER BY points ASC
+      `,
+      rowMode: 'object',
+      callback: (row) => {
+        pointsDistribution.push(row as { points: number; count: number });
+      },
+    });
+
+    return {
+      highestSummit,
+      lowestSummit,
+      mostValuable,
+      mostActivated,
+      unactivatedCount,
+      unactivatedSummits,
+      associationStats,
+      pointsDistribution,
+    };
   }
 
   /**

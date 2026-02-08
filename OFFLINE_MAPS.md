@@ -266,4 +266,4 @@ A: Yes! That's the whole point. Just make sure you've cached the area first.
 **73 and safe DX!** 📻⛰️
 
 For questions or issues, open an issue at:
-https://github.com/matsubo/offline-qth/issues
+https://github.com/matsubo/sota-peak-finder/issues

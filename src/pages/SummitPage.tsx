@@ -1,6 +1,13 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { MapPin, Mountain, Navigation, ArrowLeft, ExternalLink, Award } from 'lucide-react'
+import {
+  MapPinIcon as MapPin,
+  FlagIcon as Mountain,
+  CursorArrowRaysIcon as Navigation,
+  ArrowLeftIcon as ArrowLeft,
+  ArrowTopRightOnSquareIcon as ExternalLink,
+  TrophyIcon as Award
+} from '@heroicons/react/24/outline'
 import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
 import { LocationMap } from '../components/LocationMap'

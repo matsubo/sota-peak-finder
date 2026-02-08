@@ -398,3 +398,209 @@ body::before {
     0 2px 8px rgba(0, 0, 0, 0.6),
     inset 0 3px 12px rgba(0, 0, 0, 0.5);
 }
+
+/* Hero Map Banner Animations */
+@keyframes grid-scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(40px);
+  }
+}
+
+.animate-grid-scroll {
+  animation: grid-scroll 4s linear infinite;
+}
+
+@keyframes pulse-slower {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-slower {
+  animation: pulse-slower 4s ease-in-out infinite;
+}
+
+@keyframes pulse-slowest {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slowest {
+  animation: pulse-slowest 6s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping-slower {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slower {
+  animation: ping-slower 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping-slowest {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slowest {
+  animation: ping-slowest 4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 3s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-float-delayed-2 {
+  animation: float 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes draw-line {
+  0% {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-draw-line {
+  animation: draw-line 3s ease-in-out infinite;
+}
+
+@keyframes fade-in-delayed-1 {
+  0% {
+    opacity: 0;
+  }
+  20%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-delayed-1 {
+  animation: fade-in-delayed-1 2s ease-out;
+}
+
+@keyframes fade-in-delayed-2 {
+  0%, 10% {
+    opacity: 0;
+  }
+  30%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-delayed-2 {
+  animation: fade-in-delayed-2 2s ease-out;
+}
+
+@keyframes fade-in-delayed-3 {
+  0%, 20% {
+    opacity: 0;
+  }
+  40%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-delayed-3 {
+  animation: fade-in-delayed-3 2s ease-out;
+}
+
+@keyframes fade-in-delayed-4 {
+  0%, 30% {
+    opacity: 0;
+  }
+  50%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-delayed-4 {
+  animation: fade-in-delayed-4 2s ease-out;
+}
+
+@keyframes fade-in-delayed-5 {
+  0%, 40% {
+    opacity: 0;
+  }
+  60%, 100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-delayed-5 {
+  animation: fade-in-delayed-5 2s ease-out;
+}
+
+.glow-blue {
+  color: rgb(100, 200, 255);
+  text-shadow: 0 0 10px rgba(100, 200, 255, 0.6);
+}

@@ -398,7 +398,7 @@ Create static sitemap at build time:
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://matsubo.github.io/offline-qth/location/1101</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/location/1101</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
@@ -411,16 +411,16 @@ Create static sitemap at build time:
 <!-- public/sitemap.xml -->
 <sitemapindex>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-main.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-main.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-prefectures.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-prefectures.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-locations.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-locations.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://matsubo.github.io/offline-qth/sitemap-sota.xml</loc>
+    <loc>https://matsubo.github.io/sota-peak-finder/sitemap-sota.xml</loc>
   </sitemap>
 </sitemapindex>
 ```
@@ -432,7 +432,7 @@ Create static sitemap at build time:
 User-agent: *
 Allow: /
 
-Sitemap: https://matsubo.github.io/offline-qth/sitemap.xml
+Sitemap: https://matsubo.github.io/sota-peak-finder/sitemap.xml
 ```
 
 ---

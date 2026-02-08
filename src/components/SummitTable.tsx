@@ -5,7 +5,10 @@
 
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeftIcon as ChevronLeft,
+  ChevronRightIcon as ChevronRight
+} from '@heroicons/react/24/outline';
 import type { SotaSummit } from '../utils/sotaDatabase';
 import { getAssociationFlag } from '../utils/countryFlags';
 
