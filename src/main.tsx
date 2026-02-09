@@ -18,7 +18,7 @@ function PageViewTracker() {
   const location = useLocation()
 
   useEffect(() => {
-    // Scroll to top on route change or search param change
+    // Scroll to top on route change only (not on search param changes like filter sliders)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
 
     const getPageTitle = () => {
@@ -29,7 +29,7 @@ function PageViewTracker() {
       return 'Home'
     }
     trackPageView(location.pathname, getPageTitle())
-  }, [location.pathname, location.search])
+  }, [location.pathname])
 
   return null
 }
