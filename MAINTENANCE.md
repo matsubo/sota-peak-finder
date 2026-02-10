@@ -53,6 +53,78 @@ bun run build:sota
 bun run build:all
 ```
 
+## Local Development Setup
+
+### For Developers
+
+Since database files are not committed to the repository, you must generate them locally:
+
+#### Quick Setup (Recommended)
+```bash
+# One command to download and build database
+bun run setup
+```
+
+This runs `scripts/setup-dev-database.ts` which:
+- Downloads the latest SOTA CSV
+- Builds the SQLite database
+- Displays statistics
+
+#### Manual Setup
+```bash
+# 1. Download latest SOTA CSV
+curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
+
+# 2. Build database
+bun run build:sota
+
+# 3. Verify database exists
+ls -lh public/data/sota.db
+```
+
+#### Verify Setup
+```bash
+# Check database is working
+bun -e "
+import { Database } from 'bun:sqlite';
+const db = new Database('public/data/sota.db');
+const count = db.query('SELECT COUNT(*) as count FROM summits').get();
+console.log(\`Database ready with \${count.count.toLocaleString()} summits\`);
+db.close();
+"
+```
+
+### For AI Assistants / CI
+
+Before running tests or automated tasks:
+
+```bash
+# Setup database if not exists (cross-platform)
+bun run -e "
+import fs from 'fs';
+if (!fs.existsSync('public/data/sota.db')) {
+  await import('./scripts/setup-dev-database.ts');
+}
+"
+
+# Or simply run setup (it's idempotent)
+bun run setup
+
+# Then run your tests
+bun run test:e2e
+```
+
+### Troubleshooting
+
+**Database file not found**
+- Run `bun run setup`
+- Or manually download and build as shown above
+
+**Build fails**
+- Check that `/tmp/sota-summits-worldwide.csv` exists and is valid
+- Verify bun is installed: `bun --version`
+- Check disk space (database needs ~100 MB free)
+
 ### Database Build Process
 
 The `build-sota-database.mjs` script:

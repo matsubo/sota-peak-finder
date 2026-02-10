@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:sota": "bun run scripts/build-sota-database.mjs",
-    "build:sitemaps": "bun run scripts/generate-summit-sitemap.mjs",
+    "build:sota": "bun scripts/build-sota-database.mjs",
+    "build:sitemaps": "bun scripts/generate-summit-sitemap.mjs",
     "build:all": "bun run build:sota && bun run build:sitemaps && bun run build",
+    "setup": "bun scripts/setup-dev-database.ts",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "lint:fix": "eslint . --ext ts,tsx --fix",

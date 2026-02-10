@@ -1,5 +1,40 @@
 # セットアップガイド
 
+## 0. データベースのセットアップ（重要）
+
+**データベースファイルはリポジトリに含まれていません。** 開発を始める前に、必ずデータベースをセットアップしてください。
+
+### クイックセットアップ
+```bash
+# 依存関係のインストール
+bun install
+
+# データベースのセットアップ（自動ダウンロード + ビルド）
+bun run setup
+```
+
+### 手動セットアップ
+```bash
+# SOTAデータベースをダウンロード
+curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
+
+# データベースをビルド
+bun run build:sota
+
+# 確認
+ls -lh public/data/sota.db
+```
+
+### テスト実行前の確認
+```bash
+# データベースが存在するか確認
+if [ ! -f public/data/sota.db ]; then
+  echo "⚠️  データベースが見つかりません。bun run setup を実行してください"
+fi
+```
+
+---
+
 ## 1. アイコンの生成
 
 PWAに必要なアイコン画像を生成します。

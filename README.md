@@ -83,11 +83,20 @@ All files are cached on first visit for complete offline access.
 
 ## 🛠️ Development
 
-### Setup
+### First-Time Setup
+
+**Important**: Database files are not in the repository. You must generate them locally before development.
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 bun install
+
+# 2. Setup database (downloads latest SOTA data and builds database)
+bun run setup
+
+# Or manually:
+# curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
+# bun run build:sota
 ```
 
 ### Run Locally
@@ -98,6 +107,18 @@ bun run dev
 ```
 
 Open `http://localhost:5173` in your browser.
+
+### For AI Assistants / Automated Testing
+
+Before running tests or development tasks, ensure the database is set up:
+
+```bash
+# Quick setup for CI/testing
+bun run setup
+
+# Then run tests
+bun run test:e2e
+```
 
 ### Build for Production
 
