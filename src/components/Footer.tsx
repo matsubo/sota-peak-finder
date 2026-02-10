@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  LanguageIcon as Languages,
-  QuestionMarkCircleIcon as HelpCircle,
-  CircleStackIcon as Database,
-  BookOpenIcon as BookOpen,
-  ChatBubbleLeftRightIcon as MessageCircle,
-  ArrowTopRightOnSquareIcon as ExternalLink
-} from '@heroicons/react/24/outline'
+  Languages,
+  HelpCircle,
+  Database,
+  BookOpen,
+  MessageCircle,
+  ExternalLink
+} from 'lucide-react'
 // Github icon - using custom SVG as Heroicons doesn't have brand icons
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Github = (props: any) => (

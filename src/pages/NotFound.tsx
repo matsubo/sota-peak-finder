@@ -5,12 +5,7 @@
 
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  HomeIcon as Home,
-  FlagIcon as Mountain,
-  MagnifyingGlassIcon as Search,
-  ArrowLeftIcon as ArrowLeft
-} from '@heroicons/react/24/outline'
+import { Home, Flag as Mountain, Search, ArrowLeft } from 'lucide-react'
 
 export function NotFound() {
   const { t } = useTranslation()

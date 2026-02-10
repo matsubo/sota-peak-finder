@@ -1,10 +1,10 @@
 import {
-  FlagIcon as Mountain,
-  ArrowTrendingUpIcon as TrendingUp,
-  CircleStackIcon as DatabaseIcon,
-  MapPinIcon as MapPin,
-  GlobeAltIcon as Globe
-} from '@heroicons/react/24/outline'
+  Flag as Mountain,
+  TrendingUp,
+  Database as DatabaseIcon,
+  MapPin,
+  Globe
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'

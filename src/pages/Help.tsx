@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowLeftIcon as ArrowLeft } from '@heroicons/react/24/outline'
+import { ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { sotaDatabase } from '../utils/sotaDatabase'

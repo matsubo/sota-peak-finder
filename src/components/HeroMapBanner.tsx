@@ -1,4 +1,4 @@
-import { MapPinIcon as MapPin, CursorArrowRaysIcon as Navigation, ArrowTrendingUpIcon as TrendingUp } from '@heroicons/react/24/outline'
+import { MapPin, Navigation, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
