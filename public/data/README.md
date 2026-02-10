@@ -1,3 +1,18 @@
+# Data Directory
+
+**Note**: SOTA database files (`sota.db`, `sota-data.json`) are **NOT committed to git**. They are automatically generated during the deployment process.
+
+- **Generated files** (in .gitignore):
+  - `sota.db` - SQLite database with R*Tree spatial index (~44 MB)
+  - `sota.db-shm`, `sota.db-wal` - SQLite temporary files
+  - `sota-data.json` - JSON format database (legacy)
+
+- **Committed files**:
+  - `location-data.json` - JCC/JCG location reference data
+  - `README.md` - This file
+
+---
+
 # JCC/JCG データ構造
 
 ## location-data.json の構造

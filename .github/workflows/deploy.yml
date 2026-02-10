@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Run every Sunday at 00:00 UTC to update SOTA database
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
 permissions:
@@ -32,6 +35,18 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Download latest SOTA database
+        run: |
+          echo "📥 Downloading latest SOTA database..."
+          curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
+          echo "✅ Download complete ($(du -h /tmp/sota-summits-worldwide.csv | cut -f1))"
+
+      - name: Build SOTA database
+        run: |
+          echo "🔨 Building SOTA database..."
+          bun run build:sota
+          echo "✅ Database built ($(du -h public/data/sota.db | cut -f1))"
 
       - name: Generate Sitemaps
         run: bun run build:sitemaps

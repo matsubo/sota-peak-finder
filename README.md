@@ -111,7 +111,12 @@ bun run preview
 
 ### Database Management
 
+The SOTA database is **automatically updated every Sunday at 00:00 UTC** via GitHub Actions. You can also manually update it:
+
 ```bash
+# Download latest SOTA CSV
+curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
+
 # Rebuild SOTA database
 bun run build:sota
 
@@ -122,12 +127,16 @@ bun run build:sitemaps
 bun run build:all
 ```
 
+**Manual deployment trigger**: Go to Actions → Deploy to GitHub Pages → Run workflow
+
 ## 📊 Technical Details
 
 ### Data Sources
 - **SOTA Database**: https://storage.sota.org.uk/summitslist.csv (~24 MB CSV, 179,527 summits)
-- **Built Database**: ~44 MB with R*Tree spatial index
-- **Update Frequency**: Periodic updates from official SOTA database
+- **Built Database**: ~44 MB with R*Tree spatial index (generated during deployment, not in git)
+- **Update Frequency**: Automatically updated every Sunday at 00:00 UTC via GitHub Actions
+- **Data Freshness**: The database is rebuilt weekly from the official SOTA source to ensure you always have the latest summit information, including new activations and summit additions
+- **Repository**: Database files are NOT committed to git - they're generated fresh on each deployment
 
 ### Architecture
 - **SQLite WASM**: Official `@sqlite.org/sqlite-wasm` (v3.52.0) for in-browser database

@@ -12,3 +12,9 @@ test-results/
 .env.local
 master.json
 .playwright-mcp/
+
+# SOTA database files (generated during build/deploy)
+public/data/sota.db
+public/data/sota.db-shm
+public/data/sota.db-wal
+public/data/sota-data.json
