@@ -2,6 +2,20 @@
 
 [![GitHub Pages](https://img.shields.io/badge/demo-live-success)](https://matsubo.github.io/sota-peak-finder/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/matsubo/sota-peak-finder)](https://github.com/matsubo/sota-peak-finder/releases)
+[![GitHub stars](https://img.shields.io/github/stars/matsubo/sota-peak-finder?style=social)](https://github.com/matsubo/sota-peak-finder/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/matsubo/sota-peak-finder?style=social)](https://github.com/matsubo/sota-peak-finder/network/members)
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![PWA](https://img.shields.io/badge/PWA-enabled-5A0FC8?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+[![SQLite](https://img.shields.io/badge/SQLite-WASM-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/wasm/)
+
+[![GitHub last commit](https://img.shields.io/github/last-commit/matsubo/sota-peak-finder)](https://github.com/matsubo/sota-peak-finder/commits/main)
+[![GitHub code size](https://img.shields.io/github/languages/code-size/matsubo/sota-peak-finder)](https://github.com/matsubo/sota-peak-finder)
+[![GitHub issues](https://img.shields.io/github/issues/matsubo/sota-peak-finder)](https://github.com/matsubo/sota-peak-finder/issues)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/Fztt8jwr6A)
 
 **Find SOTA Summits Worldwide—Works Offline Anywhere**
 
@@ -235,6 +249,8 @@ MIT License
 
 Pull requests, issues, and feedback are welcome!
 
+**Have questions or need help?** Join the discussion at [GitHub Discussions](https://github.com/matsubo/sota-peak-finder/discussions)
+
 We especially welcome contributions to expand the JCC/JCG database coverage.
 
 ## 🏔️ About SOTA
@@ -249,6 +265,13 @@ The Maidenhead Locator System is a global coordinate system used in amateur radi
 **JE1WFV**
 - Twitter: [@je1wfv](https://x.com/je1wfv)
 - GitHub: [matsubo/sota-peak-finder](https://github.com/matsubo/sota-peak-finder)
+
+## ☕ Support
+
+If you find this project helpful, consider supporting its development:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/matsubokkuri)
+[![GitHub Sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=EA4AAA)](https://github.com/sponsors/matsubo)
 
 ## 73!
 

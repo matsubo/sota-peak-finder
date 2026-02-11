@@ -6,7 +6,9 @@ import {
   Database,
   BookOpen,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
+  Coffee,
+  Heart
 } from 'lucide-react'
 // Github icon - using custom SVG as Heroicons doesn't have brand icons
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -132,6 +134,36 @@ export function Footer({ isOnline = false, sotaCount = null, sotaBuildDate = nul
                 >
                   <Github className="w-4 h-4" />
                   <span className="text-xs font-mono-data">{t('footer.github')}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Support / Donation */}
+            <div>
+              <div className="text-[9px] font-mono-data text-teal-500/50 tracking-wider mb-2 text-center">
+                SUPPORT
+              </div>
+              <div className="flex items-center justify-center gap-4">
+                <a
+                  href="https://buymeacoffee.com/matsubokkuri"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-amber-400/80 hover:text-amber-300 transition-colors"
+                >
+                  <Coffee className="w-4 h-4" />
+                  <span className="text-xs font-mono-data">Buy Me a Coffee</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <div className="w-px h-4 bg-teal-500/20"></div>
+                <a
+                  href="https://github.com/sponsors/matsubo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-amber-400/80 hover:text-amber-300 transition-colors"
+                >
+                  <Heart className="w-4 h-4" />
+                  <span className="text-xs font-mono-data">GitHub Sponsors</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
