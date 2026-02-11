@@ -13,9 +13,9 @@
 
 ---
 
-# JCC/JCG データ構造
+# JCC/JCG Data Structure
 
-## location-data.json の構造
+## location-data.json Structure
 
 ```json
 {
@@ -25,8 +25,8 @@
     {
       "lat": 35.6895,
       "lon": 139.6917,
-      "prefecture": "東京都",
-      "city": "千代田区",
+      "prefecture": "Tokyo",
+      "city": "Chiyoda",
       "jcc": "1001",
       "jcg": "10001"
     }
@@ -34,78 +34,78 @@
 }
 ```
 
-## フィールドの説明
+## Field Descriptions
 
-- `version`: データフォーマットのバージョン
-- `lastUpdate`: 最終更新日（YYYY-MM-DD形式）
-- `locations`: ロケーションデータの配列
+- `version`: Data format version
+- `lastUpdate`: Last update date (YYYY-MM-DD format)
+- `locations`: Array of location data
 
-### ロケーションオブジェクト
+### Location Object
 
-- `lat`: 緯度（10進数形式）
-- `lon`: 経度（10進数形式）
-- `prefecture`: 都道府県名
-- `city`: 市区町村名
-- `jcc`: JCC（Japan Century City）コード
-- `jcg`: JCG（Japan Century Gun）コード
+- `lat`: Latitude (decimal format)
+- `lon`: Longitude (decimal format)
+- `prefecture`: Prefecture name
+- `city`: City/municipality name
+- `jcc`: JCC (Japan Century City) code
+- `jcg`: JCG (Japan Century Gun) code
 
-## データの追加方法
+## How to Add Data
 
-### 手動追加
+### Manual Addition
 
-`locations` 配列に新しいオブジェクトを追加してください。
+Add a new object to the `locations` array:
 
 ```json
 {
-  "lat": 緯度,
-  "lon": 経度,
-  "prefecture": "都道府県名",
-  "city": "市区町村名",
-  "jcc": "JCCコード",
-  "jcg": "JCGコード"
+  "lat": latitude,
+  "lon": longitude,
+  "prefecture": "Prefecture name",
+  "city": "City name",
+  "jcc": "JCC code",
+  "jcg": "JCG code"
 }
 ```
 
-### データソース
+### Data Sources
 
-JCC/JCGコードは以下から取得できます：
+JCC/JCG codes can be obtained from:
 
-- JARL（一般社団法人日本アマチュア無線連盟）公式サイト
-- JCC/JCGリスト（PDF等で公開されている場合）
-- アマチュア無線関連のデータベース
+- JARL (Japan Amateur Radio League) official website
+- JCC/JCG lists (published as PDF, etc.)
+- Amateur radio-related databases
 
-### 推奨データポイント
+### Recommended Data Points
 
-精度を上げるため、各市区町村の代表地点を追加することを推奨します：
+To improve accuracy, it's recommended to add representative points for each city/municipality:
 
-1. 市区町村役場の位置
-2. 主要な山岳地点（SOTA運用に便利）
-3. 境界付近の地点（判定精度向上のため）
+1. Location of city/municipal office
+2. Major mountain points (convenient for SOTA operations)
+3. Boundary points (to improve detection accuracy)
 
-## データの検証
+## Data Validation
 
-以下の点に注意してデータを検証してください：
+Please validate data with attention to these points:
 
-1. 緯度は -90 〜 90 の範囲
-2. 経度は -180 〜 180 の範囲
-3. JCC/JCGコードは正しい形式（数字4-5桁）
-4. 都道府県名・市区町村名は正式名称
+1. Latitude must be in range -90 to 90
+2. Longitude must be in range -180 to 180
+3. JCC/JCG codes must be in correct format (4-5 digit numbers)
+4. Prefecture/city names must use official names
 
-## より高度なデータ構造（将来の拡張）
+## Advanced Data Structure (Future Extension)
 
-将来的には以下のような拡張も検討できます：
+Future extensions could include:
 
 ```json
 {
   "lat": 35.6895,
   "lon": 139.6917,
-  "prefecture": "東京都",
-  "city": "千代田区",
+  "prefecture": "Tokyo",
+  "city": "Chiyoda",
   "jcc": "1001",
   "jcg": "10001",
-  "elevation": 25,           // 標高（メートル）
-  "gl": "PM95",              // グリッドロケーター
-  "bounds": {                // 境界情報
+  "elevation": 25,           // Elevation (meters)
+  "gl": "PM95",              // Grid locator
+  "bounds": {                // Boundary information
     "north": 35.7,
     "south": 35.68,
     "east": 139.7,
@@ -114,12 +114,12 @@ JCC/JCGコードは以下から取得できます：
 }
 ```
 
-## データの寄贈
+## Data Contributions
 
-より詳細なJCC/JCGデータをお持ちの方は、プルリクエストをお送りください！
+If you have more detailed JCC/JCG data, please send a pull request!
 
-アマチュア無線コミュニティ全体の利益になります。
+It will benefit the entire amateur radio community.
 
-## ライセンス
+## License
 
-JCC/JCGコードの著作権については、JARLおよび関連団体の規定に従ってください。
+Please follow the regulations of JARL and related organizations regarding the copyright of JCC/JCG codes.

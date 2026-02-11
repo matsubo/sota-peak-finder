@@ -1,92 +1,92 @@
-# バージョン管理ガイド
+# Version Management Guide
 
-## バージョンの更新方法
+## How to Update Version
 
-このプロジェクトでは、`package.json` のバージョンが単一の情報源（Single Source of Truth）です。
+In this project, the version in `package.json` is the single source of truth.
 
-### バージョンを更新するには：
+### To update the version:
 
 ```bash
-# パッチバージョンアップ (2.1.0 → 2.1.1) - バグフィックス
+# Patch version bump (2.1.0 → 2.1.1) - Bug fixes
 bun run version:patch
 
-# マイナーバージョンアップ (2.1.0 → 2.2.0) - 新機能
+# Minor version bump (2.1.0 → 2.2.0) - New features
 bun run version:minor
 
-# メジャーバージョンアップ (2.1.0 → 3.0.0) - 破壊的変更
+# Major version bump (2.1.0 → 3.0.0) - Breaking changes
 bun run version:major
 
-# または手動で package.json を編集
+# Or manually edit package.json
 # "version": "2.1.0" → "version": "2.2.0"
 ```
 
-### 自動的に反映される場所：
+### Automatically reflected in:
 
-- ✅ アプリのフッター（v2.1.0 と表示）
-- ✅ ビルド時に `__APP_VERSION__` としてグローバルに注入
-- ✅ TypeScript の型定義も自動生成
+- ✅ App footer (displayed as v2.1.0)
+- ✅ Globally injected as `__APP_VERSION__` at build time
+- ✅ TypeScript type definitions are also automatically generated
 
-### セマンティックバージョニング
+### Semantic Versioning
 
-- **MAJOR (3.0.0)**: 破壊的変更
-  - 例: API の大幅な変更、非互換な変更
+- **MAJOR (3.0.0)**: Breaking changes
+  - Example: Major API changes, incompatible changes
 
-- **MINOR (2.1.0)**: 新機能追加
-  - 例: 新しい言語対応、新機能の追加
+- **MINOR (2.1.0)**: New features
+  - Example: New language support, new feature additions
 
-- **PATCH (2.0.1)**: バグ修正
-  - 例: バグ修正、小さな改善
+- **PATCH (2.0.1)**: Bug fixes
+  - Example: Bug fixes, minor improvements
 
-## 更新手順
+## Update Procedure
 
-1. バージョンを更新:
+1. Update version:
    ```bash
    bun run version:minor
    ```
 
-2. ビルド:
+2. Build:
    ```bash
    bun run build
    ```
 
-3. コミット & タグ作成（npm version が自動的に行います）:
+3. Commit & create tag (npm version does this automatically):
    ```bash
    git push && git push --tags
    ```
 
-## 現在のバージョン確認
+## Check Current Version
 
 ```bash
-# package.json から確認
+# Check from package.json
 cat package.json | grep version
 
-# または
+# Or
 bun run --version
 ```
 
-## 変更履歴
+## Changelog
 
 ### v2.3.2 (2026-02-06)
-- オフラインマップタイルキャッシング追加
-- OpenStreetMapタイル自動キャッシュ（最大500タイル、30日間）
-- Leafletマーカーアイコンのキャッシング（1年間）
-- オフライン時の警告バナー表示
-- オフラインマップ利用ガイドの追加
+- Added offline map tile caching
+- Automatic OpenStreetMap tile caching (max 500 tiles, 30 days)
+- Leaflet marker icon caching (1 year)
+- Offline warning banner display
+- Added offline map usage guide
 
 ### v2.3.1 (2026-02-06)
-- プログラマティックSEO実装（9,000+ページ対応）
-- 翻訳ファイルの正しいインポート（src/localesに移動）
-- pre-commit linting（Husky + lint-staged）の追加
-- LocationPage型定義の修正
-- react-helmet-async追加（SEOメタタグ対応）
+- Implemented programmatic SEO (9,000+ pages supported)
+- Correct translation file import (moved to src/locales)
+- Added pre-commit linting (Husky + lint-staged)
+- Fixed LocationPage type definition
+- Added react-helmet-async (SEO meta tag support)
 
 ### v2.1.0 (2024-02-03)
-- バージョン自動管理システムの追加
-- l10n問題の修正
-- PWAキャッシュ処理の改善
+- Added automatic version management system
+- Fixed l10n issues
+- Improved PWA cache handling
 
 ### v2.0.0 (2024-02-03)
-- React + TypeScript + Tailwind CSS への完全書き直し
-- Bun対応
-- E2Eテスト追加
-- i18n/l10n対応（日本語・英語）
+- Complete rewrite with React + TypeScript + Tailwind CSS
+- Bun support
+- Added E2E tests
+- i18n/l10n support (Japanese & English)

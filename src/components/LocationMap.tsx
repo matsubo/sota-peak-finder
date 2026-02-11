@@ -17,7 +17,6 @@ L.Icon.Default.mergeOptions({
 interface SotaSummit {
   ref: string
   name: string
-  nameEn: string
   lat: number
   lon: number
   altitude: number

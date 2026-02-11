@@ -1,172 +1,172 @@
-# セットアップガイド
+# Setup Guide
 
-## 0. データベースのセットアップ（重要）
+## 0. Database Setup (Important)
 
-**データベースファイルはリポジトリに含まれていません。** 開発を始める前に、必ずデータベースをセットアップしてください。
+**Database files are not included in the repository.** You must set up the database before starting development.
 
-### クイックセットアップ
+### Quick Setup
 ```bash
-# 依存関係のインストール
+# Install dependencies
 bun install
 
-# データベースのセットアップ（自動ダウンロード + ビルド）
+# Setup database (automatic download + build)
 bun run setup
 ```
 
-### 手動セットアップ
+### Manual Setup
 ```bash
-# SOTAデータベースをダウンロード
+# Download SOTA database
 curl -L -o /tmp/sota-summits-worldwide.csv https://storage.sota.org.uk/summitslist.csv
 
-# データベースをビルド
+# Build database
 bun run build:sota
 
-# 確認
+# Verify
 ls -lh public/data/sota.db
 ```
 
-### テスト実行前の確認
+### Pre-test Verification
 ```bash
-# データベースが存在するか確認
+# Check if database exists
 if [ ! -f public/data/sota.db ]; then
-  echo "⚠️  データベースが見つかりません。bun run setup を実行してください"
+  echo "⚠️  Database not found. Please run: bun run setup"
 fi
 ```
 
 ---
 
-## 1. アイコンの生成
+## 1. Icon Generation
 
-PWAに必要なアイコン画像を生成します。
+Generate icon images required for PWA.
 
 ```bash
-# ブラウザで create-icons.html を開く
+# Open create-icons.html in browser
 open create-icons.html
 ```
 
-1. `create-icons.html` をブラウザで開く
-2. `icon-192.png` と `icon-512.png` をダウンロード
-3. ダウンロードしたファイルをプロジェクトのルートディレクトリに配置
+1. Open `create-icons.html` in your browser
+2. Download `icon-192.png` and `icon-512.png`
+3. Place the downloaded files in the project root directory
 
-または、お好きなアイコン作成ツールで 192x192 と 512x512 のPNG画像を作成してください。
+Alternatively, create 192x192 and 512x512 PNG images using your favorite icon creation tool.
 
-## 2. ローカルでテスト
+## 2. Local Testing
 
-HTTPSまたはlocalhostで動作する必要があります（Service Worker の制限）。
+Must run on HTTPS or localhost (Service Worker restriction).
 
-### Python の場合
+### Using Python
 ```bash
 python -m http.server 8000
 ```
 
-### Node.js の場合
+### Using Node.js
 ```bash
 npx serve
 ```
 
-### PHP の場合
+### Using PHP
 ```bash
 php -S localhost:8000
 ```
 
-ブラウザで `http://localhost:8000` を開いてテストしてください。
+Open `http://localhost:8000` in your browser to test.
 
-## 3. GitHub Pagesへのデプロイ
+## 3. Deploy to GitHub Pages
 
-### 3-1. GitHubリポジトリの作成
+### 3-1. Create GitHub Repository
 
 ```bash
-# Gitリポジトリの初期化
+# Initialize Git repository
 git init
 
-# ファイルを追加
+# Add files
 git add .
 
-# 初回コミット
+# Initial commit
 git commit -m "Initial commit: Offline QTH PWA"
 
-# GitHubリポジトリと接続（あなたのリポジトリURLに置き換えてください）
-git remote add origin https://github.com/あなたのユーザー名/sota-peak-finder.git
+# Connect to GitHub repository (replace with your repository URL)
+git remote add origin https://github.com/YOUR_USERNAME/sota-peak-finder.git
 
-# プッシュ
+# Push
 git branch -M main
 git push -u origin main
 ```
 
-### 3-2. GitHub Pagesの有効化
+### 3-2. Enable GitHub Pages
 
-1. GitHubリポジトリのページを開く
-2. `Settings` タブをクリック
-3. 左メニューから `Pages` を選択
-4. `Source` で `main` ブランチを選択
-5. `Save` をクリック
+1. Open your GitHub repository page
+2. Click the `Settings` tab
+3. Select `Pages` from the left menu
+4. Select `main` branch in `Source`
+5. Click `Save`
 
-数分後、`https://あなたのユーザー名.github.io/sota-peak-finder/` でアクセス可能になります。
+After a few minutes, it will be accessible at `https://YOUR_USERNAME.github.io/sota-peak-finder/`.
 
-## 4. manifest.json の設定確認
+## 4. Verify manifest.json Configuration
 
-`manifest.json` の `start_url` をあなたのリポジトリ名に合わせて変更してください。
-
-```json
-{
-  "start_url": "/sota-peak-finder/"  // リポジトリ名と一致させる
-}
-```
-
-リポジトリ名が違う場合は、適宜変更してください。
-
-## 5. Service Worker のパス設定
-
-`service-worker.js` 内のパスも確認してください。GitHub Pagesではリポジトリ名がパスに含まれます。
-
-## 6. JCC/JCGデータの拡充
-
-`data/location-data.json` にJCC/JCGデータを追加していきます。
-
-より詳細なデータがあれば、精度が向上します。
-
-### データの追加方法
+Change the `start_url` in `manifest.json` to match your repository name.
 
 ```json
 {
-  "lat": 35.6895,      // 緯度
-  "lon": 139.6917,     // 経度
-  "prefecture": "東京都",
-  "city": "千代田区",
-  "jcc": "1001",       // JCCコード
-  "jcg": "10001"       // JCGコード
+  "start_url": "/sota-peak-finder/"  // Match with repository name
 }
 ```
 
-## トラブルシューティング
+If your repository name is different, change it accordingly.
 
-### Service Workerが登録されない
-- HTTPSまたはlocalhostで実行されているか確認
-- ブラウザのコンソールでエラーを確認
-- ブラウザのキャッシュをクリア
+## 5. Service Worker Path Configuration
 
-### 位置情報が取得できない
-- ブラウザの位置情報許可を確認
-- HTTPSで実行されているか確認（本番環境）
-- デバイスのGPS設定を確認
+Also check the paths in `service-worker.js`. GitHub Pages includes the repository name in the path.
 
-### オフラインで動作しない
-- 一度オンラインでアクセスしてキャッシュを作成
-- Service Workerが正常に登録されているか確認
-- Application > Service Workers で状態を確認（Chrome DevTools）
+## 6. Expand JCC/JCG Data
 
-### GitHub Pagesで404エラー
-- リポジトリ名とmanifest.jsonのstart_urlが一致しているか確認
-- ブランチ名が正しいか確認
-- 数分待ってから再度アクセス
+Add JCC/JCG data to `data/location-data.json`.
 
-## 開発Tips
+More detailed data improves accuracy.
 
-### Service Workerのデバッグ
-Chrome DevTools > Application > Service Workers で状態確認・アンインストールが可能
+### How to Add Data
 
-### キャッシュのクリア
+```json
+{
+  "lat": 35.6895,         // Latitude
+  "lon": 139.6917,        // Longitude
+  "prefecture": "Tokyo",
+  "city": "Chiyoda",
+  "jcc": "1001",          // JCC code
+  "jcg": "10001"          // JCG code
+}
+```
+
+## Troubleshooting
+
+### Service Worker Not Registering
+- Verify running on HTTPS or localhost
+- Check browser console for errors
+- Clear browser cache
+
+### Cannot Get Location
+- Check browser location permission
+- Verify running on HTTPS (production environment)
+- Check device GPS settings
+
+### Not Working Offline
+- Access once while online to create cache
+- Verify Service Worker is registered properly
+- Check status in Application > Service Workers (Chrome DevTools)
+
+### 404 Error on GitHub Pages
+- Verify repository name matches manifest.json start_url
+- Check branch name is correct
+- Wait a few minutes and try again
+
+## Development Tips
+
+### Service Worker Debugging
+Check status and uninstall in Chrome DevTools > Application > Service Workers
+
+### Clear Cache
 Chrome DevTools > Application > Storage > Clear site data
 
-### オフラインテスト
-Chrome DevTools > Network > Offline にチェックを入れてテスト
+### Offline Testing
+Check Offline in Chrome DevTools > Network to test

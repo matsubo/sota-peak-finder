@@ -24,16 +24,16 @@ export interface QTHInfo {
   city: string
   jcc: string
   jcg: string
-  accuracy: number | null // 位置情報の精度（メートル）
-  sotaSummits?: SotaSummitWithDistance[]  // 最寄りのSOTA山頂リスト（オプショナル）
+  accuracy: number | null // Location accuracy (meters)
+  sotaSummits?: SotaSummitWithDistance[]  // List of nearest SOTA summits (optional)
 }
 
 export interface SotaSummitWithDistance extends SotaSummit {
-  distance: number  // 距離（メートル）
-  isActivationZone: boolean // SOTAアクティベーションゾーン内にいるか
-  bearing: number // 方位（度）
-  cardinalBearing: string // 8方位
-  verticalDistance: number | null // 山頂との標高差（メートル）
+  distance: number  // Distance (meters)
+  isActivationZone: boolean // Whether within SOTA activation zone
+  bearing: number // Bearing (degrees)
+  cardinalBearing: string // 8-point compass direction
+  verticalDistance: number | null // Elevation difference to summit (meters)
 }
 
 export interface GeocodingResult {
@@ -42,7 +42,7 @@ export interface GeocodingResult {
   fullAddress?: string
 }
 
-// SOTA (Summits On The Air) 関連の型定義
+// SOTA (Summits On The Air) type definitions
 export interface SotaData {
   version: string
   lastUpdate: string
@@ -52,15 +52,14 @@ export interface SotaData {
 
 export interface SotaSummit {
   id?: number           // Database ID (optional, from SQLite)
-  ref: string           // SOTA参照番号 (例: JA/WK-001)
-  name: string          // 山名
-  nameEn?: string       // 山名（英語）- legacy field for backward compatibility
-  lat: number           // 緯度
-  lon: number           // 経度
-  altitude: number      // 標高（メートル）
-  points: number        // SOTAポイント
-  activations?: number  // アクティベーション回数（オプション）
-  bonus?: number | null // ボーナスポイント（オプション）
-  association?: string  // SOTA Association (例: Japan, USA)
-  region?: string       // SOTA Region (例: JA/NS, W7W)
+  ref: string           // SOTA reference number (e.g., JA/WK-001)
+  name: string          // Summit name
+  lat: number           // Latitude
+  lon: number           // Longitude
+  altitude: number      // Elevation (meters)
+  points: number        // SOTA points
+  activations?: number  // Activation count (optional)
+  bonus?: number | null // Bonus points (optional)
+  association?: string  // SOTA Association (e.g., Japan, USA)
+  region?: string       // SOTA Region (e.g., JA/NS, W7W)
 }

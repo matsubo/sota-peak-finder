@@ -122,7 +122,6 @@ public/
     {
       "ref": "JA/AC-001",
       "name": "Chausuyama",
-      "nameEn": "Chausuyama",
       "lat": 35.2276,
       "lon": 137.6555,
       "altitude": 1415,

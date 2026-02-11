@@ -12,13 +12,13 @@ Implement a **Locations Playbook** to create 9,000+ SEO-optimized pages targetin
 
 ### Search Patterns Identified
 
-| Pattern | Example Queries | Volume | Competition |
-|---------|----------------|--------|-------------|
-| "JCC [city]" | "JCC 札幌", "JCC 東京" | Medium | Low |
-| "JCG [area]" | "JCG 北海道", "JCG 千代田区" | Medium | Low |
-| "SOTA [mountain]" | "SOTA 茶臼山", "SOTA JA/AC-001" | High | Medium |
-| "[city] アマチュア無線" | "札幌 アマチュア無線 QTH" | Low | Medium |
-| "[mountain] 無線 運用" | "富士山 無線 運用", "高尾山 SOTA" | Medium | High |
+| Pattern | Example Queries (Japanese Market) | English Translation | Volume | Competition |
+|---------|-----------------------------------|---------------------|--------|-------------|
+| "JCC [city]" | "JCC 札幌", "JCC 東京" | "JCC Sapporo", "JCC Tokyo" | Medium | Low |
+| "JCG [area]" | "JCG 北海道", "JCG 千代田区" | "JCG Hokkaido", "JCG Chiyoda" | Medium | Low |
+| "SOTA [mountain]" | "SOTA 茶臼山", "SOTA JA/AC-001" | "SOTA Chausuyama", "SOTA JA/AC-001" | High | Medium |
+| "[city] amateur radio" | "札幌 アマチュア無線 QTH" | "Sapporo amateur radio QTH" | Low | Medium |
+| "[mountain] radio operation" | "富士山 無線 運用", "高尾山 SOTA" | "Mt. Fuji radio operation", "Mt. Takao SOTA" | Medium | High |
 
 **Total Addressable Pages**: 9,000+
 - 47 prefectures
@@ -55,12 +55,12 @@ Implement a **Locations Playbook** to create 9,000+ SEO-optimized pages targetin
 ```
 Homepage
   ├─ /area/hokkaido (hub)
-  │   ├─ /location/1101 (札幌市中央区)
-  │   ├─ /location/1102 (札幌市北区)
+  │   ├─ /location/1101 (Sapporo Chuo Ward)
+  │   ├─ /location/1102 (Sapporo Kita Ward)
   │   └─ ... (all Hokkaido cities)
   │
   ├─ /area/tokyo (hub)
-  │   ├─ /location/1301 (千代田区)
+  │   ├─ /location/1301 (Chiyoda Ward)
   │   └─ ... (all Tokyo areas)
   │
   └─ /sota/ja-ac-001 (Chausuyama)
@@ -77,9 +77,9 @@ Homepage
 **Example**: `/area/hokkaido`
 
 **SEO Elements:**
-- **Title**: `北海道のJCC/JCG/SOTA一覧 | オフラインQTH`
-- **Meta Description**: `北海道内の全{N}市区町村のJCC/JCG番号と{M}ヶ所のSOTA山頂情報を掲載。アマチュア無線の移動運用に便利なオフライン対応QTH検索ツール。`
-- **H1**: `北海道 - アマチュア無線QTH情報`
+- **Title**: `Hokkaido JCC/JCG/SOTA List | Offline QTH` (Japanese: `北海道のJCC/JCG/SOTA一覧 | オフラインQTH`)
+- **Meta Description**: `Complete list of {N} municipalities with JCC/JCG codes and {M} SOTA summits in Hokkaido. Offline-capable QTH finder for amateur radio portable operations.` (Japanese: `北海道内の全{N}市区町村のJCC/JCG番号と{M}ヶ所のSOTA山頂情報を掲載。アマチュア無線の移動運用に便利なオフライン対応QTH検索ツール。`)
+- **H1**: `Hokkaido - Amateur Radio QTH Information` (Japanese: `北海道 - アマチュア無線QTH情報`)
 
 **Content Sections:**
 1. **Overview** - Prefecture introduction, statistics

@@ -1,5 +1,5 @@
 /**
- * 度分秒（DMS）形式への変換
+ * Convert to DMS (Degrees, Minutes, Seconds) format
  */
 export function convertToDMS(decimal: number, isLatitude: boolean): string {
   const absolute = Math.abs(decimal)
@@ -19,12 +19,12 @@ export function convertToDMS(decimal: number, isLatitude: boolean): string {
 }
 
 /**
- * Maidenhead Grid Locator (グリッドロケーター) の計算
+ * Calculate Maidenhead Grid Locator
  */
 export function calculateGridLocator(lat: number, lon: number): string {
-  // 経度を0-360の範囲に変換
+  // Convert longitude to 0-360 range
   let adjustedLon = lon + 180
-  // 緯度を0-180の範囲に変換
+  // Convert latitude to 0-180 range
   let adjustedLat = lat + 90
 
   // Field (A-R)
@@ -47,14 +47,14 @@ export function calculateGridLocator(lat: number, lon: number): string {
 }
 
 /**
- * ハバーサイン公式による2点間の距離計算（メートル）
- * 地球を球体として扱い、より正確な距離を計算
+ * Calculate distance between two points using Haversine formula (in meters)
+ * Treats the Earth as a sphere for more accurate distance calculation
  *
- * @param lat1 地点1の緯度
- * @param lon1 地点1の経度
- * @param lat2 地点2の緯度
- * @param lon2 地点2の経度
- * @returns 距離（メートル）
+ * @param lat1 Latitude of point 1
+ * @param lon1 Longitude of point 1
+ * @param lat2 Latitude of point 2
+ * @param lon2 Longitude of point 2
+ * @returns Distance in meters
  */
 export function haversineDistance(
   lat1: number,
@@ -62,7 +62,7 @@ export function haversineDistance(
   lat2: number,
   lon2: number
 ): number {
-  const R = 6371e3; // 地球の半径（メートル）
+  const R = 6371e3; // Earth's radius in meters
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -73,16 +73,16 @@ export function haversineDistance(
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c; // メートル単位
+  return R * c; // In meters
 }
 
 /**
- * 2点間の方位を計算する
- * @param lat1 地点1の緯度
- * @param lon1 地点1の経度
- * @param lat2 地点2の緯度
- * @param lon2 地点2の経度
- * @returns 方位（0-360度）
+ * Calculate bearing between two points
+ * @param lat1 Latitude of point 1
+ * @param lon1 Longitude of point 1
+ * @param lat2 Latitude of point 2
+ * @param lon2 Longitude of point 2
+ * @returns Bearing in degrees (0-360)
  */
 export function calculateBearing(
   lat1: number,
@@ -98,16 +98,16 @@ export function calculateBearing(
   const y = Math.sin(λ2 - λ1) * Math.cos(φ2);
   const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(λ2 - λ1);
   const θ = Math.atan2(y, x);
-  const brng = ((θ * 180) / Math.PI + 360) % 360; // 度数法に変換し、0-360の範囲に正規化
+  const brng = ((θ * 180) / Math.PI + 360) % 360; // Convert to degrees and normalize to 0-360 range
 
   return brng;
 }
 
 
 /**
- * 方位（度）を8方位の文字列に変換する
- * @param bearing 方位（0-360度）
- * @returns 8方位の文字列 (N, NE, E, SE, S, SW, W, NW)
+ * Convert bearing (degrees) to 8-point compass direction
+ * @param bearing Bearing in degrees (0-360)
+ * @returns 8-point compass direction string (N, NE, E, SE, S, SW, W, NW)
  */
 export function bearingToCardinal(bearing: number): string {
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
