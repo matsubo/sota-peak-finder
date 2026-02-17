@@ -324,5 +324,29 @@
     "loadError": "Could not load weather data",
     "loading": "Loading forecast...",
     "poweredBy": "Powered by Open-Meteo"
+  },
+  "activations": {
+    "title": "Recent Activations",
+    "date": "Date",
+    "callsign": "Callsign",
+    "qsos": "QSOs",
+    "noActivations": "No activations recorded yet",
+    "loading": "Loading activations...",
+    "error": "Could not load activation data",
+    "unavailableOffline": "Activation data unavailable offline",
+    "poweredBy": "Data from SOTAdata"
+  },
+  "activator": {
+    "title": "Activator",
+    "totalActivations": "Activations",
+    "totalQsos": "Total QSOs",
+    "totalPoints": "Total Points",
+    "summit": "Summit",
+    "date": "Date",
+    "qsos": "QSOs",
+    "points": "Points",
+    "loading": "Loading activator history...",
+    "error": "Could not load activator history",
+    "noHistory": "No activation history found"
   }
 }
