@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
 import { LocationMap } from '../components/LocationMap'
 import { WeatherForecast } from '../components/WeatherForecast'
+import { RecentActivations } from '../components/RecentActivations'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { sotaDatabase } from '../utils/sotaDatabase'
@@ -389,6 +390,9 @@ export function SummitPage() {
               lon={summit.lon}
               elevation={summit.altitude}
             />
+
+            {/* Recent Activations */}
+            <RecentActivations summitRef={summit.ref} />
 
             {/* Activation Information */}
             <div className="card-technical rounded p-6 animate-fade-in">
