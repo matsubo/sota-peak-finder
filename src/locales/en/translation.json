@@ -334,7 +334,8 @@
     "loading": "Loading activations...",
     "error": "Could not load activation data",
     "unavailableOffline": "Activation data unavailable offline",
-    "poweredBy": "Data from SOTAdata"
+    "poweredBy": "Data from SOTAdata",
+    "fetchedAt": "Fetched at {{time}}"
   },
   "activator": {
     "title": "Activator",

@@ -18,7 +18,7 @@ function formatDate(dateStr: string, locale: string): string {
 
 export function RecentActivations({ summitRef }: RecentActivationsProps) {
   const { t, i18n } = useTranslation()
-  const { activations, loading, error } = useActivations(summitRef)
+  const { activations, loading, error, fetchedAt } = useActivations(summitRef)
 
   if (!navigator.onLine && activations.length === 0) {
     return (
@@ -61,6 +61,11 @@ export function RecentActivations({ summitRef }: RecentActivationsProps) {
       </h2>
       <p className="text-xs font-mono-data text-teal-400/60 mb-4">
         {t('activations.poweredBy')}
+        {fetchedAt && (
+          <span className="ml-2">
+            — {t('activations.fetchedAt', { time: new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(fetchedAt) })}
+          </span>
+        )}
       </p>
 
       {activations.length === 0 ? (

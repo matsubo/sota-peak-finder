@@ -334,7 +334,8 @@
     "loading": "アクティベーション情報を読み込み中...",
     "error": "アクティベーションデータを取得できませんでした",
     "unavailableOffline": "オフライン時はアクティベーションデータを表示できません",
-    "poweredBy": "データ提供: SOTAdata"
+    "poweredBy": "データ提供: SOTAdata",
+    "fetchedAt": "{{time}} に取得"
   },
   "activator": {
     "title": "アクティベーター",

@@ -5,12 +5,14 @@ interface UseActivationsResult {
   activations: SummitActivation[]
   loading: boolean
   error: string | null
+  fetchedAt: Date | null
 }
 
 export function useActivations(summitRef: string | undefined): UseActivationsResult {
   const [activations, setActivations] = useState<SummitActivation[]>([])
   const [loading, setLoading] = useState(!!summitRef)
   const [error, setError] = useState<string | null>(null)
+  const [fetchedAt, setFetchedAt] = useState<Date | null>(null)
 
   useEffect(() => {
     if (!summitRef) return
@@ -22,6 +24,7 @@ export function useActivations(summitRef: string | undefined): UseActivationsRes
         if (!cancelled) {
           setActivations(data)
           setError(null)
+          setFetchedAt(new Date())
           setLoading(false)
         }
       })
@@ -38,5 +41,5 @@ export function useActivations(summitRef: string | undefined): UseActivationsRes
     }
   }, [summitRef])
 
-  return { activations, loading, error }
+  return { activations, loading, error, fetchedAt }
 }
