@@ -129,6 +129,36 @@ export default defineConfig({
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            // SOTA activations API - cache for 12 hours
+            urlPattern: /^https:\/\/api2\.sota\.org\.uk\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sota-activations-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 12 // 12 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // SOTA activator logs API - cache for 12 hours
+            urlPattern: /^https:\/\/api-db2\.sota\.org\.uk\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sota-activator-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 12 // 12 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }
