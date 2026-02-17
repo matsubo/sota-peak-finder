@@ -116,14 +116,14 @@ export default defineConfig({
             }
           },
           {
-            // Open-Meteo weather API - cache for 1 hour
+            // Open-Meteo weather API - cache for 12 hours
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'weather-api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 // 1 hour
+                maxAgeSeconds: 60 * 60 * 12 // 12 hours
               },
               cacheableResponse: {
                 statuses: [0, 200]
