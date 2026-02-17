@@ -80,3 +80,21 @@ test.describe('オフラインQTH アプリケーション', () => {
     await expect(page.locator('a:has-text("GitHub")')).toHaveAttribute('href', 'https://github.com/matsubo/sota-peak-finder')
   })
 })
+
+test.describe('Summit detail page', () => {
+  test('shows weather forecast card', async ({ page }) => {
+    // Navigate to a known summit (Mount Fuji JA/SO-001)
+    await page.goto('/summit/ja-so-001')
+
+    // Wait for summit data to load
+    await expect(page.locator('h1')).toBeVisible({ timeout: 30000 })
+
+    // Weather card should be visible (may take a moment to fetch)
+    await expect(
+      page.locator('text=7-Day Weather Forecast').or(page.locator('text=7日間の天気予報'))
+    ).toBeVisible({ timeout: 15000 })
+
+    // Should show Open-Meteo attribution
+    await expect(page.locator('text=Open-Meteo')).toBeVisible()
+  })
+})
