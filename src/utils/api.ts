@@ -223,3 +223,71 @@ export async function findNearbySotaSummits(
     return []
   }
 }
+
+/**
+ * SOTA activation record for a summit
+ */
+export interface SummitActivation {
+  id: number
+  userId: number
+  activationDate: string
+  ownCallsign: string
+  qsos: number
+}
+
+/**
+ * SOTA activator log record
+ */
+export interface ActivatorLogEntry {
+  ActivationId: number
+  ActivationDate: string
+  OwnCallsign: string
+  SummitCode: string
+  Summit: string
+  Points: number
+  BonusPoints: number
+  Total: number
+  QSOs: number
+}
+
+/**
+ * Fetch recent activations for a summit from SOTA API
+ */
+export async function fetchSummitActivations(
+  summitRef: string,
+  limit: number = 10
+): Promise<SummitActivation[]> {
+  const slashIndex = summitRef.indexOf('/')
+  if (slashIndex === -1) return []
+
+  const association = summitRef.substring(0, slashIndex)
+  const summitCode = summitRef.substring(slashIndex + 1)
+
+  const url = `https://api2.sota.org.uk/api/activations/${association}/${summitCode}`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch activations: ${response.status}`)
+  }
+
+  const data: SummitActivation[] = await response.json()
+  return data.slice(0, limit)
+}
+
+/**
+ * Fetch activation history for an activator by user ID
+ */
+export async function fetchActivatorHistory(
+  userId: number,
+  limit: number = 100
+): Promise<ActivatorLogEntry[]> {
+  const url = `https://api-db2.sota.org.uk/logs/activator/${userId}/${limit}/1`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch activator history: ${response.status}`)
+  }
+
+  const data: ActivatorLogEntry[] = await response.json()
+  return data
+}
