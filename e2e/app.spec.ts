@@ -98,3 +98,40 @@ test.describe('Summit detail page', () => {
     await expect(page.locator('text=Open-Meteo')).toBeVisible()
   })
 })
+
+test.describe('Summit activation history', () => {
+  test('shows recent activations on summit page', async ({ page }) => {
+    await page.goto('/summit/ja-tk-001')
+
+    // Wait for summit data to load
+    await expect(page.locator('h1')).toBeVisible({ timeout: 30000 })
+
+    // Recent Activations section should be visible
+    await expect(
+      page.locator('text=Recent Activations').or(page.locator('text=最近のアクティベーション'))
+    ).toBeVisible({ timeout: 15000 })
+
+    // Should show SOTAdata attribution
+    await expect(page.locator('text=SOTAdata')).toBeVisible()
+  })
+
+  test('navigates to activator page when clicking callsign', async ({ page }) => {
+    await page.goto('/summit/ja-tk-001')
+
+    // Wait for activations to load
+    await expect(
+      page.locator('text=Recent Activations').or(page.locator('text=最近のアクティベーション'))
+    ).toBeVisible({ timeout: 15000 })
+
+    // Click the first callsign link in the activations table
+    const firstCallsign = page.locator('table').last().locator('tbody tr').first().locator('a')
+    await expect(firstCallsign).toBeVisible({ timeout: 10000 })
+    await firstCallsign.click()
+
+    // Should navigate to activator page
+    await expect(page).toHaveURL(/\/activator\/\d+/)
+
+    // Activator page should show callsign and history
+    await expect(page.locator('h1')).toBeVisible({ timeout: 15000 })
+  })
+})
