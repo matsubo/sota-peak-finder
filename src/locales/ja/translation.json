@@ -301,5 +301,28 @@
   "header": {
     "browseAllSummits": "全山頂を見る",
     "findNearestSummits": "最寄りの山頂を探す"
+  },
+  "weather": {
+    "title": "7日間の天気予報",
+    "altitudeAdjusted": "標高{{elevation}}mに調整済み",
+    "tempHigh": "最高",
+    "tempLow": "最低",
+    "wind": "風速",
+    "gusts": "突風",
+    "precip": "降水量",
+    "clear": "晴れ",
+    "partlyCloudy": "曇り時々晴れ",
+    "cloudy": "曇り",
+    "fog": "霧",
+    "drizzle": "霧雨",
+    "rain": "雨",
+    "snow": "雪",
+    "showers": "にわか雨",
+    "thunderstorm": "雷雨",
+    "windWarning": "強風注意（突風{{speed}} km/h以上の予報）",
+    "unavailableOffline": "オフライン時は天気予報を表示できません",
+    "loadError": "天気データを取得できませんでした",
+    "loading": "天気予報を読み込み中...",
+    "poweredBy": "Powered by Open-Meteo"
   }
 }

@@ -301,5 +301,28 @@
   "header": {
     "browseAllSummits": "Browse All Summits",
     "findNearestSummits": "Find Nearest Summits"
+  },
+  "weather": {
+    "title": "7-Day Weather Forecast",
+    "altitudeAdjusted": "Altitude-adjusted to {{elevation}}m",
+    "tempHigh": "High",
+    "tempLow": "Low",
+    "wind": "Wind",
+    "gusts": "Gusts",
+    "precip": "Precip",
+    "clear": "Clear",
+    "partlyCloudy": "Partly Cloudy",
+    "cloudy": "Cloudy",
+    "fog": "Fog",
+    "drizzle": "Drizzle",
+    "rain": "Rain",
+    "snow": "Snow",
+    "showers": "Showers",
+    "thunderstorm": "Thunderstorm",
+    "windWarning": "Strong winds (gusts over {{speed}} km/h) expected",
+    "unavailableOffline": "Weather forecast unavailable offline",
+    "loadError": "Could not load weather data",
+    "loading": "Loading forecast...",
+    "poweredBy": "Powered by Open-Meteo"
   }
 }
