@@ -219,7 +219,7 @@ export function ActivatorPage() {
                     {totalPages > 1 && (
                       <div className="mt-4 flex items-center justify-between">
                         <button
-                          onClick={() => setPage(currentPage - 1)}
+                          onClick={() => { setPage(currentPage - 1); window.scrollTo(0, 0) }}
                           disabled={currentPage === 1}
                           className="px-3 py-1.5 bg-black/60 border border-teal-500/40 rounded hover:bg-teal-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         >
@@ -232,7 +232,7 @@ export function ActivatorPage() {
                         </div>
 
                         <button
-                          onClick={() => setPage(currentPage + 1)}
+                          onClick={() => { setPage(currentPage + 1); window.scrollTo(0, 0) }}
                           disabled={currentPage === totalPages}
                           className="px-3 py-1.5 bg-black/60 border border-teal-500/40 rounded hover:bg-teal-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         >
