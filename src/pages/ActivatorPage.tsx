@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Radio, Loader } from 'lucide-react'
+import { ArrowLeft, Radio, Loader, ExternalLink } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
 import { Header } from '../components/Header'
@@ -120,6 +120,17 @@ export function ActivatorPage() {
                 <h1 className="text-2xl sm:text-3xl md:text-5xl font-display glow-amber mb-2">
                   {callsign || 'Unknown'}
                 </h1>
+                {callsign && (
+                  <a
+                    href={`https://sotl.as/activators/${callsign}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-mono-data text-teal-400 hover:text-teal-300 transition-colors mt-1"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    {t('activator.viewOnSotlas')}
+                  </a>
+                )}
               </div>
 
               {/* Summary Stats */}

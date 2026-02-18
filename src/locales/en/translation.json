@@ -348,6 +348,8 @@
     "points": "Points",
     "loading": "Loading activator history...",
     "error": "Could not load activator history",
-    "noHistory": "No activation history found"
+    "noHistory": "No activation history found",
+    "viewOnSotlas": "View on SOTLAS",
+    "sotlasDesc": "Full activator profile on SOTLAS"
   }
 }

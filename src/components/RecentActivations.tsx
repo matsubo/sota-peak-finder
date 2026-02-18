@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Radio, Loader } from 'lucide-react'
+import { Radio, Loader, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useActivations } from '../hooks/useActivations'
 
@@ -104,6 +104,15 @@ export function RecentActivations({ summitRef }: RecentActivationsProps) {
                     >
                       {activation.ownCallsign}
                     </Link>
+                    <a
+                      href={`https://sotl.as/activators/${activation.ownCallsign}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex ml-1 text-teal-400/50 hover:text-teal-400 transition-colors"
+                      title={t('activator.viewOnSotlas')}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </td>
                   <td className="py-3 px-2 text-right font-mono-data text-green-400">
                     {activation.qsos}
