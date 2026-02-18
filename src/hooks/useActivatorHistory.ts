@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { fetchActivatorHistory, type ActivatorLogEntry } from '../utils/api'
 
 const PAGE_SIZE = 50
+const MAX_RECORDS = 1000
 
 interface UseActivatorHistoryResult {
   activations: ActivatorLogEntry[]
@@ -11,6 +12,8 @@ interface UseActivatorHistoryResult {
   error: string | null
   currentPage: number
   totalPages: number
+  maxRecords: number
+  hasMore: boolean
   setPage: (page: number) => void
 }
 
@@ -66,5 +69,7 @@ export function useActivatorHistory(userId: string | undefined): UseActivatorHis
     setCurrentPage(Math.max(1, Math.min(page, totalPages)))
   }
 
-  return { activations, allActivations, callsign, loading, error, currentPage, totalPages, setPage }
+  const hasMore = allActivations.length >= MAX_RECORDS
+
+  return { activations, allActivations, callsign, loading, error, currentPage, totalPages, maxRecords: MAX_RECORDS, hasMore, setPage }
 }

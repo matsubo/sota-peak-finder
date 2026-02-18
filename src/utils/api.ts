@@ -279,7 +279,7 @@ export async function fetchSummitActivations(
  */
 export async function fetchActivatorHistory(
   userId: number,
-  limit: number = 10000
+  limit: number = 1000
 ): Promise<ActivatorLogEntry[]> {
   const url = `https://api-db2.sota.org.uk/logs/activator/${userId}/${limit}/1`
   const response = await fetch(url)

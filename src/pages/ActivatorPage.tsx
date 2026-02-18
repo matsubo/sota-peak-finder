@@ -20,7 +20,7 @@ function formatDate(dateStr: string, locale: string): string {
 export function ActivatorPage() {
   const { userId } = useParams<{ userId: string }>()
   const { t, i18n } = useTranslation()
-  const { activations, allActivations, callsign, loading, error, currentPage, totalPages, setPage } = useActivatorHistory(userId)
+  const { activations, allActivations, callsign, loading, error, currentPage, totalPages, maxRecords, hasMore, setPage } = useActivatorHistory(userId)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
@@ -160,6 +160,11 @@ export function ActivatorPage() {
                         end: Math.min(currentPage * 50, allActivations.length),
                         total: allActivations.length
                       })}
+                      {hasMore && (
+                        <span className="ml-2 text-orange-400/70">
+                          {t('activator.limitNotice', { max: maxRecords })}
+                        </span>
+                      )}
                     </div>
 
                     <div className="overflow-x-auto">
