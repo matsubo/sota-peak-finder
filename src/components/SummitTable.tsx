@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { SotaSummit } from '../utils/sotaDatabase';
 import { getAssociationFlag } from '../utils/countryFlags';
+import { BookmarkButton } from './BookmarkButton';
+import { useBookmarks } from '../hooks/useBookmarks';
 
 interface SummitTableProps {
   summits: SotaSummit[];
@@ -27,6 +29,7 @@ export function SummitTable({
   onAssociationClick,
 }: SummitTableProps) {
   const { t } = useTranslation();
+  const { getStatus, cycleBookmark } = useBookmarks();
 
   const pageSize = 20;
   const totalPages = Math.ceil(totalSummits / pageSize);
@@ -88,6 +91,7 @@ export function SummitTable({
                 <th className="px-3 py-2 text-right text-xs font-semibold text-vfd-green font-mono-data">{t('table.altitude')}</th>
                 <th className="px-3 py-2 text-right text-xs font-semibold text-vfd-green font-mono-data">{t('table.points')}</th>
                 <th className="px-3 py-2 text-right text-xs font-semibold text-vfd-green font-mono-data">{t('table.activations')}</th>
+                <th className="px-3 py-2 text-center text-xs font-semibold text-vfd-green font-mono-data w-10"></th>
               </tr>
             </thead>
             <tbody>
@@ -135,6 +139,13 @@ export function SummitTable({
                   <td className={`px-3 py-2 text-sm font-mono-data text-right ${getActivationColor(summit.activations)}`}>
                     {summit.activations}
                   </td>
+                  <td className="px-3 py-2 text-center" onClick={e => e.stopPropagation()}>
+                    <BookmarkButton
+                      status={getStatus(summit.ref)}
+                      onCycle={() => cycleBookmark(summit.ref)}
+                      size="sm"
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -145,7 +156,7 @@ export function SummitTable({
       {/* Mobile Card Layout */}
       <div className="md:hidden space-y-2">
         {summits.map((summit, index) => (
-          <div key={summit.id} className="card-technical p-3 space-y-2">
+          <div key={summit.id} className="relative card-technical p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <Link
@@ -184,6 +195,13 @@ export function SummitTable({
                   {summit.activations}
                 </span>
               </div>
+            </div>
+            <div className="absolute top-2 right-2" onClick={e => e.stopPropagation()}>
+              <BookmarkButton
+                status={getStatus(summit.ref)}
+                onCycle={() => cycleBookmark(summit.ref)}
+                size="sm"
+              />
             </div>
           </div>
         ))}
