@@ -3,7 +3,8 @@ import {
   TrendingUp,
   Database as DatabaseIcon,
   MapPin,
-  Globe
+  Globe,
+  Bookmark
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
@@ -278,6 +279,22 @@ function App() {
                   </div>
                 </Link>
               </div>
+
+              {/* Bookmarks CTA */}
+              <Link
+                to="/bookmarks"
+                className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 hover:bg-amber-500/5 transition-all group animate-fade-in flex items-center justify-between"
+              >
+                <div>
+                  <h3 className="font-display text-lg text-amber-400 mb-2 tracking-wider">
+                    {t('bookmarks.title')}
+                  </h3>
+                  <p className="text-xs text-teal-300/70 font-mono-data">
+                    {t('dashboard.bookmarksDesc')}
+                  </p>
+                </div>
+                <Bookmark className="w-8 h-8 text-amber-400/60 group-hover:text-amber-400 transition-colors" />
+              </Link>
 
               {/* Share on X */}
               <a

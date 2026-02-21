@@ -181,7 +181,8 @@
     "browseAllSummits": "Browse All Summits",
     "browseAllDesc": "Filter and search the complete database",
     "findNearby": "Find Nearby Summits",
-    "findNearbyDesc": "Use GPS to discover peaks around you"
+    "findNearbyDesc": "Use GPS to discover peaks around you",
+    "bookmarksDesc": "View and manage your saved summits"
   },
   "hero": {
     "gpsLocationFinder": "GPS LOCATION FINDER",
