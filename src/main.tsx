@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { BookmarkProvider } from './contexts/BookmarkContext'
 import App from './App.tsx'
 import { Help } from './pages/Help.tsx'
 import { SummitPage } from './pages/SummitPage.tsx'
@@ -42,17 +43,19 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter basename="/sota-peak-finder">
-        <PageViewTracker />
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/nearby" element={<NearbyPage />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/summits" element={<SummitsListPage />} />
-          <Route path="/summit/:ref" element={<SummitPage />} />
-          <Route path="/activator/:userId" element={<ActivatorPage />} />
-          <Route path="/bookmarks" element={<BookmarksPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <BookmarkProvider>
+          <PageViewTracker />
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/nearby" element={<NearbyPage />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/summits" element={<SummitsListPage />} />
+            <Route path="/summit/:ref" element={<SummitPage />} />
+            <Route path="/activator/:userId" element={<ActivatorPage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BookmarkProvider>
       </BrowserRouter>
     </HelmetProvider>
   </React.StrictMode>,
