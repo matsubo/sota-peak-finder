@@ -52,7 +52,7 @@ export function useBookmarks() {
       } else {
         next = {
           ...prev,
-          [ref]: { status: nextStatus, savedAt: new Date().toISOString() },
+          [ref]: { status: nextStatus, savedAt: prev[ref]?.savedAt ?? new Date().toISOString() },
         }
       }
 
