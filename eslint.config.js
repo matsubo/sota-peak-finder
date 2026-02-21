@@ -38,7 +38,8 @@ export default [
         console: 'readonly',
         setTimeout: 'readonly',
         // Vite globals
-        __APP_VERSION__: 'readonly'
+        __APP_VERSION__: 'readonly',
+        localStorage: 'readonly'
       }
     },
     plugins: {
