@@ -84,7 +84,6 @@ export function SummitTable({
           <table className="w-full">
             <thead>
               <tr className="border-b border-teal-500/30 bg-black/40">
-                <th className="px-3 py-2 text-left text-xs font-semibold text-vfd-green font-mono-data">{t('table.number')}</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-vfd-green font-mono-data">{t('table.ref')}</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-vfd-green font-mono-data">{t('table.name')}</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-vfd-green font-mono-data">{t('table.association')}</th>
@@ -95,14 +94,11 @@ export function SummitTable({
               </tr>
             </thead>
             <tbody>
-              {summits.map((summit, index) => (
+              {summits.map((summit) => (
                 <tr
                   key={summit.id}
                   className="border-b border-teal-500/10 hover:bg-teal-500/10 transition-colors"
                 >
-                  <td className="px-3 py-2 text-xs text-gray-500 font-mono-data">
-                    {startIndex + index}
-                  </td>
                   <td className="px-3 py-2">
                     <Link
                       to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
@@ -155,7 +151,7 @@ export function SummitTable({
 
       {/* Mobile Card Layout */}
       <div className="md:hidden space-y-2">
-        {summits.map((summit, index) => (
+        {summits.map((summit) => (
           <div key={summit.id} className="relative card-technical p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
@@ -169,9 +165,6 @@ export function SummitTable({
                   {summit.name}
                 </p>
               </div>
-              <span className="text-xs text-gray-500 font-mono-data">
-                #{startIndex + index}
-              </span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
