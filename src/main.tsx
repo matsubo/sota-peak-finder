@@ -9,6 +9,7 @@ import { SummitsListPage } from './pages/SummitsListPage.tsx'
 import { NearbyPage } from './pages/NearbyPage.tsx'
 import { NotFound } from './pages/NotFound.tsx'
 import { ActivatorPage } from './pages/ActivatorPage.tsx'
+import { BookmarksPage } from './pages/BookmarksPage.tsx'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
 import './i18n'
@@ -28,6 +29,7 @@ function PageViewTracker() {
       if (location.pathname === '/summits') return 'Browse Summits'
       if (location.pathname.startsWith('/summit/')) return 'Summit Detail'
       if (location.pathname.startsWith('/activator/')) return 'Activator History'
+      if (location.pathname === '/bookmarks') return 'Bookmarks'
       return 'Home'
     }
     trackPageView(location.pathname, getPageTitle())
@@ -48,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/summits" element={<SummitsListPage />} />
           <Route path="/summit/:ref" element={<SummitPage />} />
           <Route path="/activator/:userId" element={<ActivatorPage />} />
+          <Route path="/bookmarks" element={<BookmarksPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
