@@ -31,6 +31,7 @@ export function SummitPage() {
   const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([])
   const [gridLocator, setGridLocator] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [dlProgress, setDlProgress] = useState<{ loaded: number; total: number } | null>(null)
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -74,6 +75,13 @@ export function SummitPage() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  useEffect(() => {
+    const unsub = sotaDatabase.onProgress((loaded, total) => {
+      setDlProgress({ loaded, total })
+    })
+    return unsub
+  }, [])
 
   useEffect(() => {
     async function loadSummitData() {
@@ -139,9 +147,25 @@ export function SummitPage() {
           <div className="card-technical rounded-none border-l-4 border-l-teal-500 p-12 flex flex-col items-center gap-4 animate-fade-in">
             <div className="w-10 h-10 border-2 border-teal-500/20 border-t-teal-400 rounded-full animate-spin" />
             <div className="font-mono-data text-teal-400 tracking-wider">{t('summitPage.loading')}</div>
-            <div className="text-xs font-mono-data text-teal-400/40">
-              Downloading summit database on first visit (~52MB)
-            </div>
+            {dlProgress && dlProgress.total > 0 ? (
+              <div className="w-64 space-y-1">
+                <div className="flex justify-between text-[10px] font-mono-data text-teal-400/50">
+                  <span>{(dlProgress.loaded / 1024 / 1024).toFixed(1)} MB</span>
+                  <span>{Math.round(dlProgress.loaded / dlProgress.total * 100)}%</span>
+                  <span>{(dlProgress.total / 1024 / 1024).toFixed(1)} MB</span>
+                </div>
+                <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-teal-500 to-green-400 transition-all duration-150"
+                    style={{ width: `${(dlProgress.loaded / dlProgress.total * 100).toFixed(1)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs font-mono-data text-teal-400/40">
+                Downloading summit database on first visit (~52MB)
+              </div>
+            )}
           </div>
         </div>
       </div>

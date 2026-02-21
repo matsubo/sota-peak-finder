@@ -26,10 +26,24 @@ export interface SotaSummitWithDistance extends SotaSummit {
   distance: number;
 }
 
+type ProgressListener = (loaded: number, total: number) => void;
+
 class SotaDatabase {
   private sqlite3: Sqlite3Static | null = null;
   private db: Database | null = null;
   private initPromise: Promise<void> | null = null;
+  private progressListeners: ProgressListener[] = [];
+
+  onProgress(cb: ProgressListener): () => void {
+    this.progressListeners.push(cb);
+    return () => {
+      this.progressListeners = this.progressListeners.filter(l => l !== cb);
+    };
+  }
+
+  private emitProgress(loaded: number, total: number) {
+    this.progressListeners.forEach(l => l(loaded, total));
+  }
 
   /**
    * Initialize SQLite WASM and load database
@@ -67,8 +81,32 @@ class SotaDatabase {
         throw new Error(`Failed to fetch database: ${response.statusText}`);
       }
 
-      const arrayBuffer = await response.arrayBuffer();
-      const dbData = new Uint8Array(arrayBuffer);
+      const contentLength = response.headers.get('content-length');
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      let dbData: Uint8Array;
+
+      if (response.body && total > 0) {
+        const reader = response.body.getReader();
+        const chunks: Uint8Array[] = [];
+        let loaded = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          loaded += value.length;
+          this.emitProgress(loaded, total);
+        }
+        dbData = new Uint8Array(loaded);
+        let offset = 0;
+        for (const chunk of chunks) {
+          dbData.set(chunk, offset);
+          offset += chunk.length;
+        }
+      } else {
+        const arrayBuffer = await response.arrayBuffer();
+        dbData = new Uint8Array(arrayBuffer);
+      }
+
       console.log(`✅ Downloaded database (${(dbData.length / 1024 / 1024).toFixed(2)} MB)`);
 
       // Load database into memory using sqlite3_deserialize
