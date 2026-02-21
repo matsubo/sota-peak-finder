@@ -20,7 +20,7 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { sotaDatabase } from '../utils/sotaDatabase'
 import type { SotaSummit, SotaSummitWithDistance } from '../types/location'
-import { calculateGridLocator } from '../utils/coordinate'
+import { calculateGridLocator, haversineDistance } from '../utils/coordinate'
 import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
 import { BookmarkButton } from '../components/BookmarkButton'
 import { useBookmarks } from '../hooks/useBookmarks'
@@ -41,6 +41,8 @@ export function SummitPage() {
   // GPS activation zone checker
   const [gpsStatus, setGpsStatus] = useState<'idle' | 'watching' | 'error'>('idle')
   const [gpsPos, setGpsPos] = useState<{
+    lat: number
+    lon: number
     altitude: number | null
     accuracy: number
     altitudeAccuracy: number | null
@@ -55,6 +57,8 @@ export function SummitPage() {
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         setGpsPos({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
           altitude: pos.coords.altitude,
           accuracy: Math.round(pos.coords.accuracy),
           altitudeAccuracy: pos.coords.altitudeAccuracy ? Math.round(pos.coords.altitudeAccuracy) : null,
@@ -493,6 +497,9 @@ export function SummitPage() {
               const verticalDist = (gpsPos && gpsPos.altitude !== null && summit)
                 ? Math.round(gpsPos.altitude - summit.altitude)
                 : null
+              const horizontalDist = (gpsPos && summit)
+                ? Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon))
+                : null
               const inRange = verticalDist !== null && verticalDist >= -25 && verticalDist <= 25
               const borderColor = gpsPos && gpsPos.altitude !== null
                 ? (inRange ? 'border-l-green-500' : 'border-l-red-500')
@@ -504,7 +511,7 @@ export function SummitPage() {
                       <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
                         <Target className="w-5 h-5 text-orange-400" />
                       </div>
-                      <h2 className="font-display text-lg text-orange-400 tracking-wider">ACTIVATION ZONE</h2>
+                      <h2 className="font-display text-lg text-orange-400 tracking-wider">MY POSITION CHECKER</h2>
                     </div>
                     {gpsStatus === 'idle' && (
                       <button
@@ -561,19 +568,27 @@ export function SummitPage() {
                               {inRange ? '✓ IN RANGE' : '✗ OUT OF RANGE'}
                             </span>
                           </div>
-                          <div className="grid grid-cols-3 gap-2 text-center">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                             <div className="data-panel rounded p-2">
-                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">YOUR ALTITUDE</div>
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">YOUR ALT</div>
                               <div className="text-base font-mono-data text-green-400">{gpsPos.altitude}m</div>
                             </div>
                             <div className="data-panel rounded p-2">
-                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">SUMMIT</div>
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">SUMMIT ALT</div>
                               <div className="text-base font-mono-data text-amber-400">{summit.altitude}m</div>
                             </div>
                             <div className="data-panel rounded p-2">
-                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">VERTICAL DIFF</div>
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">VERTICAL</div>
                               <div className={`text-base font-mono-data ${Math.abs(verticalDist!) <= 25 ? 'text-green-400' : 'text-red-400'}`}>
                                 {verticalDist! >= 0 ? '+' : ''}{verticalDist}m
+                              </div>
+                            </div>
+                            <div className="data-panel rounded p-2">
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">HORIZONTAL</div>
+                              <div className="text-base font-mono-data text-cyan-400">
+                                {horizontalDist! >= 1000
+                                  ? `${(horizontalDist! / 1000).toFixed(1)}km`
+                                  : `${horizontalDist}m`}
                               </div>
                             </div>
                           </div>
