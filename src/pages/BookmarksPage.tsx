@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Bookmark, Star, Trophy, Trash2, ArrowLeft } from 'lucide-react'
+import { Bookmark, Star, Trophy, Trash2 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
@@ -84,13 +84,6 @@ export function BookmarksPage() {
                     </p>
                   </div>
                 </div>
-                <Link
-                  to="/"
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono-data text-teal-400 border border-teal-500/30 rounded hover:bg-teal-500/10 transition-all"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  {t('common.backToHome')}
-                </Link>
               </div>
             </div>
           </div>
