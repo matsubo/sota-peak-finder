@@ -1,12 +1,15 @@
 import { useParams, Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   MapPin,
   Flag as Mountain,
   Navigation,
   ArrowLeft,
   ExternalLink,
-  Trophy as Award
+  Trophy as Award,
+  Target,
+  LocateFixed,
+  Loader2
 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
@@ -17,19 +20,97 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { sotaDatabase } from '../utils/sotaDatabase'
 import type { SotaSummit, SotaSummitWithDistance } from '../types/location'
-import { calculateGridLocator } from '../utils/coordinate'
+import { calculateGridLocator, haversineDistance } from '../utils/coordinate'
 import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
+import { BookmarkButton } from '../components/BookmarkButton'
+import { useBookmarks } from '../hooks/useBookmarks'
+import { trackSummitView, trackPositionCheckStart, trackPositionCheckStop, trackPositionCheckResult } from '../utils/analytics'
 
 export function SummitPage() {
   const { ref } = useParams<{ ref: string }>()
   const { t, i18n } = useTranslation()
+  const { getStatus, cycleBookmark } = useBookmarks()
   const [summit, setSummit] = useState<SotaSummit | null>(null)
   const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([])
   const [gridLocator, setGridLocator] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [dlProgress, setDlProgress] = useState<{ loaded: number; total: number } | null>(null)
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+
+  // GPS activation zone checker
+  const [gpsStatus, setGpsStatus] = useState<'idle' | 'watching' | 'error'>('idle')
+  const [gpsPos, setGpsPos] = useState<{
+    lat: number
+    lon: number
+    altitude: number | null
+    accuracy: number
+    altitudeAccuracy: number | null
+    updatedAt: number
+  } | null>(null)
+  const [secondsAgo, setSecondsAgo] = useState(0)
+  const watchIdRef = useRef<number | null>(null)
+  const trackedFirstResultRef = useRef(false)
+
+  const stopGpsWatch = useCallback(() => {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    if (summit) trackPositionCheckStop(summit.ref)
+    setGpsStatus('idle')
+    setGpsPos(null)
+    setSecondsAgo(0)
+  }, [summit])
+
+  const startGpsWatch = useCallback(() => {
+    if (!navigator.geolocation) { setGpsStatus('error'); return }
+    if (summit) trackPositionCheckStart(summit.ref)
+    trackedFirstResultRef.current = false
+    setGpsStatus('watching')
+    setGpsPos(null)
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        setGpsPos({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+          altitude: pos.coords.altitude,
+          accuracy: Math.round(pos.coords.accuracy),
+          altitudeAccuracy: pos.coords.altitudeAccuracy ? Math.round(pos.coords.altitudeAccuracy) : null,
+          updatedAt: Date.now()
+        })
+        setSecondsAgo(0)
+      },
+      () => setGpsStatus('error'),
+      { enableHighAccuracy: true, maximumAge: 0 }
+    )
+  }, [summit])
+
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!gpsPos) return
+    const interval = setInterval(() => setSecondsAgo(Math.floor((Date.now() - gpsPos.updatedAt) / 1000)), 1000)
+    return () => clearInterval(interval)
+  }, [gpsPos])
+
+  // Track first position check result with altitude
+  useEffect(() => {
+    if (!gpsPos || !summit || trackedFirstResultRef.current) return
+    if (gpsPos.altitude === null) return
+    const vertDist = Math.round(gpsPos.altitude - summit.altitude)
+    const horizDist = Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon) * 1000)
+    const inRange = Math.abs(vertDist) <= 25
+    const uncertain = inRange && gpsPos.altitudeAccuracy != null && (Math.abs(vertDist) + gpsPos.altitudeAccuracy) > 25
+    const result = uncertain ? 'uncertain' : inRange ? 'in_range' : 'out_of_range'
+    trackPositionCheckResult(summit.ref, result, vertDist, horizDist)
+    trackedFirstResultRef.current = true
+  }, [gpsPos, summit])
 
   // Monitor online/offline status
   useEffect(() => {
@@ -72,9 +153,19 @@ export function SummitPage() {
   }
 
   useEffect(() => {
+    const unsub = sotaDatabase.onProgress((loaded, total) => {
+      setDlProgress({ loaded, total })
+    })
+    return unsub
+  }, [])
+
+  useEffect(() => {
     async function loadSummitData() {
       try {
-        if (!ref) return
+        if (!ref) {
+          setLoading(false)
+          return
+        }
 
         // Convert URL format (ja-ns-001) back to SOTA ref (JA/NS-001)
         // SOTA format: AA/BB-NNN (last dash before number stays, others become slashes)
@@ -91,6 +182,7 @@ export function SummitPage() {
         }
 
         setSummit(summitData)
+        trackSummitView(summitData.ref, summitData.points, summitData.altitude, summitData.association)
         setGridLocator(calculateGridLocator(summitData.lat, summitData.lon))
 
         // Find nearby summits (within 50km)
@@ -126,8 +218,33 @@ export function SummitPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-4 sm:p-6 md:p-8 flex items-center justify-center">
-        <div className="text-teal-400 font-mono-data">{t('summitPage.loading')}</div>
+      <div className="min-h-screen p-3 sm:p-4 md:p-5 relative z-10">
+        <div className="mx-auto max-w-6xl">
+          <Header isOnline={isOnline} />
+          <div className="card-technical rounded-none border-l-4 border-l-teal-500 p-12 flex flex-col items-center gap-4 animate-fade-in">
+            <div className="w-10 h-10 border-2 border-teal-500/20 border-t-teal-400 rounded-full animate-spin" />
+            <div className="font-mono-data text-teal-400 tracking-wider">{t('summitPage.loading')}</div>
+            {dlProgress && dlProgress.total > 0 ? (
+              <div className="w-64 space-y-1">
+                <div className="flex justify-between text-[10px] font-mono-data text-teal-400/50">
+                  <span>{(dlProgress.loaded / 1024 / 1024).toFixed(1)} MB</span>
+                  <span>{Math.round(dlProgress.loaded / dlProgress.total * 100)}%</span>
+                  <span>{(dlProgress.total / 1024 / 1024).toFixed(1)} MB</span>
+                </div>
+                <div className="h-1 bg-black/40 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-teal-500 to-green-400 transition-all duration-150"
+                    style={{ width: `${(dlProgress.loaded / dlProgress.total * 100).toFixed(1)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="text-xs font-mono-data text-teal-400/40">
+                Downloading summit database on first visit (~52MB)
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     )
   }
@@ -265,6 +382,17 @@ export function SummitPage() {
               <div className="text-xs font-mono text-teal-400/60 mt-2">
                 {summit.altitude}m {'// '}{summit.points} pts {'// '}GRID {gridLocator}
               </div>
+              <div className="mt-4 flex items-center gap-2">
+                <BookmarkButton
+                  status={getStatus(summit.ref)}
+                  onCycle={() => cycleBookmark(summit.ref)}
+                />
+                <span className="text-xs font-mono-data text-teal-400/50">
+                  {getStatus(summit.ref) === 'want_to_go' && t('bookmarks.wantToGo')}
+                  {getStatus(summit.ref) === 'activated' && t('bookmarks.activated')}
+                  {getStatus(summit.ref) === null && t('bookmarks.title')}
+                </span>
+              </div>
               <a
                 href={`https://x.com/intent/tweet?text=${encodeURIComponent(t('share.summitMessage', { name: summit.name, ref: summit.ref, altitude: summit.altitude, points: summit.points }))}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`)}`}
                 target="_blank"
@@ -394,6 +522,272 @@ export function SummitPage() {
             {/* Recent Activations */}
             <RecentActivations summitRef={summit.ref} />
 
+            {/* Position Checker Card */}
+            {(() => {
+              const HALF_RANGE = 60
+              const vertDist = gpsPos?.altitude != null
+                ? Math.round(gpsPos.altitude - summit.altitude)
+                : null
+              const horizDist = gpsPos
+                ? Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon))
+                : null
+              const inRange = vertDist !== null && Math.abs(vertDist) <= 25
+              // Uncertain: altitude accuracy could push you across the zone boundary
+              const uncertain = inRange && gpsPos?.altitudeAccuracy != null
+                && (Math.abs(vertDist!) + gpsPos.altitudeAccuracy) > 25
+              // Gauge: map deviation from summit (-HALF_RANGE..+HALF_RANGE) to 0..100%
+              const gaugePos = vertDist !== null
+                ? Math.max(2, Math.min(98, ((vertDist + HALF_RANGE) / (HALF_RANGE * 2)) * 100))
+                : null
+              const zoneL = ((-25 + HALF_RANGE) / (HALF_RANGE * 2)) * 100
+              const zoneR = ((25 + HALF_RANGE) / (HALF_RANGE * 2)) * 100
+              // Guidance when out of range
+              const guidance = (!inRange && vertDist !== null)
+                ? vertDist > 25
+                  ? `↓ Descend ${vertDist - 25}m to enter activation zone`
+                  : `↑ Ascend ${Math.abs(vertDist) - 25}m to enter activation zone`
+                : null
+              // Dynamic styling
+              let borderClass = 'border-l-orange-500'
+              let badgeBg = 'bg-black/20 border border-teal-500/10'
+              let badgeTextClass = 'text-teal-400/30'
+              let badgeLabel = '— AWAITING GPS —'
+              if (gpsPos?.altitude != null) {
+                if (uncertain) {
+                  borderClass = 'border-l-amber-500'
+                  badgeBg = 'bg-amber-500/10 border border-amber-500/30'
+                  badgeTextClass = 'text-amber-400'
+                  badgeLabel = '⚠ UNCERTAIN'
+                } else if (inRange) {
+                  borderClass = 'border-l-green-500'
+                  badgeBg = 'bg-green-500/10 border border-green-500/30'
+                  badgeTextClass = 'text-green-400'
+                  badgeLabel = '✓ IN RANGE'
+                } else {
+                  borderClass = 'border-l-red-500'
+                  badgeBg = 'bg-red-500/10 border border-red-500/30'
+                  badgeTextClass = 'text-red-400'
+                  badgeLabel = '✗ OUT OF RANGE'
+                }
+              }
+              return (
+                <div className={`card-technical rounded-none border-l-4 ${borderClass} p-5 animate-fade-in`}>
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
+                        <Target className="w-4 h-4 text-orange-400" />
+                      </div>
+                      <div>
+                        <h2 className="font-display text-base text-orange-400 tracking-wider leading-none">POSITION CHECKER</h2>
+                        <p className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">Activation zone: ±25m vertical from summit</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {gpsStatus === 'watching' && gpsPos && (
+                        <span className="text-[10px] font-mono-data text-teal-400/40">
+                          {secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}
+                        </span>
+                      )}
+                      {gpsStatus === 'watching' && !gpsPos && (
+                        <span className="flex items-center gap-1 text-[10px] font-mono-data text-teal-400/60">
+                          <Loader2 className="w-3 h-3 animate-spin" />acquiring
+                        </span>
+                      )}
+                      {gpsStatus === 'error' && (
+                        <button
+                          onClick={startGpsWatch}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all text-xs font-mono-data text-red-400"
+                        >
+                          <LocateFixed className="w-3.5 h-3.5" />
+                          Retry
+                        </button>
+                      )}
+                      {gpsStatus === 'idle' && (
+                        <button
+                          onClick={startGpsWatch}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-orange-500/40 bg-orange-500/10 hover:bg-orange-500/20 transition-all text-xs font-mono-data text-orange-400"
+                        >
+                          <LocateFixed className="w-3.5 h-3.5" />
+                          Start Check
+                        </button>
+                      )}
+                      {gpsStatus === 'watching' && (
+                        <button
+                          onClick={stopGpsWatch}
+                          className="flex items-center gap-1.5 px-2 py-1 rounded border border-teal-500/30 bg-black/30 hover:bg-red-500/10 hover:border-red-500/30 transition-all text-[10px] font-mono-data text-teal-400/50 hover:text-red-400"
+                        >
+                          Stop
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* IDLE */}
+                  {gpsStatus === 'idle' && (
+                    <div className="text-center py-5 space-y-4">
+                      <p className="text-sm font-mono-data text-gray-400 leading-relaxed">
+                        Verify your vertical and horizontal distance<br />from the summit in real-time.
+                      </p>
+                      <button
+                        onClick={startGpsWatch}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-orange-500/40 bg-orange-500/10 hover:bg-orange-500/20 transition-all text-sm font-mono-data text-orange-400"
+                      >
+                        <LocateFixed className="w-4 h-4" />
+                        Start GPS Check
+                      </button>
+                    </div>
+                  )}
+
+                  {/* ACQUIRING */}
+                  {gpsStatus === 'watching' && !gpsPos && (
+                    <div className="flex flex-col items-center gap-3 py-8">
+                      <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
+                      <p className="font-mono-data text-teal-400 text-sm tracking-wider">Acquiring GPS signal...</p>
+                      <p className="text-[11px] font-mono-data text-gray-500 text-center leading-relaxed">
+                        Move to an open area if this<br />takes longer than expected
+                      </p>
+                    </div>
+                  )}
+
+                  {/* ACTIVE: no altitude from device */}
+                  {gpsPos && gpsPos.altitude === null && (
+                    <div className="space-y-3">
+                      <div className="data-panel rounded p-3 border border-amber-500/20">
+                        <p className="text-xs font-mono-data text-amber-400/80 leading-relaxed">
+                          ⚠ Altitude unavailable — vertical range check not possible.
+                          <span className="text-gray-500 block mt-1">Device may not support GPS altitude, or you are indoors.</span>
+                        </p>
+                      </div>
+                      <div className="data-panel rounded p-3 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">↔ HORIZONTAL DISTANCE</div>
+                          <div className="text-xl font-mono-data text-cyan-400">
+                            {horizDist! >= 1000 ? `${(horizDist! / 1000).toFixed(2)}km` : `${horizDist}m`}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">GPS ±</div>
+                          <div className="text-sm font-mono-data text-gray-400">{gpsPos.accuracy}m</div>
+                        </div>
+                      </div>
+                      <div className="text-right text-[10px] font-mono-data text-teal-400/30">
+                        {secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ACTIVE: has altitude */}
+                  {gpsPos && gpsPos.altitude !== null && (
+                    <div className="space-y-4">
+
+                      {/* Primary status badge */}
+                      <div className={`rounded p-4 text-center ${badgeBg}`}>
+                        <div className={`text-2xl font-mono-data font-bold tracking-widest ${badgeTextClass}`}>
+                          {badgeLabel}
+                        </div>
+                        {uncertain && (
+                          <div className="text-[11px] font-mono-data text-amber-400/60 mt-1.5">
+                            Altitude accuracy ±{gpsPos.altitudeAccuracy}m overlaps zone boundary — move closer to confirm
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Deviation gauge */}
+                      <div>
+                        <div className="flex justify-between text-[9px] font-mono-data text-teal-400/30 mb-1 px-0.5">
+                          <span>−{HALF_RANGE}m</span>
+                          <span>★ SUMMIT</span>
+                          <span>+{HALF_RANGE}m</span>
+                        </div>
+                        <div className="relative h-9 rounded bg-black/50 border border-teal-500/20 overflow-hidden">
+                          {/* Activation zone band */}
+                          <div
+                            className="absolute inset-y-0 bg-green-500/15 border-x border-green-500/25"
+                            style={{ left: `${zoneL}%`, width: `${zoneR - zoneL}%` }}
+                          />
+                          {/* −25 label */}
+                          <div className="absolute inset-y-0 flex items-center" style={{ left: `${zoneL}%` }}>
+                            <span className="text-[8px] font-mono-data text-green-500/50 pl-1">−25</span>
+                          </div>
+                          {/* +25 label */}
+                          <div className="absolute inset-y-0 flex items-end pb-0.5 justify-end" style={{ right: `${100 - zoneR}%` }}>
+                            <span className="text-[8px] font-mono-data text-green-500/50 pr-1">+25</span>
+                          </div>
+                          {/* Summit center line */}
+                          <div className="absolute inset-y-0 w-px bg-amber-400/50" style={{ left: '50%' }} />
+                          <div className="absolute inset-y-0 flex items-center" style={{ left: 'calc(50% + 3px)' }}>
+                            <span className="text-[9px] text-amber-400/60">★</span>
+                          </div>
+                          {/* Your position dot */}
+                          {gaugePos !== null && (
+                            <div
+                              className="absolute inset-y-0 flex items-center"
+                              style={{ left: `${gaugePos}%`, transform: 'translateX(-50%)' }}
+                            >
+                              <div className={`w-4 h-4 rounded-full border-2 shadow-lg ${
+                                uncertain ? 'bg-amber-400 border-amber-200'
+                                  : inRange ? 'bg-green-400 border-green-200'
+                                    : 'bg-red-400 border-red-200'
+                              }`} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-center text-[9px] font-mono-data text-teal-400/25 mt-0.5">
+                          ← below summit · above summit →
+                        </div>
+                      </div>
+
+                      {/* Guidance hint when out of range */}
+                      {guidance && (
+                        <div className="data-panel rounded p-3 text-center border border-amber-500/20">
+                          <span className="text-sm font-mono-data text-amber-400 tracking-wide">{guidance}</span>
+                        </div>
+                      )}
+
+                      {/* Distance numbers */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="data-panel rounded p-3">
+                          <div className="text-[10px] font-mono-data text-teal-400/50 mb-1">↕ VERTICAL</div>
+                          <div className={`text-2xl font-mono-data leading-none ${Math.abs(vertDist!) <= 25 ? 'text-green-400' : 'text-red-400'}`}>
+                            {vertDist! > 0 ? '+' : ''}{vertDist}m
+                          </div>
+                          <div className="text-[9px] font-mono-data text-gray-500 mt-1">
+                            {vertDist! > 0 ? 'above summit' : vertDist! < 0 ? 'below summit' : 'at summit level'}
+                          </div>
+                        </div>
+                        <div className="data-panel rounded p-3">
+                          <div className="text-[10px] font-mono-data text-teal-400/50 mb-1">↔ HORIZONTAL</div>
+                          <div className="text-2xl font-mono-data text-cyan-400 leading-none">
+                            {horizDist! >= 1000 ? `${(horizDist! / 1000).toFixed(2)}km` : `${horizDist}m`}
+                          </div>
+                          <div className="text-[9px] font-mono-data text-gray-500 mt-1">from summit</div>
+                        </div>
+                      </div>
+
+                      {/* GPS accuracy + freshness footer */}
+                      <div className="flex items-center justify-between text-[10px] font-mono-data text-teal-400/35">
+                        <span>
+                          GPS ±{gpsPos.accuracy}m{gpsPos.altitudeAccuracy ? ` · Alt ±${gpsPos.altitudeAccuracy}m` : ''}
+                        </span>
+                        <div className="flex items-center gap-3">
+                          <span>{secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}</span>
+                          <button
+                            onClick={stopGpsWatch}
+                            className="px-2 py-0.5 rounded border border-teal-500/20 hover:border-red-500/30 hover:text-red-400 transition-all"
+                          >
+                            Stop
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              )
+            })()}
+
             {/* Activation Information */}
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
@@ -412,14 +806,6 @@ export function SummitPage() {
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
                     Difficulty: <span className={difficulty.color}>{difficulty.label}</span> (based on altitude and terrain)
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-lg font-display text-amber-400 mb-2">Activation Zone</h3>
-                  <p>
-                    To qualify for a valid activation, you must operate from within <strong>25 meters vertical distance</strong> of the summit.
-                    The app will automatically detect if you&apos;re in the activation zone when using GPS.
                   </p>
                 </section>
 
@@ -484,14 +870,6 @@ export function SummitPage() {
                 </div>
               </div>
             )}
-
-            {/* Offline Access Note */}
-            <div className="card-technical rounded p-6 animate-fade-in border-l-4 border-l-green-500">
-              <h2 className="text-xl font-display text-green-400 mb-3">{t('summitPage.offlineAvailable')}</h2>
-              <p className="text-gray-300">
-                {t('summitPage.offlineDesc')}
-              </p>
-            </div>
 
             {/* External Resources */}
             <div className="card-technical rounded p-4 animate-fade-in">

@@ -181,7 +181,8 @@
     "browseAllSummits": "Browse All Summits",
     "browseAllDesc": "Filter and search the complete database",
     "findNearby": "Find Nearby Summits",
-    "findNearbyDesc": "Use GPS to discover peaks around you"
+    "findNearbyDesc": "Use GPS to discover peaks around you",
+    "bookmarksDesc": "View and manage your saved summits"
   },
   "hero": {
     "gpsLocationFinder": "GPS LOCATION FINDER",
@@ -351,5 +352,16 @@
     "noHistory": "No activation history found",
     "showing": "Showing {{start}}-{{end}} of {{total}} activations",
     "limitNotice": "(showing latest {{max}})"
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "wantToGo": "Want to Go",
+    "activated": "Activated",
+    "empty": "No bookmarks yet",
+    "emptyDesc": "Tap the bookmark icon on any summit to save it here.",
+    "savedAt": "Saved",
+    "remove": "Remove",
+    "count": "{{count}} bookmarked",
+    "headerTitle": "Bookmarks"
   }
 }

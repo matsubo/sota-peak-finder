@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { HelpCircle, Database, Map } from 'lucide-react'
+import { Database, Map, Bookmark } from 'lucide-react'
 import { cn } from '../lib/utils'
+import { useBookmarks } from '../hooks/useBookmarks'
 
 interface HeaderProps {
   isOnline?: boolean
@@ -10,6 +11,7 @@ interface HeaderProps {
 export function Header({ isOnline = false }: HeaderProps) {
   const { t } = useTranslation()
   const location = useLocation()
+  const { bookmarkCount } = useBookmarks()
 
   return (
     <header className="mb-4 animate-fade-in">
@@ -64,10 +66,20 @@ export function Header({ isOnline = false }: HeaderProps) {
               <Map className={`w-3.5 h-3.5 ${location.pathname === '/nearby' ? 'text-blue-400' : 'text-teal-400'}`} />
             </Link>
             <Link
-              to="/help"
-              className="p-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 transition-all"
+              to="/bookmarks"
+              className={`relative p-1.5 rounded border transition-all ${
+                location.pathname === '/bookmarks'
+                  ? 'border-amber-500/60 bg-amber-500/20'
+                  : 'border-teal-500/40 bg-black/40 hover:bg-amber-500/20'
+              }`}
+              title={t('bookmarks.headerTitle')}
             >
-              <HelpCircle className="w-3.5 h-3.5 text-teal-400" />
+              <Bookmark className={`w-3.5 h-3.5 ${location.pathname === '/bookmarks' ? 'text-amber-400' : 'text-teal-400'}`} />
+              {bookmarkCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center rounded-full bg-amber-500 text-black text-[8px] font-bold font-mono-data">
+                  {bookmarkCount > 9 ? '9+' : bookmarkCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>

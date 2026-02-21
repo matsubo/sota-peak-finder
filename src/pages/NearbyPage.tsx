@@ -9,6 +9,8 @@ import { trackSotaSummitView } from '../utils/analytics'
 import { LocationMap } from '../components/LocationMap'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
+import { BookmarkButton } from '../components/BookmarkButton'
+import { useBookmarks } from '../hooks/useBookmarks'
 
 export function NearbyPage() {
   const { t, i18n } = useTranslation()
@@ -20,6 +22,8 @@ export function NearbyPage() {
   const [clickedLocation, setClickedLocation] = useState<{ lat: number; lon: number } | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [overrideSummits, setOverrideSummits] = useState<any[] | null>(null)
+
+  const { getStatus, cycleBookmark } = useBookmarks()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,14 +168,14 @@ export function NearbyPage() {
 
                 {/* Summit Rows */}
                 {(overrideSummits || location.sotaSummits)!.map((summit, index) => (
-                  <Link
-                    key={summit.ref}
-                    to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
-                    className={cn(
-                      "grid grid-cols-10 gap-2 px-3 py-2.5 border-b border-teal-500/10 hover:bg-teal-500/5 transition-colors group cursor-pointer",
-                      index % 2 === 0 ? "bg-black/20" : "bg-black/10"
-                    )}
-                  >
+                  <div key={summit.ref} className="flex items-stretch">
+                    <Link
+                      to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
+                      className={cn(
+                        "flex-1 grid grid-cols-10 gap-2 px-3 py-2.5 border-b border-teal-500/10 hover:bg-teal-500/5 transition-colors group cursor-pointer",
+                        index % 2 === 0 ? "bg-black/20" : "bg-black/10"
+                      )}
+                    >
                     {/* Number */}
                     <div className="col-span-1 flex items-center">
                       <span className="font-mono-data text-teal-400 text-sm">{index + 1}</span>
@@ -210,7 +214,15 @@ export function NearbyPage() {
                       <div className="text-teal-100/80">{summit.altitude}m</div>
                       <div className="text-teal-400/60">{summit.points} pts</div>
                     </div>
-                  </Link>
+                    </Link>
+                    <div className="flex items-center px-2 border-l border-teal-500/20">
+                      <BookmarkButton
+                        status={getStatus(summit.ref)}
+                        onCycle={() => cycleBookmark(summit.ref)}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

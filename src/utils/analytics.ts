@@ -103,3 +103,81 @@ export const trackPageView = (pagePath: string, pageTitle: string) => {
     page_title: pageTitle
   })
 }
+
+/**
+ * Track summit detail page view
+ */
+export const trackSummitView = (ref: string, points: number, altitudeM: number, assoc: string) => {
+  pushToDataLayer({
+    event: 'summit_view',
+    summit_ref: ref,
+    summit_points: points,
+    summit_altitude_m: altitudeM,
+    summit_association: assoc
+  })
+}
+
+/**
+ * Track bookmark status cycle (null → want_to_go → activated → null)
+ */
+export const trackBookmarkCycle = (
+  ref: string,
+  fromStatus: string | null,
+  toStatus: string | null
+) => {
+  pushToDataLayer({
+    event: 'bookmark_cycle',
+    summit_ref: ref,
+    from_status: fromStatus ?? 'none',
+    to_status: toStatus ?? 'none'
+  })
+}
+
+/**
+ * Track bookmark removal from bookmarks page
+ */
+export const trackBookmarkRemove = (ref: string, previousStatus: string | null) => {
+  pushToDataLayer({
+    event: 'bookmark_remove',
+    summit_ref: ref,
+    previous_status: previousStatus ?? 'none'
+  })
+}
+
+/**
+ * Track position checker GPS watch start
+ */
+export const trackPositionCheckStart = (summitRef: string) => {
+  pushToDataLayer({
+    event: 'position_check_start',
+    summit_ref: summitRef
+  })
+}
+
+/**
+ * Track position checker GPS watch stop
+ */
+export const trackPositionCheckStop = (summitRef: string) => {
+  pushToDataLayer({
+    event: 'position_check_stop',
+    summit_ref: summitRef
+  })
+}
+
+/**
+ * Track position check result (first fix with altitude)
+ */
+export const trackPositionCheckResult = (
+  summitRef: string,
+  result: 'in_range' | 'out_of_range' | 'uncertain',
+  vertDistM: number,
+  horizDistM: number
+) => {
+  pushToDataLayer({
+    event: 'position_check_result',
+    summit_ref: summitRef,
+    result,
+    vert_dist_m: vertDistM,
+    horiz_dist_m: horizDistM
+  })
+}

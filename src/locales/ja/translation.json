@@ -181,7 +181,8 @@
     "browseAllSummits": "全山頂を見る",
     "browseAllDesc": "完全なデータベースをフィルタ・検索",
     "findNearby": "近くの山頂を探す",
-    "findNearbyDesc": "GPSであなたの周りの山頂を発見"
+    "findNearbyDesc": "GPSであなたの周りの山頂を発見",
+    "bookmarksDesc": "保存したサミットを確認・管理する"
   },
   "hero": {
     "gpsLocationFinder": "GPS位置情報検索",
@@ -351,5 +352,16 @@
     "noHistory": "アクティベーション履歴が見つかりません",
     "showing": "{{total}}件中 {{start}}-{{end}}件を表示",
     "limitNotice": "（直近{{max}}件を表示）"
+  },
+  "bookmarks": {
+    "title": "ブックマーク",
+    "wantToGo": "行きたい",
+    "activated": "アクティベート済み",
+    "empty": "ブックマークはありません",
+    "emptyDesc": "サミットのブックマークアイコンをタップしてここに保存できます。",
+    "savedAt": "保存日",
+    "remove": "削除",
+    "count": "{{count}} 件",
+    "headerTitle": "ブックマーク"
   }
 }
