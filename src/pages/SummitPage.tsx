@@ -51,9 +51,20 @@ export function SummitPage() {
   const [secondsAgo, setSecondsAgo] = useState(0)
   const watchIdRef = useRef<number | null>(null)
 
+  const stopGpsWatch = useCallback(() => {
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current)
+      watchIdRef.current = null
+    }
+    setGpsStatus('idle')
+    setGpsPos(null)
+    setSecondsAgo(0)
+  }, [])
+
   const startGpsWatch = useCallback(() => {
     if (!navigator.geolocation) { setGpsStatus('error'); return }
     setGpsStatus('watching')
+    setGpsPos(null)
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         setGpsPos({
@@ -566,7 +577,13 @@ export function SummitPage() {
                         </span>
                       )}
                       {gpsStatus === 'error' && (
-                        <span className="text-[10px] font-mono-data text-red-400/70">GPS unavailable</span>
+                        <button
+                          onClick={startGpsWatch}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all text-xs font-mono-data text-red-400"
+                        >
+                          <LocateFixed className="w-3.5 h-3.5" />
+                          Retry
+                        </button>
                       )}
                       {gpsStatus === 'idle' && (
                         <button
@@ -575,6 +592,14 @@ export function SummitPage() {
                         >
                           <LocateFixed className="w-3.5 h-3.5" />
                           Start Check
+                        </button>
+                      )}
+                      {gpsStatus === 'watching' && (
+                        <button
+                          onClick={stopGpsWatch}
+                          className="flex items-center gap-1.5 px-2 py-1 rounded border border-teal-500/30 bg-black/30 hover:bg-red-500/10 hover:border-red-500/30 transition-all text-[10px] font-mono-data text-teal-400/50 hover:text-red-400"
+                        >
+                          Stop
                         </button>
                       )}
                     </div>
@@ -727,7 +752,15 @@ export function SummitPage() {
                         <span>
                           GPS ±{gpsPos.accuracy}m{gpsPos.altitudeAccuracy ? ` · Alt ±${gpsPos.altitudeAccuracy}m` : ''}
                         </span>
-                        <span>{secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}</span>
+                        <div className="flex items-center gap-3">
+                          <span>{secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}</span>
+                          <button
+                            onClick={stopGpsWatch}
+                            className="px-2 py-0.5 rounded border border-teal-500/20 hover:border-red-500/30 hover:text-red-400 transition-all"
+                          >
+                            Stop
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
