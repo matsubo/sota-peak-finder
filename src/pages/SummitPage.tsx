@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import {
   MapPin,
   Flag as Mountain,
@@ -7,7 +7,9 @@ import {
   ArrowLeft,
   ExternalLink,
   Trophy as Award,
-  Target
+  Target,
+  LocateFixed,
+  Loader2
 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next'
@@ -35,6 +37,47 @@ export function SummitPage() {
   const [sotaCount, setSotaCount] = useState<number | null>(null)
   const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(navigator.onLine)
+
+  // GPS activation zone checker
+  const [gpsStatus, setGpsStatus] = useState<'idle' | 'watching' | 'error'>('idle')
+  const [gpsPos, setGpsPos] = useState<{
+    altitude: number | null
+    accuracy: number
+    altitudeAccuracy: number | null
+    updatedAt: number
+  } | null>(null)
+  const [secondsAgo, setSecondsAgo] = useState(0)
+  const watchIdRef = useRef<number | null>(null)
+
+  const startGpsWatch = useCallback(() => {
+    if (!navigator.geolocation) { setGpsStatus('error'); return }
+    setGpsStatus('watching')
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        setGpsPos({
+          altitude: pos.coords.altitude,
+          accuracy: Math.round(pos.coords.accuracy),
+          altitudeAccuracy: pos.coords.altitudeAccuracy ? Math.round(pos.coords.altitudeAccuracy) : null,
+          updatedAt: Date.now()
+        })
+        setSecondsAgo(0)
+      },
+      () => setGpsStatus('error'),
+      { enableHighAccuracy: true, maximumAge: 0 }
+    )
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!gpsPos) return
+    const interval = setInterval(() => setSecondsAgo(Math.floor((Date.now() - gpsPos.updatedAt) / 1000)), 1000)
+    return () => clearInterval(interval)
+  }, [gpsPos])
 
   // Monitor online/offline status
   useEffect(() => {
@@ -446,35 +489,105 @@ export function SummitPage() {
             <RecentActivations summitRef={summit.ref} />
 
             {/* Activation Zone Card */}
-            <div className="card-technical rounded-none border-l-4 border-l-orange-500 p-5 animate-fade-in">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
-                  <Target className="w-5 h-5 text-orange-400" />
-                </div>
-                <h2 className="font-display text-lg text-orange-400 tracking-wider">ACTIVATION ZONE</h2>
-              </div>
-              <div className="flex items-start gap-6">
-                <div className="shrink-0 text-center">
-                  <div className="text-5xl font-mono-data text-orange-400 leading-none">25</div>
-                  <div className="text-xs font-mono-data text-orange-400/60 mt-1 tracking-wider">METERS</div>
-                  <div className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">VERTICAL</div>
-                </div>
-                <div className="border-l border-orange-500/20 pl-6 space-y-3 flex-1">
-                  <div className="flex items-center gap-3">
-                    <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-green-500/15 border border-green-500/40 text-green-400 tracking-wider">✓ IN RANGE</span>
-                    <span className="text-xs font-mono-data text-gray-400">Within 25m vertical of summit</span>
+            {(() => {
+              const verticalDist = (gpsPos && gpsPos.altitude !== null && summit)
+                ? Math.round(gpsPos.altitude - summit.altitude)
+                : null
+              const inRange = verticalDist !== null && verticalDist >= -25 && verticalDist <= 25
+              const borderColor = gpsPos && gpsPos.altitude !== null
+                ? (inRange ? 'border-l-green-500' : 'border-l-red-500')
+                : 'border-l-orange-500'
+              return (
+                <div className={`card-technical rounded-none border-l-4 ${borderColor} p-5 animate-fade-in`}>
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
+                        <Target className="w-5 h-5 text-orange-400" />
+                      </div>
+                      <h2 className="font-display text-lg text-orange-400 tracking-wider">ACTIVATION ZONE</h2>
+                    </div>
+                    {gpsStatus === 'idle' && (
+                      <button
+                        onClick={startGpsWatch}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/10 transition-all text-xs font-mono-data text-teal-400"
+                      >
+                        <LocateFixed className="w-3.5 h-3.5" />
+                        Check My Position
+                      </button>
+                    )}
+                    {gpsStatus === 'watching' && !gpsPos && (
+                      <div className="flex items-center gap-1.5 text-xs font-mono-data text-teal-400/60">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Acquiring GPS...
+                      </div>
+                    )}
+                    {gpsStatus === 'error' && (
+                      <span className="text-xs font-mono-data text-red-400">GPS unavailable</span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-red-500/15 border border-red-500/40 text-red-400 tracking-wider">✗ OUT OF RANGE</span>
-                    <span className="text-xs font-mono-data text-gray-400">More than 25m vertical below</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-mono-data text-teal-400/60 pt-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 status-indicator shrink-0"></div>
-                    GPS auto-detection active in Nearby Finder
-                  </div>
+
+                  {/* No GPS yet — show reference labels */}
+                  {!gpsPos && (
+                    <div className="flex items-start gap-6">
+                      <div className="shrink-0 text-center">
+                        <div className="text-5xl font-mono-data text-orange-400 leading-none">25</div>
+                        <div className="text-xs font-mono-data text-orange-400/60 mt-1 tracking-wider">METERS</div>
+                        <div className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">VERTICAL</div>
+                      </div>
+                      <div className="border-l border-orange-500/20 pl-6 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-green-500/15 border border-green-500/40 text-green-400 tracking-wider">✓ IN RANGE</span>
+                          <span className="text-xs font-mono-data text-gray-400">Within 25m vertical of summit</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-red-500/15 border border-red-500/40 text-red-400 tracking-wider">✗ OUT OF RANGE</span>
+                          <span className="text-xs font-mono-data text-gray-400">More than 25m vertical below</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Live GPS result */}
+                  {gpsPos && (
+                    <div className="space-y-3">
+                      {gpsPos.altitude === null ? (
+                        <div className="data-panel rounded p-3 text-xs font-mono-data text-amber-400/80">
+                          ⚠ GPS altitude unavailable — device may not support altitude or is indoors
+                        </div>
+                      ) : (
+                        <>
+                          <div className={`flex items-center justify-center gap-3 rounded p-4 ${inRange ? 'bg-green-500/10 border border-green-500/30' : 'bg-red-500/10 border border-red-500/30'}`}>
+                            <span className={`text-2xl font-mono-data font-bold tracking-widest ${inRange ? 'text-green-400' : 'text-red-400'}`}>
+                              {inRange ? '✓ IN RANGE' : '✗ OUT OF RANGE'}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="data-panel rounded p-2">
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">YOUR ALTITUDE</div>
+                              <div className="text-base font-mono-data text-green-400">{gpsPos.altitude}m</div>
+                            </div>
+                            <div className="data-panel rounded p-2">
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">SUMMIT</div>
+                              <div className="text-base font-mono-data text-amber-400">{summit.altitude}m</div>
+                            </div>
+                            <div className="data-panel rounded p-2">
+                              <div className="text-[10px] font-mono-data text-teal-400/50 mb-0.5">VERTICAL DIFF</div>
+                              <div className={`text-base font-mono-data ${Math.abs(verticalDist!) <= 25 ? 'text-green-400' : 'text-red-400'}`}>
+                                {verticalDist! >= 0 ? '+' : ''}{verticalDist}m
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      <div className="flex items-center justify-between text-[10px] font-mono-data text-teal-400/40 pt-1">
+                        <span>GPS ±{gpsPos.accuracy}m{gpsPos.altitudeAccuracy ? ` · Alt ±${gpsPos.altitudeAccuracy}m` : ''}</span>
+                        <span>{secondsAgo === 0 ? 'just now' : `${secondsAgo}s ago`}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
+              )
+            })()}
 
             {/* Activation Information */}
             <div className="card-technical rounded p-6 animate-fade-in">

@@ -37,6 +37,8 @@ export default [
         fetch: 'readonly',
         console: 'readonly',
         setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
         // Vite globals
         __APP_VERSION__: 'readonly',
         localStorage: 'readonly'
