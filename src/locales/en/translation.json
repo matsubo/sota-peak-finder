@@ -351,5 +351,16 @@
     "noHistory": "No activation history found",
     "showing": "Showing {{start}}-{{end}} of {{total}} activations",
     "limitNotice": "(showing latest {{max}})"
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "wantToGo": "Want to Go",
+    "activated": "Activated",
+    "empty": "No bookmarks yet",
+    "emptyDesc": "Tap the bookmark icon on any summit to save it here.",
+    "savedAt": "Saved",
+    "remove": "Remove",
+    "count": "{{count}} bookmarked",
+    "headerTitle": "Bookmarks"
   }
 }

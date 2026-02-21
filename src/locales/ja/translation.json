@@ -351,5 +351,16 @@
     "noHistory": "アクティベーション履歴が見つかりません",
     "showing": "{{total}}件中 {{start}}-{{end}}件を表示",
     "limitNotice": "（直近{{max}}件を表示）"
+  },
+  "bookmarks": {
+    "title": "ブックマーク",
+    "wantToGo": "行きたい",
+    "activated": "活性済み",
+    "empty": "ブックマークはありません",
+    "emptyDesc": "サミットのブックマークアイコンをタップしてここに保存できます。",
+    "savedAt": "保存日",
+    "remove": "削除",
+    "count": "{{count}} 件",
+    "headerTitle": "ブックマーク"
   }
 }
