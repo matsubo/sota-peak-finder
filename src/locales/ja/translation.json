@@ -355,7 +355,7 @@
   "bookmarks": {
     "title": "ブックマーク",
     "wantToGo": "行きたい",
-    "activated": "活性済み",
+    "activated": "アクティベート済み",
     "empty": "ブックマークはありません",
     "emptyDesc": "サミットのブックマークアイコンをタップしてここに保存できます。",
     "savedAt": "保存日",
