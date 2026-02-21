@@ -6,13 +6,16 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { useBookmarks } from '../hooks/useBookmarks'
 
-export function BookmarksPage() {
-  const { t } = useTranslation()
-  const { bookmarks, removeBookmark } = useBookmarks()
+interface SummitEntryProps {
+  summitRef: string
+  savedAt: string
+  onRemove: (ref: string) => void
+  removeLabel: string
+  savedAtLabel: string
+}
 
-  const wantToGo = Object.entries(bookmarks).filter(([, b]) => b.status === 'want_to_go')
-  const activated = Object.entries(bookmarks).filter(([, b]) => b.status === 'activated')
-  const isEmpty = wantToGo.length === 0 && activated.length === 0
+function SummitEntry({ summitRef, savedAt, onRemove, removeLabel, savedAtLabel }: SummitEntryProps) {
+  const summitUrl = `/summit/${summitRef.toLowerCase().replace(/\//g, '-')}`
 
   const formatDate = (iso: string) => {
     try {
@@ -22,32 +25,38 @@ export function BookmarksPage() {
     }
   }
 
-  const summitUrl = (ref: string) =>
-    `/summit/${ref.toLowerCase().replace(/\//g, '-')}`
-
-  const SummitEntry = ({ ref, savedAt }: { ref: string; savedAt: string }) => (
+  return (
     <div className="flex items-center justify-between gap-3 data-panel rounded p-3 hover:bg-teal-500/5 transition-colors">
       <div className="flex-1 min-w-0">
         <Link
-          to={summitUrl(ref)}
+          to={summitUrl}
           className="font-mono-data text-amber-400 hover:text-amber-300 transition-colors text-sm"
         >
-          {ref}
+          {summitRef}
         </Link>
         <div className="text-[10px] text-teal-400/50 font-mono-data mt-0.5">
-          {t('bookmarks.savedAt')}: {formatDate(savedAt)}
+          {savedAtLabel}: {formatDate(savedAt)}
         </div>
       </div>
       <button
-        onClick={() => removeBookmark(ref)}
-        title={t('bookmarks.remove')}
-        aria-label={t('bookmarks.remove')}
+        onClick={() => onRemove(summitRef)}
+        title={removeLabel}
+        aria-label={removeLabel}
         className="p-1.5 rounded border border-red-500/20 text-red-400/60 hover:text-red-400 hover:border-red-500/50 transition-all"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>
     </div>
   )
+}
+
+export function BookmarksPage() {
+  const { t } = useTranslation()
+  const { bookmarks, removeBookmark } = useBookmarks()
+
+  const wantToGo = Object.entries(bookmarks).filter(([, b]) => b.status === 'want_to_go')
+  const activated = Object.entries(bookmarks).filter(([, b]) => b.status === 'activated')
+  const isEmpty = wantToGo.length === 0 && activated.length === 0
 
   return (
     <>
@@ -108,7 +117,14 @@ export function BookmarksPage() {
                     </div>
                     <div className="space-y-2">
                       {wantToGo.map(([ref, b]) => (
-                        <SummitEntry key={ref} ref={ref} savedAt={b.savedAt} />
+                        <SummitEntry
+                          key={ref}
+                          summitRef={ref}
+                          savedAt={b.savedAt}
+                          onRemove={removeBookmark}
+                          removeLabel={t('bookmarks.remove')}
+                          savedAtLabel={t('bookmarks.savedAt')}
+                        />
                       ))}
                     </div>
                   </div>
@@ -127,7 +143,14 @@ export function BookmarksPage() {
                     </div>
                     <div className="space-y-2">
                       {activated.map(([ref, b]) => (
-                        <SummitEntry key={ref} ref={ref} savedAt={b.savedAt} />
+                        <SummitEntry
+                          key={ref}
+                          summitRef={ref}
+                          savedAt={b.savedAt}
+                          onRemove={removeBookmark}
+                          removeLabel={t('bookmarks.remove')}
+                          savedAtLabel={t('bookmarks.savedAt')}
+                        />
                       ))}
                     </div>
                   </div>
