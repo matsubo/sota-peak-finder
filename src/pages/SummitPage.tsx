@@ -554,14 +554,6 @@ export function SummitPage() {
               </div>
             )}
 
-            {/* Offline Access Note */}
-            <div className="card-technical rounded p-6 animate-fade-in border-l-4 border-l-green-500">
-              <h2 className="text-xl font-display text-green-400 mb-3">{t('summitPage.offlineAvailable')}</h2>
-              <p className="text-gray-300">
-                {t('summitPage.offlineDesc')}
-              </p>
-            </div>
-
             {/* External Resources */}
             <div className="card-technical rounded p-4 animate-fade-in">
               <h3 className="text-sm font-mono-data text-teal-400/60 mb-3 tracking-wider">{t('summitPage.externalResources')}</h3>
