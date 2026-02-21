@@ -19,10 +19,13 @@ import { sotaDatabase } from '../utils/sotaDatabase'
 import type { SotaSummit, SotaSummitWithDistance } from '../types/location'
 import { calculateGridLocator } from '../utils/coordinate'
 import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
+import { BookmarkButton } from '../components/BookmarkButton'
+import { useBookmarks } from '../hooks/useBookmarks'
 
 export function SummitPage() {
   const { ref } = useParams<{ ref: string }>()
   const { t, i18n } = useTranslation()
+  const { getStatus, cycleBookmark } = useBookmarks()
   const [summit, setSummit] = useState<SotaSummit | null>(null)
   const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([])
   const [gridLocator, setGridLocator] = useState<string>('')
@@ -264,6 +267,17 @@ export function SummitPage() {
               </div>
               <div className="text-xs font-mono text-teal-400/60 mt-2">
                 {summit.altitude}m {'// '}{summit.points} pts {'// '}GRID {gridLocator}
+              </div>
+              <div className="mt-4 flex items-center gap-2">
+                <BookmarkButton
+                  status={getStatus(summit.ref)}
+                  onCycle={() => cycleBookmark(summit.ref)}
+                />
+                <span className="text-xs font-mono-data text-teal-400/50">
+                  {getStatus(summit.ref) === 'want_to_go' && t('bookmarks.wantToGo')}
+                  {getStatus(summit.ref) === 'activated' && t('bookmarks.activated')}
+                  {getStatus(summit.ref) === null && t('bookmarks.title')}
+                </span>
               </div>
               <a
                 href={`https://x.com/intent/tweet?text=${encodeURIComponent(t('share.summitMessage', { name: summit.name, ref: summit.ref, altitude: summit.altitude, points: summit.points }))}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`)}`}
