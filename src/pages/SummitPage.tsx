@@ -354,32 +354,6 @@ export function SummitPage() {
               </div>
             </div>
 
-            {/* Activation Zone Card */}
-            <div className="card-technical rounded-none border-l-4 border-l-orange-500 p-5 animate-fade-in">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
-                  <Target className="w-5 h-5 text-orange-400" />
-                </div>
-                <h2 className="font-display text-lg text-orange-400 tracking-wider">ACTIVATION ZONE</h2>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="shrink-0 text-center">
-                  <div className="text-5xl font-mono-data text-orange-400 leading-none">25</div>
-                  <div className="text-xs font-mono-data text-orange-400/60 mt-1 tracking-wider">METERS</div>
-                  <div className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">VERTICAL</div>
-                </div>
-                <div className="border-l border-orange-500/20 pl-6 space-y-2">
-                  <p className="text-sm text-gray-300 font-mono-data leading-relaxed">
-                    Operate within <strong className="text-orange-400">25m vertical distance</strong> of the summit to qualify for a valid activation.
-                  </p>
-                  <div className="flex items-center gap-2 text-xs font-mono-data text-teal-400/70">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 status-indicator shrink-0"></div>
-                    GPS auto-detection active in Nearby Finder
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Coordinates Card */}
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
@@ -470,6 +444,37 @@ export function SummitPage() {
 
             {/* Recent Activations */}
             <RecentActivations summitRef={summit.ref} />
+
+            {/* Activation Zone Card */}
+            <div className="card-technical rounded-none border-l-4 border-l-orange-500 p-5 animate-fade-in">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded bg-orange-500/10 border border-orange-500/30">
+                  <Target className="w-5 h-5 text-orange-400" />
+                </div>
+                <h2 className="font-display text-lg text-orange-400 tracking-wider">ACTIVATION ZONE</h2>
+              </div>
+              <div className="flex items-start gap-6">
+                <div className="shrink-0 text-center">
+                  <div className="text-5xl font-mono-data text-orange-400 leading-none">25</div>
+                  <div className="text-xs font-mono-data text-orange-400/60 mt-1 tracking-wider">METERS</div>
+                  <div className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">VERTICAL</div>
+                </div>
+                <div className="border-l border-orange-500/20 pl-6 space-y-3 flex-1">
+                  <div className="flex items-center gap-3">
+                    <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-green-500/15 border border-green-500/40 text-green-400 tracking-wider">✓ IN RANGE</span>
+                    <span className="text-xs font-mono-data text-gray-400">Within 25m vertical of summit</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="px-2 py-0.5 rounded text-xs font-mono-data font-bold bg-red-500/15 border border-red-500/40 text-red-400 tracking-wider">✗ OUT OF RANGE</span>
+                    <span className="text-xs font-mono-data text-gray-400">More than 25m vertical below</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-mono-data text-teal-400/60 pt-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 status-indicator shrink-0"></div>
+                    GPS auto-detection active in Nearby Finder
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Activation Information */}
             <div className="card-technical rounded p-6 animate-fade-in">
