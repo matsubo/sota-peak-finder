@@ -78,7 +78,10 @@ export function SummitPage() {
   useEffect(() => {
     async function loadSummitData() {
       try {
-        if (!ref) return
+        if (!ref) {
+          setLoading(false)
+          return
+        }
 
         // Convert URL format (ja-ns-001) back to SOTA ref (JA/NS-001)
         // SOTA format: AA/BB-NNN (last dash before number stays, others become slashes)
@@ -130,8 +133,17 @@ export function SummitPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-4 sm:p-6 md:p-8 flex items-center justify-center">
-        <div className="text-teal-400 font-mono-data">{t('summitPage.loading')}</div>
+      <div className="min-h-screen p-3 sm:p-4 md:p-5 relative z-10">
+        <div className="mx-auto max-w-6xl">
+          <Header isOnline={isOnline} />
+          <div className="card-technical rounded-none border-l-4 border-l-teal-500 p-12 flex flex-col items-center gap-4 animate-fade-in">
+            <div className="w-10 h-10 border-2 border-teal-500/20 border-t-teal-400 rounded-full animate-spin" />
+            <div className="font-mono-data text-teal-400 tracking-wider">{t('summitPage.loading')}</div>
+            <div className="text-xs font-mono-data text-teal-400/40">
+              Downloading summit database on first visit (~52MB)
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
