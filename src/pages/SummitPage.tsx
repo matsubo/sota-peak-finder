@@ -24,6 +24,7 @@ import { calculateGridLocator, haversineDistance } from '../utils/coordinate'
 import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
 import { BookmarkButton } from '../components/BookmarkButton'
 import { useBookmarks } from '../hooks/useBookmarks'
+import { trackSummitView, trackPositionCheckStart, trackPositionCheckStop, trackPositionCheckResult } from '../utils/analytics'
 
 export function SummitPage() {
   const { ref } = useParams<{ ref: string }>()
@@ -50,19 +51,23 @@ export function SummitPage() {
   } | null>(null)
   const [secondsAgo, setSecondsAgo] = useState(0)
   const watchIdRef = useRef<number | null>(null)
+  const trackedFirstResultRef = useRef(false)
 
   const stopGpsWatch = useCallback(() => {
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current)
       watchIdRef.current = null
     }
+    if (summit) trackPositionCheckStop(summit.ref)
     setGpsStatus('idle')
     setGpsPos(null)
     setSecondsAgo(0)
-  }, [])
+  }, [summit])
 
   const startGpsWatch = useCallback(() => {
     if (!navigator.geolocation) { setGpsStatus('error'); return }
+    if (summit) trackPositionCheckStart(summit.ref)
+    trackedFirstResultRef.current = false
     setGpsStatus('watching')
     setGpsPos(null)
     watchIdRef.current = navigator.geolocation.watchPosition(
@@ -80,7 +85,7 @@ export function SummitPage() {
       () => setGpsStatus('error'),
       { enableHighAccuracy: true, maximumAge: 0 }
     )
-  }, [])
+  }, [summit])
 
   useEffect(() => {
     return () => {
@@ -93,6 +98,19 @@ export function SummitPage() {
     const interval = setInterval(() => setSecondsAgo(Math.floor((Date.now() - gpsPos.updatedAt) / 1000)), 1000)
     return () => clearInterval(interval)
   }, [gpsPos])
+
+  // Track first position check result with altitude
+  useEffect(() => {
+    if (!gpsPos || !summit || trackedFirstResultRef.current) return
+    if (gpsPos.altitude === null) return
+    const vertDist = Math.round(gpsPos.altitude - summit.altitude)
+    const horizDist = Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon) * 1000)
+    const inRange = Math.abs(vertDist) <= 25
+    const uncertain = inRange && gpsPos.altitudeAccuracy != null && (Math.abs(vertDist) + gpsPos.altitudeAccuracy) > 25
+    const result = uncertain ? 'uncertain' : inRange ? 'in_range' : 'out_of_range'
+    trackPositionCheckResult(summit.ref, result, vertDist, horizDist)
+    trackedFirstResultRef.current = true
+  }, [gpsPos, summit])
 
   // Monitor online/offline status
   useEffect(() => {
@@ -164,6 +182,7 @@ export function SummitPage() {
         }
 
         setSummit(summitData)
+        trackSummitView(summitData.ref, summitData.points, summitData.altitude, summitData.association)
         setGridLocator(calculateGridLocator(summitData.lat, summitData.lon))
 
         // Find nearby summits (within 50km)

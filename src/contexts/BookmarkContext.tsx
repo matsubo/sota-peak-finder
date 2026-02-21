@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { trackBookmarkCycle, trackBookmarkRemove } from '../utils/analytics'
 
 export type BookmarkStatus = 'want_to_go' | 'activated'
 
@@ -82,6 +83,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      trackBookmarkCycle(ref, current, nextStatus)
       writeToStorage(next)
       return next
     })
@@ -89,6 +91,7 @@ export function BookmarkProvider({ children }: { children: ReactNode }) {
 
   const removeBookmark = useCallback((ref: string) => {
     setBookmarks(prev => {
+      trackBookmarkRemove(ref, prev[ref]?.status ?? null)
       const { [ref]: _, ...next } = prev
       writeToStorage(next)
       return next
