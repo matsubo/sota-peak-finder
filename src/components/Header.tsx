@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { HelpCircle, Database, Map, Bookmark } from 'lucide-react'
+import { Database, Map, Bookmark } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useBookmarks } from '../hooks/useBookmarks'
 
@@ -80,12 +80,6 @@ export function Header({ isOnline = false }: HeaderProps) {
                   {bookmarkCount > 9 ? '9+' : bookmarkCount}
                 </span>
               )}
-            </Link>
-            <Link
-              to="/help"
-              className="p-1.5 rounded border border-teal-500/40 bg-black/40 hover:bg-teal-500/20 transition-all"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-teal-400" />
             </Link>
           </div>
         </div>
