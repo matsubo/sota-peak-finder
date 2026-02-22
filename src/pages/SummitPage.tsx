@@ -41,6 +41,7 @@ export function SummitPage() {
 
   // GPS activation zone checker
   const [gpsStatus, setGpsStatus] = useState<'idle' | 'watching' | 'error'>('idle')
+  const [gpsErrorCode, setGpsErrorCode] = useState<number | null>(null)
   const [gpsPos, setGpsPos] = useState<{
     lat: number
     lon: number
@@ -48,6 +49,7 @@ export function SummitPage() {
     accuracy: number
     altitudeAccuracy: number | null
     updatedAt: number
+    isDemAltitude?: boolean
   } | null>(null)
   const [secondsAgo, setSecondsAgo] = useState(0)
   const watchIdRef = useRef<number | null>(null)
@@ -61,6 +63,7 @@ export function SummitPage() {
     if (summit) trackPositionCheckStop(summit.ref)
     setGpsStatus('idle')
     setGpsPos(null)
+    setGpsErrorCode(null)
     setSecondsAgo(0)
   }, [summit])
 
@@ -70,19 +73,35 @@ export function SummitPage() {
     trackedFirstResultRef.current = false
     setGpsStatus('watching')
     setGpsPos(null)
+    setGpsErrorCode(null)
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        setGpsPos({
+        setSecondsAgo(0)
+        const base = {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
           altitude: pos.coords.altitude,
           accuracy: Math.round(pos.coords.accuracy),
           altitudeAccuracy: pos.coords.altitudeAccuracy ? Math.round(pos.coords.altitudeAccuracy) : null,
           updatedAt: Date.now()
-        })
-        setSecondsAgo(0)
+        }
+        setGpsPos(base)
+        // When GPS altitude is unavailable, fall back to DEM elevation from Open-Meteo
+        if (pos.coords.altitude === null && navigator.onLine) {
+          fetch(`https://api.open-meteo.com/v1/elevation?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.elevation?.[0] != null) {
+                setGpsPos(prev => prev ? { ...prev, altitude: data.elevation[0], altitudeAccuracy: null, isDemAltitude: true } : prev)
+              }
+            })
+            .catch(() => {/* keep null altitude */})
+        }
       },
-      () => setGpsStatus('error'),
+      (err) => {
+        setGpsErrorCode(err.code)
+        setGpsStatus('error')
+      },
       { enableHighAccuracy: true, maximumAge: 0 }
     )
   }, [summit])
@@ -604,6 +623,11 @@ export function SummitPage() {
                           Retry
                         </button>
                       )}
+                      {gpsStatus === 'watching' && gpsPos?.isDemAltitude && (
+                        <span className="text-[10px] font-mono-data text-amber-400/60" title="Altitude from terrain map (DEM)">
+                          ⛰ DEM
+                        </span>
+                      )}
                       {gpsStatus === 'idle' && (
                         <button
                           onClick={startGpsWatch}
@@ -623,6 +647,26 @@ export function SummitPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* ERROR */}
+                  {gpsStatus === 'error' && (
+                    <div className="text-center py-5 space-y-3">
+                      <p className="text-sm font-mono-data text-red-400">
+                        {gpsErrorCode === 1
+                          ? '⚠ Location access denied. Enable it in browser settings.'
+                          : gpsErrorCode === 2
+                            ? '⚠ GPS signal unavailable. Move to an open area outdoors.'
+                            : '⚠ GPS error. Tap Retry.'}
+                      </p>
+                      <button
+                        onClick={startGpsWatch}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 transition-all text-sm font-mono-data text-red-400"
+                      >
+                        <LocateFixed className="w-4 h-4" />
+                        Retry
+                      </button>
+                    </div>
+                  )}
 
                   {/* IDLE */}
                   {gpsStatus === 'idle' && (
@@ -769,7 +813,7 @@ export function SummitPage() {
                       {/* GPS accuracy + freshness footer */}
                       <div className="flex items-center justify-between text-[10px] font-mono-data text-teal-400/35">
                         <span>
-                          GPS ±{gpsPos.accuracy}m{gpsPos.altitudeAccuracy ? ` · Alt ±${gpsPos.altitudeAccuracy}m` : ''}
+                          GPS ±{gpsPos.accuracy}m{gpsPos.isDemAltitude ? ' · Alt from terrain map' : gpsPos.altitudeAccuracy ? ` · Alt ±${gpsPos.altitudeAccuracy}m` : ''}
                         </span>
                         <div className="flex items-center gap-3">
                           <span>{secondsAgo === 0 ? '● live' : `${secondsAgo}s ago`}</span>
