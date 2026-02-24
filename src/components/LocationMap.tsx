@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -216,21 +216,6 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
 
           return (
             <div key={summit.ref}>
-              {/* Activation zone circle (25m radius) */}
-              {summit.isActivationZone && (
-                <Circle
-                  center={[summit.lat, summit.lon]}
-                  radius={25}
-                  pathOptions={{
-                    color: 'rgb(102, 255, 153)',
-                    fillColor: 'rgb(102, 255, 153)',
-                    fillOpacity: 0.1,
-                    weight: 2,
-                    dashArray: '5, 5'
-                  }}
-                />
-              )}
-
               {/* Line from reference point to summit */}
               <Polyline
                 positions={[

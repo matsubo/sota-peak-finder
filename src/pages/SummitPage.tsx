@@ -105,8 +105,8 @@ export function SummitPage() {
     if (gpsPos.altitude === null) return
     const vertDist = Math.round(gpsPos.altitude - summit.altitude)
     const horizDist = Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon) * 1000)
-    const inRange = Math.abs(vertDist) <= 25
-    const uncertain = inRange && gpsPos.altitudeAccuracy != null && (Math.abs(vertDist) + gpsPos.altitudeAccuracy) > 25
+    const inRange = vertDist >= -25
+    const uncertain = inRange && vertDist < 0 && gpsPos.altitudeAccuracy != null && (Math.abs(vertDist) + gpsPos.altitudeAccuracy) > 25
     const result = uncertain ? 'uncertain' : inRange ? 'in_range' : 'out_of_range'
     trackPositionCheckResult(summit.ref, result, vertDist, horizDist)
     trackedFirstResultRef.current = true
@@ -531,21 +531,18 @@ export function SummitPage() {
               const horizDist = gpsPos
                 ? Math.round(haversineDistance(gpsPos.lat, gpsPos.lon, summit.lat, summit.lon))
                 : null
-              const inRange = vertDist !== null && Math.abs(vertDist) <= 25
-              // Uncertain: altitude accuracy could push you across the zone boundary
-              const uncertain = inRange && gpsPos?.altitudeAccuracy != null
+              const inRange = vertDist !== null && vertDist >= -25
+              // Uncertain: altitude accuracy could push you across the lower zone boundary
+              const uncertain = inRange && vertDist !== null && vertDist < 0 && gpsPos?.altitudeAccuracy != null
                 && (Math.abs(vertDist!) + gpsPos.altitudeAccuracy) > 25
               // Gauge: map deviation from summit (-HALF_RANGE..+HALF_RANGE) to 0..100%
               const gaugePos = vertDist !== null
                 ? Math.max(2, Math.min(98, ((vertDist + HALF_RANGE) / (HALF_RANGE * 2)) * 100))
                 : null
               const zoneL = ((-25 + HALF_RANGE) / (HALF_RANGE * 2)) * 100
-              const zoneR = ((25 + HALF_RANGE) / (HALF_RANGE * 2)) * 100
-              // Guidance when out of range
+              // Guidance when out of range (only when below summit by more than 25m)
               const guidance = (!inRange && vertDist !== null)
-                ? vertDist > 25
-                  ? `↓ Descend ${vertDist - 25}m to enter activation zone`
-                  : `↑ Ascend ${Math.abs(vertDist) - 25}m to enter activation zone`
+                ? `↑ Ascend ${Math.abs(vertDist) - 25}m to enter activation zone`
                 : null
               // Dynamic styling
               let borderClass = 'border-l-orange-500'
@@ -581,7 +578,7 @@ export function SummitPage() {
                       </div>
                       <div>
                         <h2 className="font-display text-base text-orange-400 tracking-wider leading-none">POSITION CHECKER</h2>
-                        <p className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">Activation zone: ±25m vertical from summit</p>
+                        <p className="text-[10px] font-mono-data text-teal-400/40 mt-0.5">Activation zone: within 25m below summit peak</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -628,7 +625,7 @@ export function SummitPage() {
                   {gpsStatus === 'idle' && (
                     <div className="text-center py-5 space-y-4">
                       <p className="text-sm font-mono-data text-gray-400 leading-relaxed">
-                        Verify your vertical and horizontal distance<br />from the summit in real-time.
+                        Verify your vertical distance<br />from the summit in real-time.
                       </p>
                       <button
                         onClick={startGpsWatch}
@@ -702,18 +699,14 @@ export function SummitPage() {
                           <span>+{HALF_RANGE}m</span>
                         </div>
                         <div className="relative h-9 rounded bg-black/50 border border-teal-500/20 overflow-hidden">
-                          {/* Activation zone band */}
+                          {/* Activation zone band: from -25m to summit and above */}
                           <div
-                            className="absolute inset-y-0 bg-green-500/15 border-x border-green-500/25"
-                            style={{ left: `${zoneL}%`, width: `${zoneR - zoneL}%` }}
+                            className="absolute inset-y-0 bg-green-500/15 border-l border-green-500/25"
+                            style={{ left: `${zoneL}%`, right: '0%' }}
                           />
-                          {/* −25 label */}
+                          {/* −25 label (lower boundary) */}
                           <div className="absolute inset-y-0 flex items-center" style={{ left: `${zoneL}%` }}>
                             <span className="text-[8px] font-mono-data text-green-500/50 pl-1">−25</span>
-                          </div>
-                          {/* +25 label */}
-                          <div className="absolute inset-y-0 flex items-end pb-0.5 justify-end" style={{ right: `${100 - zoneR}%` }}>
-                            <span className="text-[8px] font-mono-data text-green-500/50 pr-1">+25</span>
                           </div>
                           {/* Summit center line */}
                           <div className="absolute inset-y-0 w-px bg-amber-400/50" style={{ left: '50%' }} />
@@ -750,7 +743,7 @@ export function SummitPage() {
                       <div className="grid grid-cols-2 gap-3">
                         <div className="data-panel rounded p-3">
                           <div className="text-[10px] font-mono-data text-teal-400/50 mb-1">↕ VERTICAL</div>
-                          <div className={`text-2xl font-mono-data leading-none ${Math.abs(vertDist!) <= 25 ? 'text-green-400' : 'text-red-400'}`}>
+                          <div className={`text-2xl font-mono-data leading-none ${vertDist! >= -25 ? 'text-green-400' : 'text-red-400'}`}>
                             {vertDist! > 0 ? '+' : ''}{vertDist}m
                           </div>
                           <div className="text-[9px] font-mono-data text-gray-500 mt-1">

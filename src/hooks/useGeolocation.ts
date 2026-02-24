@@ -150,9 +150,9 @@ export function useGeolocation(locationData: LocationData | null) {
         
                               summit.verticalDistance = verticalDistance
         
-                              // 標高差25m以内（下方向）、かつ水平距離100m以内
-        
-                              summit.isActivationZone = verticalDistance <= 25 && verticalDistance >= -25 && summit.distance <= 100
+                              // 山頂から25m以上下がってはいけない（距離の規定はなし）
+
+                              summit.isActivationZone = verticalDistance >= -25
         
                             } else {
         
