@@ -9,6 +9,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      '.worktrees/**',
       '.backup/**',
       'node_modules/**',
       'playwright.config.ts',
