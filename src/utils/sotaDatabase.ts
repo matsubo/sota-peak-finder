@@ -5,8 +5,8 @@
  * Database is cached in OPFS (Origin Private File System) for offline access.
  */
 
-import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
-import type { Sqlite3Static, Database } from '@sqlite.org/sqlite-wasm';
+import type { Database, Sqlite3Static } from "@sqlite.org/sqlite-wasm";
+import sqlite3InitModule from "@sqlite.org/sqlite-wasm";
 
 export interface SotaSummit {
   id: number;
@@ -47,10 +47,10 @@ class SotaDatabase {
 
   private async _init(): Promise<void> {
     try {
-      console.log('🏔️  Initializing SOTA Database...');
+      console.log("🏔️  Initializing SOTA Database...");
 
       // Initialize SQLite WASM
-      const basePath = import.meta.env.BASE_URL || '/';
+      const basePath = import.meta.env.BASE_URL || "/";
       // @ts-expect-error - sqlite3InitModule type definition is incorrect, it does accept config
       this.sqlite3 = await sqlite3InitModule({
         print: console.log,
@@ -58,10 +58,10 @@ class SotaDatabase {
         locateFile: (file: string) => `${basePath}wasm/${file}`,
       });
 
-      console.log('✅ SQLite WASM initialized (version:', this.sqlite3.version.libVersion, ')');
+      console.log("✅ SQLite WASM initialized (version:", this.sqlite3.version.libVersion, ")");
 
       // Download database from network (Service Worker will cache it)
-      console.log('📥 Downloading SOTA database...');
+      console.log("📥 Downloading SOTA database...");
       const response = await fetch(`${basePath}data/sota.db`);
       if (!response.ok) {
         throw new Error(`Failed to fetch database: ${response.statusText}`);
@@ -72,24 +72,28 @@ class SotaDatabase {
       console.log(`✅ Downloaded database (${(dbData.length / 1024 / 1024).toFixed(2)} MB)`);
 
       // Load database into memory using sqlite3_deserialize
-      this.db = new this.sqlite3.oo1.DB(':memory:');
+      this.db = new this.sqlite3.oo1.DB(":memory:");
       const ptrSource = this.sqlite3.wasm.allocFromTypedArray(dbData);
-      const flags = this.sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE
-        | this.sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
+      const flags =
+        this.sqlite3.capi.SQLITE_DESERIALIZE_FREEONCLOSE |
+        this.sqlite3.capi.SQLITE_DESERIALIZE_RESIZEABLE;
       const rc = this.sqlite3.capi.sqlite3_deserialize(
-        (this.db as unknown as Record<string, unknown>).pointer as number, 'main', ptrSource,
-        dbData.byteLength, dbData.byteLength, flags
+        (this.db as unknown as Record<string, unknown>).pointer as number,
+        "main",
+        ptrSource,
+        dbData.byteLength,
+        dbData.byteLength,
+        flags,
       );
       if (rc !== 0) {
         throw new Error(`sqlite3_deserialize failed with code ${rc}`);
       }
 
       // Verify database integrity
-      const count = this.db.selectValue('SELECT COUNT(*) FROM summits');
+      const count = this.db.selectValue("SELECT COUNT(*) FROM summits");
       console.log(`✅ Database ready with ${count?.toLocaleString()} summits`);
-
     } catch (error) {
-      console.error('❌ Failed to initialize database:', error);
+      console.error("❌ Failed to initialize database:", error);
       this.initPromise = null;
       throw error;
     }
@@ -108,7 +112,7 @@ class SotaDatabase {
     lat: number,
     lon: number,
     radiusKm: number = 50,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<SotaSummitWithDistance[]> {
     if (!this.db) {
       await this.init();
@@ -139,23 +143,26 @@ class SotaDatabase {
 
     const candidates: SotaSummit[] = [];
 
-    this.db!.exec({
+    this.db?.exec({
       sql: query,
       bind: [maxLat, minLat, maxLon, minLon],
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         candidates.push(row as unknown as SotaSummit);
       },
     });
 
     // Calculate Haversine distance in JavaScript
-    const toRad = (deg: number) => deg * Math.PI / 180;
-    const results: SotaSummitWithDistance[] = candidates.map(summit => {
+    const toRad = (deg: number) => (deg * Math.PI) / 180;
+    const results: SotaSummitWithDistance[] = candidates.map((summit) => {
       const dLat = toRad(summit.lat - lat);
       const dLon = toRad(summit.lon - lon);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat)) * Math.cos(toRad(summit.lat)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat)) *
+          Math.cos(toRad(summit.lat)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const distance = 6371 * c; // km
 
@@ -186,10 +193,10 @@ class SotaDatabase {
 
     let result: SotaSummit | null = null;
 
-    this.db!.exec({
+    this.db?.exec({
       sql: query,
       bind: [ref],
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         result = row as unknown as SotaSummit;
       },
@@ -209,10 +216,10 @@ class SotaDatabase {
       await this.init();
     }
 
-    const totalSummits = this.db!.selectValue('SELECT COUNT(*) FROM summits') as number;
+    const totalSummits = this.db?.selectValue("SELECT COUNT(*) FROM summits") as number;
 
     const associations: Array<{ association: string; count: number }> = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT association, COUNT(*) as count
         FROM summits
@@ -220,7 +227,7 @@ class SotaDatabase {
         ORDER BY count DESC
         LIMIT 20
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         associations.push(row as { association: string; count: number });
       },
@@ -248,18 +255,18 @@ class SotaDatabase {
     };
 
     try {
-      this.db!.exec({
-        sql: 'SELECT key, value FROM metadata',
-        rowMode: 'object',
+      this.db?.exec({
+        sql: "SELECT key, value FROM metadata",
+        rowMode: "object",
         callback: (row) => {
           const { key, value } = row as { key: string; value: string };
-          if (key === 'build_date') metadata.buildDate = value;
-          if (key === 'sota_version') metadata.version = value;
-          if (key === 'source') metadata.source = value;
+          if (key === "build_date") metadata.buildDate = value;
+          if (key === "sota_version") metadata.version = value;
+          if (key === "source") metadata.source = value;
         },
       });
     } catch {
-      console.warn('⚠️  Metadata table not found (older database version)');
+      console.warn("⚠️  Metadata table not found (older database version)");
     }
 
     return metadata;
@@ -270,13 +277,13 @@ class SotaDatabase {
    */
   async clearCache(): Promise<void> {
     try {
-      if ('storage' in navigator && 'getDirectory' in navigator.storage) {
+      if ("storage" in navigator && "getDirectory" in navigator.storage) {
         const opfsRoot = await navigator.storage.getDirectory();
-        await opfsRoot.removeEntry('sota.db');
-        console.log('✅ Cleared OPFS cache');
+        await opfsRoot.removeEntry("sota.db");
+        console.log("✅ Cleared OPFS cache");
       }
     } catch (error) {
-      console.warn('⚠️  Failed to clear OPFS cache:', error);
+      console.warn("⚠️  Failed to clear OPFS cache:", error);
     }
   }
 
@@ -290,14 +297,14 @@ class SotaDatabase {
     }
 
     const associations: string[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT DISTINCT association
         FROM summits
         WHERE association IS NOT NULL AND association != ''
         ORDER BY association
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         associations.push((row as { association: string }).association);
       },
@@ -316,14 +323,14 @@ class SotaDatabase {
     }
 
     const associations: string[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT DISTINCT association
         FROM summits
         WHERE association IS NOT NULL AND association != ''
         ORDER BY association
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         associations.push((row as { association: string }).association);
       },
@@ -331,8 +338,8 @@ class SotaDatabase {
 
     // Extract unique countries from associations
     const countrySet = new Set<string>();
-    associations.forEach(association => {
-      const country = association.split(' - ')[0].trim();
+    associations.forEach((association) => {
+      const country = association.split(" - ")[0].trim();
       countrySet.add(country);
     });
 
@@ -348,7 +355,7 @@ class SotaDatabase {
     }
 
     const regions: string[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT DISTINCT region
         FROM summits
@@ -356,7 +363,7 @@ class SotaDatabase {
         ORDER BY region
       `,
       bind: [association],
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         regions.push((row as { region: string }).region);
       },
@@ -377,7 +384,7 @@ class SotaDatabase {
       await this.init();
     }
 
-    const ranges = this.db!.exec({
+    const ranges = this.db?.exec({
       sql: `
         SELECT
           MIN(altitude) as minAltitude,
@@ -385,11 +392,11 @@ class SotaDatabase {
           MAX(activations) as maxActivations
         FROM summits
       `,
-      rowMode: 'object',
-      returnValue: 'resultRows',
+      rowMode: "object",
+      returnValue: "resultRows",
     });
 
-    return ranges[0] as {
+    return (ranges?.[0] ?? { minAltitude: 0, maxAltitude: 0, maxActivations: 0 }) as {
       minAltitude: number;
       maxAltitude: number;
       maxActivations: number;
@@ -410,8 +417,8 @@ class SotaDatabase {
     minActivations?: number;
     maxActivations?: number;
     searchText?: string;
-    sortBy?: 'name' | 'altitude' | 'points' | 'activations' | 'ref';
-    sortOrder?: 'asc' | 'desc';
+    sortBy?: "name" | "altitude" | "points" | "activations" | "ref";
+    sortOrder?: "asc" | "desc";
     offset?: number;
     limit?: number;
   }): Promise<{ summits: SotaSummit[]; total: number }> {
@@ -430,8 +437,8 @@ class SotaDatabase {
       minActivations,
       maxActivations,
       searchText,
-      sortBy = 'name',
-      sortOrder = 'asc',
+      sortBy = "name",
+      sortOrder = "asc",
       offset = 0,
       limit = 20,
     } = filters;
@@ -442,72 +449,70 @@ class SotaDatabase {
 
     if (country) {
       // Filter by country: association must start with country name
-      whereClauses.push('(association = ? OR association LIKE ?)');
+      whereClauses.push("(association = ? OR association LIKE ?)");
       bindings.push(country, `${country} - %`);
     }
 
     if (association) {
-      whereClauses.push('association = ?');
+      whereClauses.push("association = ?");
       bindings.push(association);
     }
 
     if (region) {
-      whereClauses.push('region = ?');
+      whereClauses.push("region = ?");
       bindings.push(region);
     }
 
     if (minAltitude !== undefined) {
-      whereClauses.push('altitude >= ?');
+      whereClauses.push("altitude >= ?");
       bindings.push(minAltitude);
     }
 
     if (maxAltitude !== undefined) {
-      whereClauses.push('altitude <= ?');
+      whereClauses.push("altitude <= ?");
       bindings.push(maxAltitude);
     }
 
     if (minPoints !== undefined) {
-      whereClauses.push('points >= ?');
+      whereClauses.push("points >= ?");
       bindings.push(minPoints);
     }
 
     if (maxPoints !== undefined) {
-      whereClauses.push('points <= ?');
+      whereClauses.push("points <= ?");
       bindings.push(maxPoints);
     }
 
     if (minActivations !== undefined) {
-      whereClauses.push('activations >= ?');
+      whereClauses.push("activations >= ?");
       bindings.push(minActivations);
     }
 
     if (maxActivations !== undefined) {
-      whereClauses.push('activations <= ?');
+      whereClauses.push("activations <= ?");
       bindings.push(maxActivations);
     }
 
-    if (searchText && searchText.trim()) {
-      whereClauses.push('(ref LIKE ? OR name LIKE ?)');
+    if (searchText?.trim()) {
+      whereClauses.push("(ref LIKE ? OR name LIKE ?)");
       const searchPattern = `%${searchText.trim()}%`;
       bindings.push(searchPattern, searchPattern);
     }
 
-    const whereClause = whereClauses.length > 0
-      ? `WHERE ${whereClauses.join(' AND ')}`
-      : '';
+    const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
     // Build ORDER BY clause
     const orderByClause = `ORDER BY ${sortBy} ${sortOrder.toUpperCase()}`;
 
     // Count total results
     const countQuery = `SELECT COUNT(*) as total FROM summits ${whereClause}`;
-    const countResult = this.db!.exec({
+    const countResult = this.db?.exec({
       sql: countQuery,
       bind: bindings,
-      rowMode: 'object',
-      returnValue: 'resultRows',
+      rowMode: "object",
+      returnValue: "resultRows",
     });
-    const total = (countResult[0] as { total: number }).total;
+    const total = ((countResult?.[0] ?? { total: 0 }) as { total: number }).total;
 
     // Get paginated results
     const query = `
@@ -521,10 +526,10 @@ class SotaDatabase {
     `;
 
     const summits: SotaSummit[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: query,
       bind: [...bindings, limit, offset],
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         summits.push(row as unknown as SotaSummit);
       },
@@ -552,14 +557,14 @@ class SotaDatabase {
 
     // Highest altitude summit
     let highestSummit: SotaSummit | null = null;
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
         FROM summits
         ORDER BY altitude DESC
         LIMIT 1
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         highestSummit = row as unknown as SotaSummit;
       },
@@ -567,14 +572,14 @@ class SotaDatabase {
 
     // Lowest altitude summit
     let lowestSummit: SotaSummit | null = null;
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
         FROM summits
         ORDER BY altitude ASC
         LIMIT 1
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         lowestSummit = row as unknown as SotaSummit;
       },
@@ -582,14 +587,14 @@ class SotaDatabase {
 
     // Most valuable summits (by points)
     const mostValuable: SotaSummit[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
         FROM summits
         ORDER BY points DESC, altitude DESC
         LIMIT 5
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         mostValuable.push(row as unknown as SotaSummit);
       },
@@ -597,27 +602,27 @@ class SotaDatabase {
 
     // Most activated summits
     const mostActivated: SotaSummit[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
         FROM summits
         ORDER BY activations DESC
         LIMIT 5
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         mostActivated.push(row as unknown as SotaSummit);
       },
     });
 
     // Count of unactivated summits
-    const unactivatedCount = this.db!.selectValue(
-      'SELECT COUNT(*) FROM summits WHERE activations = 0'
+    const unactivatedCount = this.db?.selectValue(
+      "SELECT COUNT(*) FROM summits WHERE activations = 0",
     ) as number;
 
     // Sample of unactivated summits (random 5)
     const unactivatedSummits: SotaSummit[] = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT id, ref, name, lat, lon, altitude, points, activations, bonus, association, region
         FROM summits
@@ -625,7 +630,7 @@ class SotaDatabase {
         ORDER BY points DESC, altitude DESC
         LIMIT 5
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         unactivatedSummits.push(row as unknown as SotaSummit);
       },
@@ -633,14 +638,14 @@ class SotaDatabase {
 
     // Get all associations with counts, then group by country
     const associationsWithCounts: Array<{ association: string; count: number }> = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT association, COUNT(*) as count
         FROM summits
         GROUP BY association
         ORDER BY count DESC
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         associationsWithCounts.push(row as { association: string; count: number });
       },
@@ -650,7 +655,7 @@ class SotaDatabase {
     const countryMap = new Map<string, number>();
     associationsWithCounts.forEach(({ association, count }) => {
       // Extract country name (part before " - " if present)
-      const country = association.split(' - ')[0].trim();
+      const country = association.split(" - ")[0].trim();
       countryMap.set(country, (countryMap.get(country) || 0) + count);
     });
 
@@ -662,14 +667,14 @@ class SotaDatabase {
 
     // Points distribution
     const pointsDistribution: Array<{ points: number; count: number }> = [];
-    this.db!.exec({
+    this.db?.exec({
       sql: `
         SELECT points, COUNT(*) as count
         FROM summits
         GROUP BY points
         ORDER BY points ASC
       `,
-      rowMode: 'object',
+      rowMode: "object",
       callback: (row) => {
         pointsDistribution.push(row as { points: number; count: number });
       },

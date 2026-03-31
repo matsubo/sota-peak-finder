@@ -1,135 +1,130 @@
-import { useParams, Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import {
+  ArrowLeft,
+  Trophy as Award,
+  ExternalLink,
   MapPin,
   Flag as Mountain,
   Navigation,
-  ArrowLeft,
-  ExternalLink,
-  Trophy as Award
-} from 'lucide-react'
-import { Helmet } from 'react-helmet-async'
-import { useTranslation } from 'react-i18next'
-import { LocationMap } from '../components/LocationMap'
-import { WeatherForecast } from '../components/WeatherForecast'
-import { RecentActivations } from '../components/RecentActivations'
-import { Header } from '../components/Header'
-import { Footer } from '../components/Footer'
-import { sotaDatabase } from '../utils/sotaDatabase'
-import type { SotaSummit, SotaSummitWithDistance } from '../types/location'
-import { calculateGridLocator } from '../utils/coordinate'
-import { getAssociationFlag, getCountryName } from '../utils/countryFlags'
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
+import { LocationMap } from "../components/LocationMap";
+import { RecentActivations } from "../components/RecentActivations";
+import { WeatherForecast } from "../components/WeatherForecast";
+import type { SotaSummit, SotaSummitWithDistance } from "../types/location";
+import { calculateGridLocator } from "../utils/coordinate";
+import { getAssociationFlag, getCountryName } from "../utils/countryFlags";
+import { sotaDatabase } from "../utils/sotaDatabase";
 
 export function SummitPage() {
-  const { ref } = useParams<{ ref: string }>()
-  const { t, i18n } = useTranslation()
-  const [summit, setSummit] = useState<SotaSummit | null>(null)
-  const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([])
-  const [gridLocator, setGridLocator] = useState<string>('')
-  const [loading, setLoading] = useState(true)
-  const [sotaCount, setSotaCount] = useState<number | null>(null)
-  const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null)
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const { ref } = useParams<{ ref: string }>();
+  const { t, i18n } = useTranslation();
+  const [summit, setSummit] = useState<SotaSummit | null>(null);
+  const [nearbySummits, setNearbySummits] = useState<SotaSummitWithDistance[]>([]);
+  const [gridLocator, setGridLocator] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [sotaCount, setSotaCount] = useState<number | null>(null);
+  const [sotaBuildDate, setSotaBuildDate] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Monitor online/offline status
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
     return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   // Load database stats
   useEffect(() => {
     const loadStats = async () => {
       try {
-        await sotaDatabase.init()
-        const stats = await sotaDatabase.getStats()
-        const metadata = await sotaDatabase.getMetadata()
-        setSotaCount(stats.totalSummits)
+        await sotaDatabase.init();
+        const stats = await sotaDatabase.getStats();
+        const metadata = await sotaDatabase.getMetadata();
+        setSotaCount(stats.totalSummits);
         if (metadata.buildDate) {
-          const date = new Date(metadata.buildDate)
+          const date = new Date(metadata.buildDate);
           const formatted = new Intl.DateTimeFormat(i18n.language, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          }).format(date)
-          setSotaBuildDate(formatted)
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }).format(date);
+          setSotaBuildDate(formatted);
         }
       } catch (error) {
-        console.error('Failed to load database stats:', error)
+        console.error("Failed to load database stats:", error);
       }
-    }
-    loadStats()
-  }, [i18n.language])
+    };
+    loadStats();
+  }, [i18n.language]);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     async function loadSummitData() {
       try {
-        if (!ref) return
+        if (!ref) return;
 
         // Convert URL format (ja-ns-001) back to SOTA ref (JA/NS-001)
         // SOTA format: AA/BB-NNN (last dash before number stays, others become slashes)
-        const parts = ref.toUpperCase().split('-')
-        const number = parts.pop() // Remove last part (the number)
-        const sotaRef = parts.join('/') + '-' + number // Join rest with /, add dash before number
+        const parts = ref.toUpperCase().split("-");
+        const number = parts.pop(); // Remove last part (the number)
+        const sotaRef = `${parts.join("/")}-${number}`; // Join rest with /, add dash before number
 
-        await sotaDatabase.init()
-        const summitData = await sotaDatabase.findByRef(sotaRef)
+        await sotaDatabase.init();
+        const summitData = await sotaDatabase.findByRef(sotaRef);
 
         if (!summitData) {
-          setLoading(false)
-          return
+          setLoading(false);
+          return;
         }
 
-        setSummit(summitData)
-        setGridLocator(calculateGridLocator(summitData.lat, summitData.lon))
+        setSummit(summitData);
+        setGridLocator(calculateGridLocator(summitData.lat, summitData.lon));
 
         // Find nearby summits (within 50km)
-        const nearby = await sotaDatabase.findNearby(
-          summitData.lat,
-          summitData.lon,
-          50,
-          10
-        )
+        const nearby = await sotaDatabase.findNearby(summitData.lat, summitData.lon, 50, 10);
 
         // Filter out the current summit and add distance info
         const nearbySummitsWithDistance: SotaSummitWithDistance[] = nearby
-          .filter(s => s.ref !== summitData.ref)
-          .map(s => ({
+          .filter((s) => s.ref !== summitData.ref)
+          .map((s) => ({
             ...s,
             distance: s.distance * 1000, // Convert km to meters
             bearing: 0, // Calculate if needed
-            cardinalBearing: 'N',
+            cardinalBearing: "N",
             isActivationZone: false,
-            verticalDistance: null
-          }))
+            verticalDistance: null,
+          }));
 
-        setNearbySummits(nearbySummitsWithDistance)
+        setNearbySummits(nearbySummitsWithDistance);
       } catch (error) {
-        console.error('Failed to load summit data:', error)
+        console.error("Failed to load summit data:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    loadSummitData()
-  }, [ref])
+    loadSummitData();
+  }, [ref]);
 
   if (loading) {
     return (
       <div className="min-h-screen p-4 sm:p-6 md:p-8 flex items-center justify-center">
-        <div className="text-teal-400 font-mono-data">{t('summitPage.loading')}</div>
+        <div className="text-teal-400 font-mono-data">{t("summitPage.loading")}</div>
       </div>
-    )
+    );
   }
 
   if (!summit) {
@@ -137,30 +132,33 @@ export function SummitPage() {
       <div className="min-h-screen p-4 sm:p-6 md:p-8">
         <div className="mx-auto max-w-4xl">
           <div className="card-technical rounded p-8 text-center">
-            <h1 className="text-2xl font-display glow-amber mb-4">{t('summitPage.notFound')}</h1>
-            <p className="text-gray-400 mb-6">{t('summitPage.notFoundDesc', { ref: ref?.toUpperCase().replace(/-/g, '/') })}</p>
+            <h1 className="text-2xl font-display glow-amber mb-4">{t("summitPage.notFound")}</h1>
+            <p className="text-gray-400 mb-6">
+              {t("summitPage.notFoundDesc", { ref: ref?.toUpperCase().replace(/-/g, "/") })}
+            </p>
             <Link to="/" className="btn-primary inline-flex items-center">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('common.backToHome')}
+              {t("common.backToHome")}
             </Link>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
-  const pageTitle = `${summit.name} (${summit.ref}) - ${summit.altitude}m SOTA Summit | Offline SOTA Finder`
-  const pageDescription = `${summit.name} (${summit.ref}) - ${summit.altitude}m SOTA summit in ${summit.association}/${summit.region} worth ${summit.points} points. ${summit.activations} total activations. GPS coordinates, activation zone map, and offline access for ham radio operators.`
+  const pageTitle = `${summit.name} (${summit.ref}) - ${summit.altitude}m SOTA Summit | Offline SOTA Finder`;
+  const pageDescription = `${summit.name} (${summit.ref}) - ${summit.altitude}m SOTA summit in ${summit.association}/${summit.region} worth ${summit.points} points. ${summit.activations} total activations. GPS coordinates, activation zone map, and offline access for ham radio operators.`;
 
   // Difficulty badge based on points
   const getDifficultyLabel = (points: number) => {
-    if (points >= 10) return { label: t('summitPage.difficulty.extreme'), color: 'text-red-400' }
-    if (points >= 8) return { label: t('summitPage.difficulty.veryHard'), color: 'text-orange-400' }
-    if (points >= 4) return { label: t('summitPage.difficulty.moderate'), color: 'text-cyan-400' }
-    return { label: t('summitPage.difficulty.easy'), color: 'text-amber-400' }
-  }
+    if (points >= 10) return { label: t("summitPage.difficulty.extreme"), color: "text-red-400" };
+    if (points >= 8)
+      return { label: t("summitPage.difficulty.veryHard"), color: "text-orange-400" };
+    if (points >= 4) return { label: t("summitPage.difficulty.moderate"), color: "text-cyan-400" };
+    return { label: t("summitPage.difficulty.easy"), color: "text-amber-400" };
+  };
 
-  const difficulty = getDifficultyLabel(summit.points)
+  const difficulty = getDifficultyLabel(summit.points);
 
   return (
     <>
@@ -170,53 +168,56 @@ export function SummitPage() {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`} />
+        <link
+          rel="canonical"
+          href={`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, "-")}`}
+        />
 
         {/* Schema.org structured data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Mountain",
-            "name": summit.name,
-            "identifier": summit.ref,
-            "geo": {
+            name: summit.name,
+            identifier: summit.ref,
+            geo: {
               "@type": "GeoCoordinates",
-              "latitude": summit.lat,
-              "longitude": summit.lon,
-              "elevation": summit.altitude
+              latitude: summit.lat,
+              longitude: summit.lon,
+              elevation: summit.altitude,
             },
-            "address": {
+            address: {
               "@type": "PostalAddress",
-              "addressRegion": summit.region,
-              "addressCountry": summit.association
+              addressRegion: summit.region,
+              addressCountry: summit.association,
             },
-            "additionalProperty": [
+            additionalProperty: [
               {
                 "@type": "PropertyValue",
-                "name": "SOTA Points",
-                "value": summit.points
+                name: "SOTA Points",
+                value: summit.points,
               },
               {
                 "@type": "PropertyValue",
-                "name": "Total Activations",
-                "value": summit.activations
+                name: "Total Activations",
+                value: summit.activations,
               },
               {
                 "@type": "PropertyValue",
-                "name": "Grid Locator",
-                "value": gridLocator
+                name: "Grid Locator",
+                value: gridLocator,
               },
               {
                 "@type": "PropertyValue",
-                "name": "SOTA Association",
-                "value": summit.association
+                name: "SOTA Association",
+                value: summit.association,
               },
               {
                 "@type": "PropertyValue",
-                "name": "SOTA Region",
-                "value": summit.region
-              }
-            ]
+                name: "SOTA Region",
+                value: summit.region,
+              },
+            ],
           })}
         </script>
       </Helmet>
@@ -230,11 +231,11 @@ export function SummitPage() {
             <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
               <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider flex items-center justify-between flex-wrap gap-2">
                 <span className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-sm">{getAssociationFlag(summit.association || '')}</span>
+                  <span className="text-sm">{getAssociationFlag(summit.association || "")}</span>
                   <span className="flex items-center gap-1">
-                    SOTA_SUMMIT //
+                    SOTA_SUMMIT {"// "}
                     <Link
-                      to={`/summits?association=${encodeURIComponent(summit.association || '')}`}
+                      to={`/summits?association=${encodeURIComponent(summit.association || "")}`}
                       className="hover:text-amber-400 transition-colors underline decoration-dotted"
                       title={`View all summits in ${summit.association}`}
                     >
@@ -242,7 +243,7 @@ export function SummitPage() {
                     </Link>
                     /
                     <Link
-                      to={`/summits?association=${encodeURIComponent(summit.association || '')}&region=${encodeURIComponent(summit.region || '')}`}
+                      to={`/summits?association=${encodeURIComponent(summit.association || "")}&region=${encodeURIComponent(summit.region || "")}`}
                       className="hover:text-green-400 transition-colors underline decoration-dotted"
                       title={`View all summits in ${summit.region}`}
                     >
@@ -259,14 +260,13 @@ export function SummitPage() {
               >
                 {summit.name}
               </h1>
-              <div className="text-xl font-mono-data text-green-400 mt-2">
-                {summit.ref}
-              </div>
+              <div className="text-xl font-mono-data text-green-400 mt-2">{summit.ref}</div>
               <div className="text-xs font-mono text-teal-400/60 mt-2">
-                {summit.altitude}m {'// '}{summit.points} pts {'// '}GRID {gridLocator}
+                {summit.altitude}m {"// "}
+                {summit.points} pts {"// "}GRID {gridLocator}
               </div>
               <a
-                href={`https://x.com/intent/tweet?text=${encodeURIComponent(t('share.summitMessage', { name: summit.name, ref: summit.ref, altitude: summit.altitude, points: summit.points }))}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`)}`}
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(t("share.summitMessage", { name: summit.name, ref: summit.ref, altitude: summit.altitude, points: summit.points }))}&url=${encodeURIComponent(`https://matsubo.github.io/sota-peak-finder/summit/${summit.ref.toLowerCase().replace(/\//g, "-")}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 flex items-center gap-2 px-4 py-2 rounded border border-teal-500/30 bg-black/30 hover:bg-teal-500/10 hover:border-teal-500/50 transition-all text-sm font-mono-data text-teal-300 tracking-wide"
@@ -274,7 +274,7 @@ export function SummitPage() {
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-                {t('share.postOnX')}
+                {t("share.postOnX")}
               </a>
             </div>
           </div>
@@ -283,22 +283,30 @@ export function SummitPage() {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.altitude')}</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">
+                  {t("summitPage.altitude")}
+                </div>
                 <div className="text-2xl font-mono-data glow-green">{summit.altitude}m</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.sotaPoints')}</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">
+                  {t("summitPage.sotaPoints")}
+                </div>
                 <div className="text-2xl font-mono-data glow-amber">{summit.points} pt</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.activations')}</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">
+                  {t("summitPage.activations")}
+                </div>
                 <div className="text-2xl font-mono-data text-cyan-400">{summit.activations}</div>
               </div>
 
               <div className="card-technical rounded p-4">
-                <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.grid')}</div>
+                <div className="text-xs font-mono text-teal-400/60 mb-1">
+                  {t("summitPage.grid")}
+                </div>
                 <div className="text-xl font-mono-data glow-green">{gridLocator}</div>
               </div>
             </div>
@@ -307,36 +315,42 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
-                {t('summitPage.gpsCoordinates')}
+                {t("summitPage.gpsCoordinates")}
               </h2>
 
               <div className="space-y-3">
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.decimalDegrees')}</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">
+                    {t("summitPage.decimalDegrees")}
+                  </div>
                   <div className="text-lg font-mono-data glow-green">
                     {summit.lat.toFixed(6)}°N, {summit.lon.toFixed(6)}°E
                   </div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.maidenheadLocator')}</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">
+                    {t("summitPage.maidenheadLocator")}
+                  </div>
                   <div className="text-lg font-mono-data glow-green">{gridLocator}</div>
                 </div>
 
                 <div className="data-panel p-4 rounded">
-                  <div className="text-xs font-mono text-teal-400/60 mb-1">{t('summitPage.associationRegion')}</div>
+                  <div className="text-xs font-mono text-teal-400/60 mb-1">
+                    {t("summitPage.associationRegion")}
+                  </div>
                   <div className="text-lg font-sans-clean text-gray-200 flex items-center gap-2 flex-wrap">
-                    <span className="text-2xl">{getAssociationFlag(summit.association || '')}</span>
+                    <span className="text-2xl">{getAssociationFlag(summit.association || "")}</span>
                     <Link
-                      to={`/summits?country=${encodeURIComponent(getCountryName(summit.association || ''))}`}
+                      to={`/summits?country=${encodeURIComponent(getCountryName(summit.association || ""))}`}
                       className="text-amber-400 hover:text-amber-300 transition-colors underline decoration-dotted"
-                      title={`View all summits in ${getCountryName(summit.association || '')}`}
+                      title={`View all summits in ${getCountryName(summit.association || "")}`}
                     >
-                      {getCountryName(summit.association || '')}
+                      {getCountryName(summit.association || "")}
                     </Link>
                     <span className="text-teal-400/60">/</span>
                     <Link
-                      to={`/summits?association=${encodeURIComponent(summit.association || '')}`}
+                      to={`/summits?association=${encodeURIComponent(summit.association || "")}`}
                       className="text-green-400 hover:text-green-300 transition-colors underline decoration-dotted"
                       title={`View all summits in ${summit.association}`}
                     >
@@ -344,7 +358,7 @@ export function SummitPage() {
                     </Link>
                     <span className="text-teal-400/60">/</span>
                     <Link
-                      to={`/summits?association=${encodeURIComponent(summit.association || '')}&region=${encodeURIComponent(summit.region || '')}`}
+                      to={`/summits?association=${encodeURIComponent(summit.association || "")}&region=${encodeURIComponent(summit.region || "")}`}
                       className="text-blue-400 hover:text-blue-300 transition-colors underline decoration-dotted"
                       title={`View all summits in ${summit.region}`}
                     >
@@ -359,37 +373,35 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <Navigation className="w-5 h-5 mr-2" />
-                {t('summitPage.locationAndNearby')}
+                {t("summitPage.locationAndNearby")}
               </h2>
               <p className="text-sm text-gray-400 mb-4 font-mono-data">
-                {t('summitPage.locationDesc')}
+                {t("summitPage.locationDesc")}
               </p>
               <div className="h-96 rounded overflow-hidden">
                 <LocationMap
                   latitude={summit.lat}
                   longitude={summit.lon}
-                  sotaSummits={[
-                    // Current summit with distance 0
-                    {
-                      ...summit,
-                      distance: 0,
-                      bearing: 0,
-                      cardinalBearing: 'N' as const,
-                      isActivationZone: true
-                    },
-                    // Nearby summits
-                    ...nearbySummits
-                  ] as never}
+                  sotaSummits={
+                    [
+                      // Current summit with distance 0
+                      {
+                        ...summit,
+                        distance: 0,
+                        bearing: 0,
+                        cardinalBearing: "N" as const,
+                        isActivationZone: true,
+                      },
+                      // Nearby summits
+                      ...nearbySummits,
+                    ] as never
+                  }
                 />
               </div>
             </div>
 
             {/* Weather Forecast */}
-            <WeatherForecast
-              lat={summit.lat}
-              lon={summit.lon}
-              elevation={summit.altitude}
-            />
+            <WeatherForecast lat={summit.lat} lon={summit.lon} elevation={summit.altitude} />
 
             {/* Recent Activations */}
             <RecentActivations summitRef={summit.ref} />
@@ -398,37 +410,58 @@ export function SummitPage() {
             <div className="card-technical rounded p-6 animate-fade-in">
               <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                 <Award className="w-5 h-5 mr-2" />
-                {t('summitPage.activationInfo')}
+                {t("summitPage.activationInfo")}
               </h2>
 
               <div className="space-y-4 text-gray-300">
                 <section>
                   <h3 className="text-lg font-display text-amber-400 mb-2">Points Value</h3>
                   <p>
-                    This summit is worth <strong className="text-green-400">{summit.points} points</strong> for both activators and chasers.
+                    This summit is worth{" "}
+                    <strong className="text-green-400">{summit.points} points</strong> for both
+                    activators and chasers.
                     {summit.bonus && summit.bonus > 0 && (
-                      <> Bonus points: <strong className="text-amber-400">{summit.bonus}</strong>.</>
+                      <>
+                        {" "}
+                        Bonus points: <strong className="text-amber-400">{summit.bonus}</strong>.
+                      </>
                     )}
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
-                    Difficulty: <span className={difficulty.color}>{difficulty.label}</span> (based on altitude and terrain)
+                    Difficulty: <span className={difficulty.color}>{difficulty.label}</span> (based
+                    on altitude and terrain)
                   </p>
                 </section>
 
                 <section>
                   <h3 className="text-lg font-display text-amber-400 mb-2">Activation Zone</h3>
                   <p>
-                    To qualify for a valid activation, you must operate from within <strong>25 meters vertical distance</strong> of the summit.
-                    The app will automatically detect if you&apos;re in the activation zone when using GPS.
+                    To qualify for a valid activation, you must operate from within{" "}
+                    <strong>25 meters vertical distance</strong> of the summit. The app will
+                    automatically detect if you&apos;re in the activation zone when using GPS.
                   </p>
                 </section>
 
                 <section>
                   <h3 className="text-lg font-display text-amber-400 mb-2">Activity Statistics</h3>
                   <p>
-                    This summit has been activated <strong className="text-cyan-400">{summit.activations ?? 0} times</strong> by ham radio operators.
-                    {summit.activations === 0 && <> This is an <strong className="text-green-400">unactivated summit</strong> - be the first!</>}
-                    {(summit.activations ?? 0) > 100 && <> This is a <strong className="text-amber-400">popular summit</strong> with frequent activations.</>}
+                    This summit has been activated{" "}
+                    <strong className="text-cyan-400">{summit.activations ?? 0} times</strong> by
+                    ham radio operators.
+                    {summit.activations === 0 && (
+                      <>
+                        {" "}
+                        This is an <strong className="text-green-400">unactivated summit</strong> -
+                        be the first!
+                      </>
+                    )}
+                    {(summit.activations ?? 0) > 100 && (
+                      <>
+                        {" "}
+                        This is a <strong className="text-amber-400">popular summit</strong> with
+                        frequent activations.
+                      </>
+                    )}
                   </p>
                 </section>
               </div>
@@ -439,9 +472,9 @@ export function SummitPage() {
               <div className="card-technical rounded p-6 animate-fade-in">
                 <h2 className="text-xl font-display glow-teal mb-4 flex items-center">
                   <Mountain className="w-5 h-5 mr-2" />
-                  {t('summitPage.nearbySummits')}
+                  {t("summitPage.nearbySummits")}
                   <span className="ml-2 text-sm text-gray-400 font-mono-data">
-                    {t('summitPage.within50km')}
+                    {t("summitPage.within50km")}
                   </span>
                 </h2>
 
@@ -449,11 +482,21 @@ export function SummitPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-teal-500/30">
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.ref')}</th>
-                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.name')}</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.distance')}</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.altitude')}</th>
-                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">{t('table.points')}</th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">
+                          {t("table.ref")}
+                        </th>
+                        <th className="text-left py-3 px-2 font-mono-data text-xs text-teal-400">
+                          {t("table.name")}
+                        </th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">
+                          {t("table.distance")}
+                        </th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">
+                          {t("table.altitude")}
+                        </th>
+                        <th className="text-right py-3 px-2 font-mono-data text-xs text-teal-400">
+                          {t("table.points")}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -461,7 +504,7 @@ export function SummitPage() {
                         <tr key={s.ref} className="border-b border-gray-700/50 hover:bg-teal-500/5">
                           <td className="py-3 px-2">
                             <Link
-                              to={`/summit/${s.ref.toLowerCase().replace(/\//g, '-')}`}
+                              to={`/summit/${s.ref.toLowerCase().replace(/\//g, "-")}`}
                               className="font-mono-data text-amber-400 hover:text-amber-300"
                             >
                               {s.ref}
@@ -487,15 +530,17 @@ export function SummitPage() {
 
             {/* Offline Access Note */}
             <div className="card-technical rounded p-6 animate-fade-in border-l-4 border-l-green-500">
-              <h2 className="text-xl font-display text-green-400 mb-3">{t('summitPage.offlineAvailable')}</h2>
-              <p className="text-gray-300">
-                {t('summitPage.offlineDesc')}
-              </p>
+              <h2 className="text-xl font-display text-green-400 mb-3">
+                {t("summitPage.offlineAvailable")}
+              </h2>
+              <p className="text-gray-300">{t("summitPage.offlineDesc")}</p>
             </div>
 
             {/* External Resources */}
             <div className="card-technical rounded p-4 animate-fade-in">
-              <h3 className="text-sm font-mono-data text-teal-400/60 mb-3 tracking-wider">{t('summitPage.externalResources')}</h3>
+              <h3 className="text-sm font-mono-data text-teal-400/60 mb-3 tracking-wider">
+                {t("summitPage.externalResources")}
+              </h3>
 
               <div className="space-y-2">
                 <a
@@ -506,8 +551,12 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnGoogleMaps')}</div>
-                    <div className="text-[10px] text-gray-500">{t('summitPage.googleMapsDesc')}</div>
+                    <div className="font-mono-data text-gray-300">
+                      {t("summitPage.viewOnGoogleMaps")}
+                    </div>
+                    <div className="text-[10px] text-gray-500">
+                      {t("summitPage.googleMapsDesc")}
+                    </div>
                   </div>
                 </a>
 
@@ -519,8 +568,8 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnOSM')}</div>
-                    <div className="text-[10px] text-gray-500">{t('summitPage.osmDesc')}</div>
+                    <div className="font-mono-data text-gray-300">{t("summitPage.viewOnOSM")}</div>
+                    <div className="text-[10px] text-gray-500">{t("summitPage.osmDesc")}</div>
                   </div>
                 </a>
 
@@ -532,8 +581,10 @@ export function SummitPage() {
                 >
                   <ExternalLink className="w-4 h-4 text-teal-400/60 mr-2" />
                   <div>
-                    <div className="font-mono-data text-gray-300">{t('summitPage.viewOnSOTAMaps')}</div>
-                    <div className="text-[10px] text-gray-500">{t('summitPage.sotaMapsDesc')}</div>
+                    <div className="font-mono-data text-gray-300">
+                      {t("summitPage.viewOnSOTAMaps")}
+                    </div>
+                    <div className="text-[10px] text-gray-500">{t("summitPage.sotaMapsDesc")}</div>
                   </div>
                 </a>
               </div>
@@ -544,5 +595,5 @@ export function SummitPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

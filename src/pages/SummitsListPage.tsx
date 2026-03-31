@@ -3,12 +3,12 @@
  * Browse and filter all SOTA summits worldwide
  */
 
-import { useState, useEffect } from 'react';
-import { useSummitFilters } from '../hooks/useSummitFilters';
-import { SummitFilters } from '../components/SummitFilters';
-import { SummitTable } from '../components/SummitTable';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
+import { useEffect, useState } from "react";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
+import { SummitFilters } from "../components/SummitFilters";
+import { SummitTable } from "../components/SummitTable";
+import { useSummitFilters } from "../hooks/useSummitFilters";
 
 export function SummitsListPage() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -18,11 +18,11 @@ export function SummitsListPage() {
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -30,14 +30,14 @@ export function SummitsListPage() {
   useEffect(() => {
     const loadMetadata = async () => {
       try {
-        const { sotaDatabase } = await import('../utils/sotaDatabase');
+        const { sotaDatabase } = await import("../utils/sotaDatabase");
         await sotaDatabase.init();
         const metadata = await sotaDatabase.getMetadata();
         if (metadata.buildDate) {
           setSotaBuildDate(metadata.buildDate);
         }
       } catch (error) {
-        console.warn('Failed to load database metadata:', error);
+        console.warn("Failed to load database metadata:", error);
       }
     };
     loadMetadata();
@@ -58,7 +58,7 @@ export function SummitsListPage() {
   } = useSummitFilters();
 
   const handleAssociationClick = (association: string) => {
-    setFilters({ association, region: '' });
+    setFilters({ association, region: "" });
   };
 
   return (
@@ -68,41 +68,39 @@ export function SummitsListPage() {
 
         {/* Main Content */}
         <main className="space-y-4">
-        {/* Error Message */}
-        {error && (
-          <div className="card-technical p-4 border-red-500/40 bg-red-500/10">
-            <p className="text-red-400 font-mono-data text-sm">
-              ❌ Error: {error.message}
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 px-3 py-1 bg-black/60 border border-red-500/40 rounded hover:bg-red-500/20 transition-colors text-red-400 font-mono-data text-xs"
-            >
-              Retry
-            </button>
-          </div>
-        )}
+          {/* Error Message */}
+          {error && (
+            <div className="card-technical p-4 border-red-500/40 bg-red-500/10">
+              <p className="text-red-400 font-mono-data text-sm">❌ Error: {error.message}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-2 px-3 py-1 bg-black/60 border border-red-500/40 rounded hover:bg-red-500/20 transition-colors text-red-400 font-mono-data text-xs"
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
-        {/* Filters */}
-        <SummitFilters
-          filters={filters}
-          setFilters={setFilters}
-          resetFilters={resetFilters}
-          countries={countries}
-          associations={associations}
-          regions={regions}
-          filterRanges={filterRanges}
-        />
+          {/* Filters */}
+          <SummitFilters
+            filters={filters}
+            setFilters={setFilters}
+            resetFilters={resetFilters}
+            countries={countries}
+            associations={associations}
+            regions={regions}
+            filterRanges={filterRanges}
+          />
 
-        {/* Results Table */}
-        <SummitTable
-          summits={summits}
-          totalSummits={totalSummits}
-          currentPage={filters.page}
-          onPageChange={(page) => setFilters({ page })}
-          loading={loading}
-          onAssociationClick={handleAssociationClick}
-        />
+          {/* Results Table */}
+          <SummitTable
+            summits={summits}
+            totalSummits={totalSummits}
+            currentPage={filters.page}
+            onPageChange={(page) => setFilters({ page })}
+            loading={loading}
+            onAssociationClick={handleAssociationClick}
+          />
         </main>
 
         <Footer isOnline={isOnline} sotaCount={totalSummits} sotaBuildDate={sotaBuildDate} />

@@ -1,50 +1,55 @@
-import { useTranslation } from 'react-i18next'
-import { ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { sotaDatabase } from '../utils/sotaDatabase'
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { sotaDatabase } from "../utils/sotaDatabase";
 
 export function Help() {
-  const { t, i18n } = useTranslation()
-  const [sotaCount, setSotaCount] = useState<number | null>(null)
-  const [buildDate, setBuildDate] = useState<string | null>(null)
+  const { t, i18n } = useTranslation();
+  const [sotaCount, setSotaCount] = useState<number | null>(null);
+  const [buildDate, setBuildDate] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await sotaDatabase.init()
-        const stats = await sotaDatabase.getStats()
-        const metadata = await sotaDatabase.getMetadata()
-        setSotaCount(stats.totalSummits)
+        await sotaDatabase.init();
+        const stats = await sotaDatabase.getStats();
+        const metadata = await sotaDatabase.getMetadata();
+        setSotaCount(stats.totalSummits);
 
         // Format build date based on locale
         if (metadata.buildDate) {
-          const date = new Date(metadata.buildDate)
+          const date = new Date(metadata.buildDate);
           const formatted = new Intl.DateTimeFormat(i18n.language, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }).format(date)
-          setBuildDate(formatted)
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }).format(date);
+          setBuildDate(formatted);
         }
       } catch (error) {
-        console.error("Failed to fetch SOTA data:", error)
+        console.error("Failed to fetch SOTA data:", error);
       }
-    }
-    fetchData()
-  }, [i18n.language])
+    };
+    fetchData();
+  }, [i18n.language]);
 
   return (
     <div className="min-h-screen p-4 md:p-8 lg:p-10 relative z-10">
       <div className="mx-auto max-w-4xl">
         <header className="mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 font-mono-data text-teal-400 hover:text-amber-400 transition-colors mb-4">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 font-mono-data text-teal-400 hover:text-amber-400 transition-colors mb-4"
+          >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm tracking-wider">{t('help.backToHome')}</span>
+            <span className="text-sm tracking-wider">{t("help.backToHome")}</span>
           </Link>
           <div className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
-            <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider">DOCUMENTATION</div>
-            <h1 className="text-4xl md:text-5xl font-display glow-amber">{t('help.title')}</h1>
+            <div className="text-xs font-mono-data glow-teal mb-2 tracking-wider">
+              DOCUMENTATION
+            </div>
+            <h1 className="text-4xl md:text-5xl font-display glow-amber">{t("help.title")}</h1>
           </div>
         </header>
 
@@ -53,22 +58,22 @@ export function Help() {
           <section className="card-technical rounded-none border-l-4 border-l-green-500 p-6 corner-accent">
             <h2 className="text-2xl font-display glow-green mb-4 flex items-center gap-3">
               <span className="text-3xl">📱</span>
-              {t('help.offline.title')}
+              {t("help.offline.title")}
             </h2>
             <div className="space-y-4 text-teal-100/90 font-body leading-relaxed">
-              <p>{t('help.offline.pwa')}</p>
+              <p>{t("help.offline.pwa")}</p>
               <div className="data-panel rounded p-4 space-y-2 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="text-amber-400 mt-1">▹</span>
-                  <span>{t('help.offline.cache')}</span>
+                  <span>{t("help.offline.cache")}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-amber-400 mt-1">▹</span>
-                  <span>{t('help.offline.data')}</span>
+                  <span>{t("help.offline.data")}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-amber-400 mt-1">▹</span>
-                  <span>{t('help.offline.gps')}</span>
+                  <span>{t("help.offline.gps")}</span>
                 </div>
               </div>
             </div>
@@ -78,22 +83,22 @@ export function Help() {
           <section className="card-technical rounded-none border-l-4 border-l-teal-500 p-6 corner-accent">
             <h2 className="text-2xl font-display glow-teal mb-4 flex items-center gap-3">
               <span className="text-3xl">📍</span>
-              {t('help.accuracy.title')}
+              {t("help.accuracy.title")}
             </h2>
             <div className="space-y-4 text-teal-100/90 font-body leading-relaxed">
-              <p>{t('help.accuracy.gpsLimits')}</p>
+              <p>{t("help.accuracy.gpsLimits")}</p>
               <div className="data-panel rounded p-4 space-y-2 text-sm">
                 <div className="flex items-start gap-2">
                   <span className="text-teal-400 mt-1">▹</span>
-                  <span>{t('help.accuracy.obstacles')}</span>
+                  <span>{t("help.accuracy.obstacles")}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-teal-400 mt-1">▹</span>
-                  <span>{t('help.accuracy.agps')}</span>
+                  <span>{t("help.accuracy.agps")}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-teal-400 mt-1">▹</span>
-                  <span>{t('help.accuracy.estimation')}</span>
+                  <span>{t("help.accuracy.estimation")}</span>
                 </div>
               </div>
             </div>
@@ -103,38 +108,54 @@ export function Help() {
           <section className="card-technical rounded-none border-l-4 border-l-amber-500 p-6 corner-accent">
             <h2 className="text-2xl font-display glow-amber mb-4 flex items-center gap-3">
               <span className="text-3xl">🌍</span>
-              {t('help.data.title')}
+              {t("help.data.title")}
             </h2>
             <div className="space-y-5 text-teal-100/90 font-body leading-relaxed">
               <div className="data-panel rounded border-l-4 border-l-green-400 p-4">
-                <p className="font-bold text-green-300">🏔️ {t('help.data.worldwide')}</p>
+                <p className="font-bold text-green-300">🏔️ {t("help.data.worldwide")}</p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">SOTA Summit Database</h3>
-                <p className="text-sm">{sotaCount ? t('help.data.sota', { count: sotaCount }) : '...'}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  SOTA Summit Database
+                </h3>
+                <p className="text-sm">
+                  {sotaCount ? t("help.data.sota", { count: sotaCount }) : "..."}
+                </p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">Summit Information</h3>
-                <p className="text-sm">{t('help.data.summitInfo')}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  Summit Information
+                </h3>
+                <p className="text-sm">{t("help.data.summitInfo")}</p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">{t('help.data.database')}</h3>
-                <p className="text-sm mb-3">{t('help.data.databaseSize')}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  {t("help.data.database")}
+                </h3>
+                <p className="text-sm mb-3">{t("help.data.databaseSize")}</p>
                 <div className="data-panel rounded p-3 border-l-2 border-l-cyan-400">
-                  <p className="text-xs text-cyan-200">⚡ {t('help.data.databasePerformance')}</p>
+                  <p className="text-xs text-cyan-200">⚡ {t("help.data.databasePerformance")}</p>
                 </div>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">Database Updates</h3>
-                <p className="text-sm">{buildDate ? t('help.data.databaseUpdate', { date: buildDate }) : '...'}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  Database Updates
+                </h3>
+                <p className="text-sm">
+                  {buildDate ? t("help.data.databaseUpdate", { date: buildDate }) : "..."}
+                </p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">{t('label.elevation')}</h3>
-                <p className="text-sm">{t('help.data.elevation')}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  {t("label.elevation")}
+                </h3>
+                <p className="text-sm">{t("help.data.elevation")}</p>
               </div>
               <div>
-                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">{t('help.data.addressTitle')}</h3>
-                <p className="text-sm">{t('help.data.address')}</p>
+                <h3 className="font-display text-lg mb-2 text-teal-300 tracking-wide">
+                  {t("help.data.addressTitle")}
+                </h3>
+                <p className="text-sm">{t("help.data.address")}</p>
               </div>
             </div>
           </section>
@@ -143,20 +164,26 @@ export function Help() {
           <section className="card-technical rounded-none border-l-4 border-l-red-500 p-6 corner-accent">
             <h2 className="text-2xl font-display text-red-400 mb-4 flex items-center gap-3">
               <span className="text-3xl">🔧</span>
-              {t('help.troubleshooting.title')}
+              {t("help.troubleshooting.title")}
             </h2>
             <div className="space-y-5 text-teal-100/90 font-body leading-relaxed">
               <div className="data-panel rounded p-4">
-                <h3 className="font-display text-base mb-2 text-red-300 tracking-wide">❌ {t('help.troubleshooting.noLocationTitle')}</h3>
-                <p className="text-sm">{t('help.troubleshooting.noLocation')}</p>
+                <h3 className="font-display text-base mb-2 text-red-300 tracking-wide">
+                  ❌ {t("help.troubleshooting.noLocationTitle")}
+                </h3>
+                <p className="text-sm">{t("help.troubleshooting.noLocation")}</p>
               </div>
               <div className="data-panel rounded p-4">
-                <h3 className="font-display text-base mb-2 text-yellow-300 tracking-wide">⏱️ {t('help.troubleshooting.slowTitle')}</h3>
-                <p className="text-sm">{t('help.troubleshooting.slow')}</p>
+                <h3 className="font-display text-base mb-2 text-yellow-300 tracking-wide">
+                  ⏱️ {t("help.troubleshooting.slowTitle")}
+                </h3>
+                <p className="text-sm">{t("help.troubleshooting.slow")}</p>
               </div>
               <div className="data-panel rounded p-4">
-                <h3 className="font-display text-base mb-2 text-orange-300 tracking-wide">⚠️ {t('help.troubleshooting.wrongDataTitle')}</h3>
-                <p className="text-sm">{t('help.troubleshooting.wrongData')}</p>
+                <h3 className="font-display text-base mb-2 text-orange-300 tracking-wide">
+                  ⚠️ {t("help.troubleshooting.wrongDataTitle")}
+                </h3>
+                <p className="text-sm">{t("help.troubleshooting.wrongData")}</p>
               </div>
             </div>
           </section>
@@ -168,10 +195,10 @@ export function Help() {
             className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded text-slate-900 font-display text-base tracking-wider transition-all duration-300"
           >
             <ArrowLeft className="w-5 h-5" />
-            {t('help.backToHome')}
+            {t("help.backToHome")}
           </Link>
         </footer>
       </div>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Audiowide&family=Iceland&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Audiowide&family=Iceland&display=swap");
 
 :root {
   /* Vintage Radio Technical Color System */
@@ -16,11 +16,11 @@
 }
 
 body {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   color: #e0f0ff;
   overflow-x: hidden;
+  /* Radio frequency spectrum lines */
   background:
-    /* Radio frequency spectrum lines */
     repeating-linear-gradient(
       180deg,
       transparent,
@@ -56,14 +56,14 @@ body {
 
 /* VFD display scanline (static overlay - no animation) */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  /* Fine grain static */
   background:
-    /* Fine grain static */
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
     /* Scanlines */
     repeating-linear-gradient(
@@ -73,7 +73,9 @@ body::before {
       rgba(0, 0, 0, 0.05) 1px,
       rgba(0, 0, 0, 0.05) 2px
     );
-  background-size: 128px 128px, 100% 2px;
+  background-size:
+    128px 128px,
+    100% 2px;
   pointer-events: none;
   z-index: 1;
   opacity: 0.3;
@@ -83,40 +85,44 @@ body::before {
 
 /* Typography styles - Vintage Radio Aesthetic */
 .font-display {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .font-radio-dial {
-  font-family: 'Audiowide', sans-serif;
+  font-family: "Audiowide", sans-serif;
   font-weight: 400;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
 .font-mono-data {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
   font-weight: 400;
   letter-spacing: 0.05em;
 }
 
 .font-vfd {
-  font-family: 'Iceland', sans-serif;
+  font-family: "Iceland", sans-serif;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .font-body {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: "Share Tech Mono", monospace;
 }
 
 /* Card with technical borders */
 .card-technical {
   position: relative;
-  background: linear-gradient(135deg, rgba(var(--bg-panel), 0.6) 0%, rgba(var(--bg-panel), 0.8) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bg-panel), 0.6) 0%,
+    rgba(var(--bg-panel), 0.8) 100%
+  );
   backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--grid-line), 0.2);
   box-shadow:
@@ -126,13 +132,14 @@ body::before {
 }
 
 .card-technical::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     transparent 0%,
     rgba(var(--accent-teal), 0.5) 50%,
     transparent 100%
@@ -147,20 +154,19 @@ body::before {
 }
 
 .data-panel::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(var(--accent-teal), 0.02) 3px,
-      rgba(var(--accent-teal), 0.02) 4px
-    );
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(var(--accent-teal), 0.02) 3px,
+    rgba(var(--accent-teal), 0.02) 4px
+  );
   pointer-events: none;
 }
 
@@ -197,7 +203,8 @@ body::before {
 }
 
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -218,10 +225,10 @@ body::before {
   }
 }
 
-
 .btn-primary {
   position: relative;
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(var(--accent-amber), 0.9) 0%,
     rgba(var(--accent-amber), 0.7) 100%
   );
@@ -234,7 +241,8 @@ body::before {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg,
+  background: linear-gradient(
+    135deg,
     rgba(var(--accent-amber), 1) 0%,
     rgba(var(--accent-amber), 0.8) 100%
   );
@@ -250,7 +258,7 @@ body::before {
 /* Corner decorations for technical feel */
 .corner-accent::before,
 .corner-accent::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 12px;
   height: 12px;
@@ -288,8 +296,11 @@ body::before {
 
 /* Radio tuner dial appearance */
 .radio-panel {
-  background:
-    linear-gradient(135deg, rgba(var(--bg-radio-dial), 0.9) 0%, rgba(var(--bg-radio-dial), 0.7) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bg-radio-dial), 0.9) 0%,
+    rgba(var(--bg-radio-dial), 0.7) 100%
+  );
   border: 2px solid rgba(var(--grid-line), 0.3);
   box-shadow:
     inset 0 2px 8px rgba(0, 0, 0, 0.6),
@@ -300,17 +311,16 @@ body::before {
 }
 
 .radio-panel::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.1) 2px,
-      rgba(0, 0, 0, 0.1) 3px
-    );
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 3px
+  );
   pointer-events: none;
 }
 
@@ -324,24 +334,30 @@ body::before {
 
 .signal-bar {
   flex: 1;
-  background: linear-gradient(
-    to top,
-    rgba(var(--vfd-green), 0.8),
-    rgba(var(--vfd-green), 0.3)
-  );
+  background: linear-gradient(to top, rgba(var(--vfd-green), 0.8), rgba(var(--vfd-green), 0.3));
   border-radius: 1px;
   box-shadow: 0 0 4px rgba(var(--vfd-green), 0.5);
 }
 
-.signal-bar:nth-child(1) { height: 30%; }
-.signal-bar:nth-child(2) { height: 50%; }
-.signal-bar:nth-child(3) { height: 70%; }
-.signal-bar:nth-child(4) { height: 85%; }
-.signal-bar:nth-child(5) { height: 100%; }
+.signal-bar:nth-child(1) {
+  height: 30%;
+}
+.signal-bar:nth-child(2) {
+  height: 50%;
+}
+.signal-bar:nth-child(3) {
+  height: 70%;
+}
+.signal-bar:nth-child(4) {
+  height: 85%;
+}
+.signal-bar:nth-child(5) {
+  height: 100%;
+}
 
 /* Frequency display styling */
 .freq-display {
-  font-family: 'Iceland', sans-serif;
+  font-family: "Iceland", sans-serif;
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(var(--vfd-green), 0.3);
   padding: 8px 16px;
@@ -368,8 +384,11 @@ body::before {
 /* Radio button styling */
 .radio-btn {
   position: relative;
-  background:
-    linear-gradient(180deg, rgba(var(--accent-amber), 0.9), rgba(var(--accent-amber), 0.7));
+  background: linear-gradient(
+    180deg,
+    rgba(var(--accent-amber), 0.9),
+    rgba(var(--accent-amber), 0.7)
+  );
   border: 3px solid rgb(var(--accent-amber));
   box-shadow:
     0 0 20px rgba(var(--accent-amber), 0.4),
@@ -382,8 +401,7 @@ body::before {
 }
 
 .radio-btn:hover {
-  background:
-    linear-gradient(180deg, rgba(var(--accent-amber), 1), rgba(var(--accent-amber), 0.8));
+  background: linear-gradient(180deg, rgba(var(--accent-amber), 1), rgba(var(--accent-amber), 0.8));
   box-shadow:
     0 0 30px rgba(var(--accent-amber), 0.6),
     0 8px 24px rgba(0, 0, 0, 0.6),
@@ -415,7 +433,8 @@ body::before {
 }
 
 @keyframes pulse-slower {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -428,7 +447,8 @@ body::before {
 }
 
 @keyframes pulse-slowest {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.2;
   }
   50% {
@@ -441,7 +461,8 @@ body::before {
 }
 
 @keyframes twinkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -499,7 +520,8 @@ body::before {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -540,7 +562,8 @@ body::before {
   0% {
     opacity: 0;
   }
-  20%, 100% {
+  20%,
+  100% {
     opacity: 1;
   }
 }
@@ -550,10 +573,12 @@ body::before {
 }
 
 @keyframes fade-in-delayed-2 {
-  0%, 10% {
+  0%,
+  10% {
     opacity: 0;
   }
-  30%, 100% {
+  30%,
+  100% {
     opacity: 1;
   }
 }
@@ -563,10 +588,12 @@ body::before {
 }
 
 @keyframes fade-in-delayed-3 {
-  0%, 20% {
+  0%,
+  20% {
     opacity: 0;
   }
-  40%, 100% {
+  40%,
+  100% {
     opacity: 1;
   }
 }
@@ -576,10 +603,12 @@ body::before {
 }
 
 @keyframes fade-in-delayed-4 {
-  0%, 30% {
+  0%,
+  30% {
     opacity: 0;
   }
-  50%, 100% {
+  50%,
+  100% {
     opacity: 1;
   }
 }
@@ -589,10 +618,12 @@ body::before {
 }
 
 @keyframes fade-in-delayed-5 {
-  0%, 40% {
+  0%,
+  40% {
     opacity: 0;
   }
-  60%, 100% {
+  60%,
+  100% {
     opacity: 1;
   }
 }
