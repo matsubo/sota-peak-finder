@@ -1,0 +1,2 @@
+bun run test:e2e
+bun run build && bun run lighthouse

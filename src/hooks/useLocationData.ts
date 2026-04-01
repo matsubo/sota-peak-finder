@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
-import type { LocationData } from '../types/location'
-import { loadLocationData } from '../utils/api'
+import { useEffect, useState } from "react";
+import type { LocationData } from "../types/location";
+import { loadLocationData } from "../utils/api";
 
 export function useLocationData() {
-  const [locationData, setLocationData] = useState<LocationData | null>(null)
+  const [locationData, setLocationData] = useState<LocationData | null>(null);
 
   useEffect(() => {
-    loadLocationData().then(setLocationData)
-  }, [])
+    loadLocationData().then(setLocationData);
+  }, []);
 
-  return locationData
+  return locationData;
 }

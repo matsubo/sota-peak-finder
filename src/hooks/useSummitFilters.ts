@@ -3,9 +3,9 @@
  * Manages filter state, URL sync, and database queries for summit list page
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { sotaDatabase, type SotaSummit } from '../utils/sotaDatabase';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { type SotaSummit, sotaDatabase } from "../utils/sotaDatabase";
 
 export interface FilterState {
   country: string;
@@ -18,8 +18,8 @@ export interface FilterState {
   minActivations: number;
   maxActivations: number | undefined;
   searchText: string;
-  sortBy: 'name' | 'altitude' | 'points' | 'activations' | 'ref';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "name" | "altitude" | "points" | "activations" | "ref";
+  sortOrder: "asc" | "desc";
   page: number;
 }
 
@@ -30,18 +30,18 @@ export interface FilterRanges {
 }
 
 const DEFAULT_FILTERS: FilterState = {
-  country: '',
-  association: '',
-  region: '',
+  country: "",
+  association: "",
+  region: "",
   minAltitude: 0,
   maxAltitude: 9000,
   minPoints: 1,
   maxPoints: 10,
   minActivations: 0,
   maxActivations: undefined,
-  searchText: '',
-  sortBy: 'name',
-  sortOrder: 'asc',
+  searchText: "",
+  sortBy: "name",
+  sortOrder: "asc",
   page: 1,
 };
 
@@ -78,12 +78,12 @@ export function useSummitFilters() {
         setFilterRanges(ranges);
 
         // Update default max altitude from DB
-        setFiltersState(prev => ({
+        setFiltersState((prev) => ({
           ...prev,
           maxAltitude: ranges.maxAltitude,
         }));
       } catch (err) {
-        console.error('Failed to load initial data:', err);
+        console.error("Failed to load initial data:", err);
         setError(err as Error);
       }
     };
@@ -99,62 +99,61 @@ export function useSummitFilters() {
     const urlFilters: Partial<FilterState> = {};
 
     // Handle "unactivated" shortcut parameter
-    const unactivated = searchParams.get('unactivated');
-    if (unactivated === 'true') {
+    const unactivated = searchParams.get("unactivated");
+    if (unactivated === "true") {
       urlFilters.minActivations = 0;
       urlFilters.maxActivations = 0;
-      urlFilters.sortBy = 'points';
-      urlFilters.sortOrder = 'desc';
+      urlFilters.sortBy = "points";
+      urlFilters.sortOrder = "desc";
     }
 
-    const country = searchParams.get('country');
+    const country = searchParams.get("country");
     if (country) urlFilters.country = country;
 
-    const association = searchParams.get('association');
+    const association = searchParams.get("association");
     if (association) urlFilters.association = association;
 
-    const region = searchParams.get('region');
+    const region = searchParams.get("region");
     if (region) urlFilters.region = region;
 
-    const minAltitude = searchParams.get('minAltitude');
+    const minAltitude = searchParams.get("minAltitude");
     if (minAltitude) urlFilters.minAltitude = parseInt(minAltitude, 10);
 
-    const maxAltitude = searchParams.get('maxAltitude');
+    const maxAltitude = searchParams.get("maxAltitude");
     if (maxAltitude) urlFilters.maxAltitude = parseInt(maxAltitude, 10);
 
-    const minPoints = searchParams.get('minPoints');
+    const minPoints = searchParams.get("minPoints");
     if (minPoints) urlFilters.minPoints = parseInt(minPoints, 10);
 
-    const maxPoints = searchParams.get('maxPoints');
+    const maxPoints = searchParams.get("maxPoints");
     if (maxPoints) urlFilters.maxPoints = parseInt(maxPoints, 10);
 
-    const minActivations = searchParams.get('minActivations');
+    const minActivations = searchParams.get("minActivations");
     if (minActivations) urlFilters.minActivations = parseInt(minActivations, 10);
 
-    const maxActivations = searchParams.get('maxActivations');
+    const maxActivations = searchParams.get("maxActivations");
     if (maxActivations) urlFilters.maxActivations = parseInt(maxActivations, 10);
 
-    const searchText = searchParams.get('search');
+    const searchText = searchParams.get("search");
     if (searchText) urlFilters.searchText = searchText;
 
-    const sortBy = searchParams.get('sortBy') as FilterState['sortBy'];
-    if (sortBy && ['name', 'altitude', 'points', 'activations', 'ref'].includes(sortBy)) {
+    const sortBy = searchParams.get("sortBy") as FilterState["sortBy"];
+    if (sortBy && ["name", "altitude", "points", "activations", "ref"].includes(sortBy)) {
       urlFilters.sortBy = sortBy;
     }
 
-    const sortOrder = searchParams.get('sortOrder') as FilterState['sortOrder'];
-    if (sortOrder && ['asc', 'desc'].includes(sortOrder)) {
+    const sortOrder = searchParams.get("sortOrder") as FilterState["sortOrder"];
+    if (sortOrder && ["asc", "desc"].includes(sortOrder)) {
       urlFilters.sortOrder = sortOrder;
     }
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
     if (page) urlFilters.page = parseInt(page, 10);
 
     if (Object.keys(urlFilters).length > 0) {
-      setFiltersState(prev => ({ ...prev, ...urlFilters }));
+      setFiltersState((prev) => ({ ...prev, ...urlFilters }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams.get]);
 
   // Load regions when association changes
   useEffect(() => {
@@ -164,7 +163,7 @@ export function useSummitFilters() {
           const regs = await sotaDatabase.getRegionsByAssociation(filters.association);
           setRegions(regs);
         } catch (err) {
-          console.error('Failed to load regions:', err);
+          console.error("Failed to load regions:", err);
         }
       };
       loadRegions();
@@ -172,11 +171,10 @@ export function useSummitFilters() {
       setRegions([]);
       // Clear region when association is cleared
       if (filters.region) {
-        setFiltersState(prev => ({ ...prev, region: '' }));
+        setFiltersState((prev) => ({ ...prev, region: "" }));
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.association]); // filters.region is intentionally omitted to avoid infinite loops
+  }, [filters.association, filters.region]); // filters.region is intentionally omitted to avoid infinite loops
 
   // Debounced search query
   const performSearch = useCallback(async (currentFilters: FilterState) => {
@@ -205,7 +203,7 @@ export function useSummitFilters() {
       setSummits(result.summits);
       setTotalSummits(result.total);
     } catch (err) {
-      console.error('Search failed:', err);
+      console.error("Search failed:", err);
       setError(err as Error);
       setSummits([]);
       setTotalSummits(0);
@@ -237,41 +235,41 @@ export function useSummitFilters() {
   useEffect(() => {
     const params = new window.URLSearchParams();
 
-    if (filters.country) params.set('country', filters.country);
-    if (filters.association) params.set('association', filters.association);
-    if (filters.region) params.set('region', filters.region);
+    if (filters.country) params.set("country", filters.country);
+    if (filters.association) params.set("association", filters.association);
+    if (filters.region) params.set("region", filters.region);
     if (filters.minAltitude !== DEFAULT_FILTERS.minAltitude) {
-      params.set('minAltitude', filters.minAltitude.toString());
+      params.set("minAltitude", filters.minAltitude.toString());
     }
     if (filters.maxAltitude !== filterRanges.maxAltitude) {
-      params.set('maxAltitude', filters.maxAltitude.toString());
+      params.set("maxAltitude", filters.maxAltitude.toString());
     }
     if (filters.minPoints !== DEFAULT_FILTERS.minPoints) {
-      params.set('minPoints', filters.minPoints.toString());
+      params.set("minPoints", filters.minPoints.toString());
     }
     if (filters.maxPoints !== DEFAULT_FILTERS.maxPoints) {
-      params.set('maxPoints', filters.maxPoints.toString());
+      params.set("maxPoints", filters.maxPoints.toString());
     }
     if (filters.minActivations !== DEFAULT_FILTERS.minActivations) {
-      params.set('minActivations', filters.minActivations.toString());
+      params.set("minActivations", filters.minActivations.toString());
     }
     if (filters.maxActivations !== undefined) {
-      params.set('maxActivations', filters.maxActivations.toString());
+      params.set("maxActivations", filters.maxActivations.toString());
     }
-    if (filters.searchText) params.set('search', filters.searchText);
-    if (filters.sortBy !== DEFAULT_FILTERS.sortBy) params.set('sortBy', filters.sortBy);
-    if (filters.sortOrder !== DEFAULT_FILTERS.sortOrder) params.set('sortOrder', filters.sortOrder);
-    if (filters.page !== DEFAULT_FILTERS.page) params.set('page', filters.page.toString());
+    if (filters.searchText) params.set("search", filters.searchText);
+    if (filters.sortBy !== DEFAULT_FILTERS.sortBy) params.set("sortBy", filters.sortBy);
+    if (filters.sortOrder !== DEFAULT_FILTERS.sortOrder) params.set("sortOrder", filters.sortOrder);
+    if (filters.page !== DEFAULT_FILTERS.page) params.set("page", filters.page.toString());
 
     setSearchParams(params, { replace: true });
   }, [filters, filterRanges.maxAltitude, setSearchParams]);
 
   const setFilters = useCallback((updates: Partial<FilterState>) => {
-    setFiltersState(prev => {
+    setFiltersState((prev) => {
       const newFilters = { ...prev, ...updates };
 
       // Reset page to 1 when filters change (except when page itself is being updated)
-      if (!('page' in updates) && Object.keys(updates).length > 0) {
+      if (!("page" in updates) && Object.keys(updates).length > 0) {
         newFilters.page = 1;
       }
 

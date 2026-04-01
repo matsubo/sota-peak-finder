@@ -1,23 +1,29 @@
-import type { LocationData, Location, GeocodingResult, SotaData, SotaSummitWithDistance } from '../types/location'
-import { haversineDistance, calculateBearing, bearingToCardinal } from './coordinate'
-import { sotaDatabase } from './sotaDatabase'
+import type {
+  GeocodingResult,
+  Location,
+  LocationData,
+  SotaData,
+  SotaSummitWithDistance,
+} from "../types/location";
+import { bearingToCardinal, calculateBearing, haversineDistance } from "./coordinate";
+import { sotaDatabase } from "./sotaDatabase";
 
 /**
  * 国土地理院APIで標高を取得
  */
 export async function getElevation(lat: number, lon: number): Promise<number | null> {
   try {
-    const url = `https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php?lon=${lon}&lat=${lat}&outtype=JSON`
-    const response = await fetch(url)
-    const data = await response.json()
+    const url = `https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php?lon=${lon}&lat=${lat}&outtype=JSON`;
+    const response = await fetch(url);
+    const data = await response.json();
 
     if (data.elevation !== undefined && data.elevation !== null) {
-      return Math.round(data.elevation)
+      return Math.round(data.elevation);
     }
   } catch (error) {
-    console.log('標高取得エラー:', error)
+    console.log("標高取得エラー:", error);
   }
-  return null
+  return null;
 }
 
 /**
@@ -25,29 +31,29 @@ export async function getElevation(lat: number, lon: number): Promise<number | n
  */
 export async function reverseGeocode(lat: number, lon: number): Promise<GeocodingResult | null> {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ja`
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=ja`;
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'OfflineQTH/2.0'
-      }
-    })
-    const data = await response.json()
+        "User-Agent": "OfflineQTH/2.0",
+      },
+    });
+    const data = await response.json();
 
     if (data.address) {
-      const addr = data.address
-      const prefecture = addr.state || addr.province || ''
-      const city = addr.city || addr.town || addr.village || addr.municipality || ''
+      const addr = data.address;
+      const prefecture = addr.state || addr.province || "";
+      const city = addr.city || addr.town || addr.village || addr.municipality || "";
 
       return {
         prefecture,
         city,
-        fullAddress: data.display_name
-      }
+        fullAddress: data.display_name,
+      };
     }
   } catch (error) {
-    console.log('逆ジオコーディングエラー:', error)
+    console.log("逆ジオコーディングエラー:", error);
   }
-  return null
+  return null;
 }
 
 /**
@@ -55,14 +61,14 @@ export async function reverseGeocode(lat: number, lon: number): Promise<Geocodin
  */
 export async function loadLocationData(): Promise<LocationData | null> {
   try {
-    const basePath = import.meta.env.BASE_URL || '/'
-    const response = await fetch(`${basePath}data/location-data.json`)
-    const data = await response.json()
-    console.log('Location data loaded successfully:', data)
-    return data
+    const basePath = import.meta.env.BASE_URL || "/";
+    const response = await fetch(`${basePath}data/location-data.json`);
+    const data = await response.json();
+    console.log("Location data loaded successfully:", data);
+    return data;
   } catch (error) {
-    console.error('Failed to load location data:', error)
-    return null
+    console.error("Failed to load location data:", error);
+    return null;
   }
 }
 
@@ -72,28 +78,28 @@ export async function loadLocationData(): Promise<LocationData | null> {
 export function findLocationInfo(
   lat: number,
   lon: number,
-  locationData: LocationData | null
+  locationData: LocationData | null,
 ): { prefecture: string; city: string; jcc: string; jcg: string } {
-  if (!locationData || !locationData.locations) {
+  if (!locationData?.locations) {
     return {
-      prefecture: 'location.unknown',
-      city: 'location.unknown',
-      jcc: 'location.unknown',
-      jcg: 'location.unknown'
-    }
+      prefecture: "location.unknown",
+      city: "location.unknown",
+      jcc: "location.unknown",
+      jcg: "location.unknown",
+    };
   }
 
   // 最も近い地点を探す（Haversine距離を使用）
-  let minDistance = Infinity
-  let closestLocation: Location | null = null
+  let minDistance = Infinity;
+  let closestLocation: Location | null = null;
 
   for (const location of locationData.locations) {
     // 球面距離（メートル）を計算
-    const distance = haversineDistance(lat, lon, location.lat, location.lon)
+    const distance = haversineDistance(lat, lon, location.lat, location.lon);
 
     if (distance < minDistance) {
-      minDistance = distance
-      closestLocation = location
+      minDistance = distance;
+      closestLocation = location;
     }
   }
 
@@ -102,16 +108,16 @@ export function findLocationInfo(
       prefecture: closestLocation.prefecture,
       city: closestLocation.city,
       jcc: closestLocation.jcc,
-      jcg: closestLocation.jcg
-    }
+      jcg: closestLocation.jcg,
+    };
   }
 
   return {
-    prefecture: 'location.unknown',
-    city: 'location.unknown',
-    jcc: 'location.unknown',
-    jcg: 'location.unknown'
-  }
+    prefecture: "location.unknown",
+    city: "location.unknown",
+    jcc: "location.unknown",
+    jcg: "location.unknown",
+  };
 }
 
 /**
@@ -119,29 +125,29 @@ export function findLocationInfo(
  */
 export function findJccJcgByCity(
   city: string,
-  locationData: LocationData | null
+  locationData: LocationData | null,
 ): { jcc: string; jcg: string } {
-  if (!locationData || !locationData.locations) {
+  if (!locationData?.locations) {
     return {
-      jcc: 'location.unknown',
-      jcg: 'location.unknown'
-    }
+      jcc: "location.unknown",
+      jcg: "location.unknown",
+    };
   }
 
   // 市区町村名で完全一致検索
-  const location = locationData.locations.find(loc => loc.city === city)
+  const location = locationData.locations.find((loc) => loc.city === city);
 
   if (location) {
     return {
       jcc: location.jcc,
-      jcg: location.jcg
-    }
+      jcg: location.jcg,
+    };
   }
 
   return {
-    jcc: 'location.unknown',
-    jcg: 'location.unknown'
-  }
+    jcc: "location.unknown",
+    jcg: "location.unknown",
+  };
 }
 
 /**
@@ -153,32 +159,11 @@ export function findJccJcgByCity(
  */
 export async function initSotaDatabase(): Promise<boolean> {
   try {
-    await sotaDatabase.init()
-    return true
+    await sotaDatabase.init();
+    return true;
   } catch (error) {
-    console.error('Failed to initialize SOTA database:', error)
-    return false
-  }
-}
-
-/**
- * SOTAデータのロード（後方互換性のため維持）
- *
- * @deprecated Use initSotaDatabase() instead for worldwide support
- */
-export async function loadSotaData(): Promise<SotaData | null> {
-  console.warn('loadSotaData() is deprecated. Database is initialized automatically.')
-  try {
-    await sotaDatabase.init()
-    return {
-      version: '2.0.0',
-      lastUpdate: new Date().toISOString().split('T')[0],
-      region: 'Worldwide',
-      summits: [] // Empty array for backward compatibility
-    }
-  } catch (error) {
-    console.error('Failed to load SOTA data:', error)
-    return null
+    console.error("Failed to initialize SOTA database:", error);
+    return false;
   }
 }
 
@@ -199,28 +184,28 @@ export async function findNearbySotaSummits(
   lon: number,
   _sotaData: SotaData | null = null,
   limit: number = 10,
-  radiusKm: number = 50
+  radiusKm: number = 50,
 ): Promise<SotaSummitWithDistance[]> {
   try {
     // SQLiteデータベースから検索
-    const summits = await sotaDatabase.findNearby(lat, lon, radiusKm, limit)
+    const summits = await sotaDatabase.findNearby(lat, lon, radiusKm, limit);
 
     // 距離情報に加えて方位情報を追加
-    return summits.map(summit => {
-      const bearing = calculateBearing(lat, lon, summit.lat, summit.lon)
-      const cardinalBearing = bearingToCardinal(bearing)
+    return summits.map((summit) => {
+      const bearing = calculateBearing(lat, lon, summit.lat, summit.lon);
+      const cardinalBearing = bearingToCardinal(bearing);
       return {
         ...summit,
         distance: summit.distance * 1000, // Convert km to meters for consistency
         bearing,
         cardinalBearing,
         isActivationZone: false, // 初期値（後で標高情報と合わせて判定）
-        verticalDistance: null // 標高差（現在地の標高が必要なため、後で計算）
-      }
-    })
+        verticalDistance: null, // 標高差（現在地の標高が必要なため、後で計算）
+      };
+    });
   } catch (error) {
-    console.error('Failed to find nearby SOTA summits:', error)
-    return []
+    console.error("Failed to find nearby SOTA summits:", error);
+    return [];
   }
 }
 
@@ -228,26 +213,26 @@ export async function findNearbySotaSummits(
  * SOTA activation record for a summit
  */
 export interface SummitActivation {
-  id: number
-  userId: number
-  activationDate: string
-  ownCallsign: string
-  qsos: number
+  id: number;
+  userId: number;
+  activationDate: string;
+  ownCallsign: string;
+  qsos: number;
 }
 
 /**
  * SOTA activator log record
  */
 export interface ActivatorLogEntry {
-  ActivationId: number
-  ActivationDate: string
-  OwnCallsign: string
-  SummitCode: string
-  Summit: string
-  Points: number
-  BonusPoints: number
-  Total: number
-  QSOs: number
+  ActivationId: number;
+  ActivationDate: string;
+  OwnCallsign: string;
+  SummitCode: string;
+  Summit: string;
+  Points: number;
+  BonusPoints: number;
+  Total: number;
+  QSOs: number;
 }
 
 /**
@@ -255,23 +240,23 @@ export interface ActivatorLogEntry {
  */
 export async function fetchSummitActivations(
   summitRef: string,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<SummitActivation[]> {
-  const slashIndex = summitRef.indexOf('/')
-  if (slashIndex === -1) return []
+  const slashIndex = summitRef.indexOf("/");
+  if (slashIndex === -1) return [];
 
-  const association = summitRef.substring(0, slashIndex)
-  const summitCode = summitRef.substring(slashIndex + 1)
+  const association = summitRef.substring(0, slashIndex);
+  const summitCode = summitRef.substring(slashIndex + 1);
 
-  const url = `https://api2.sota.org.uk/api/activations/${association}/${summitCode}`
-  const response = await fetch(url)
+  const url = `https://api2.sota.org.uk/api/activations/${association}/${summitCode}`;
+  const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch activations: ${response.status}`)
+    throw new Error(`Failed to fetch activations: ${response.status}`);
   }
 
-  const data: SummitActivation[] = await response.json()
-  return data.slice(0, limit)
+  const data: SummitActivation[] = await response.json();
+  return data.slice(0, limit);
 }
 
 /**
@@ -279,15 +264,15 @@ export async function fetchSummitActivations(
  */
 export async function fetchActivatorHistory(
   userId: number,
-  limit: number = 1000
+  limit: number = 1000,
 ): Promise<ActivatorLogEntry[]> {
-  const url = `https://api-db2.sota.org.uk/logs/activator/${userId}/${limit}/1`
-  const response = await fetch(url)
+  const url = `https://api-db2.sota.org.uk/logs/activator/${userId}/${limit}/1`;
+  const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch activator history: ${response.status}`)
+    throw new Error(`Failed to fetch activator history: ${response.status}`);
   }
 
-  const data: ActivatorLogEntry[] = await response.json()
-  return data
+  const data: ActivatorLogEntry[] = await response.json();
+  return data;
 }

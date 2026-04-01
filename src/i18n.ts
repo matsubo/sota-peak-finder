@@ -1,10 +1,9 @@
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
-import LanguageDetector from 'i18next-browser-languagedetector'
-
+import i18n from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
+import enTranslation from "./locales/en/translation.json";
 // 翻訳リソースを直接インポート
-import jaTranslation from './locales/ja/translation.json'
-import enTranslation from './locales/en/translation.json'
+import jaTranslation from "./locales/ja/translation.json";
 
 i18n
   .use(LanguageDetector)
@@ -12,22 +11,22 @@ i18n
   .init({
     resources: {
       ja: {
-        translation: jaTranslation
+        translation: jaTranslation,
       },
       en: {
-        translation: enTranslation
-      }
+        translation: enTranslation,
+      },
     },
-    fallbackLng: 'ja',
-    supportedLngs: ['ja', 'en'],
+    fallbackLng: "ja",
+    supportedLngs: ["ja", "en"],
     debug: false,
     interpolation: {
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
+      order: ["localStorage", "navigator"],
+      caches: ["localStorage"],
     },
-  })
+  });
 
-export default i18n
+i18n;

@@ -3,7 +3,7 @@
  * Based on standard geohash algorithm (base32)
  */
 
-const BASE32 = '0123456789bcdefghjkmnpqrstuvwxyz';
+const BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 /**
  * Encode latitude/longitude to geohash
@@ -16,7 +16,7 @@ export function encodeGeohash(lat: number, lon: number, precision: number = 5): 
   let idx = 0;
   let bit = 0;
   let evenBit = true;
-  let geohash = '';
+  let geohash = "";
 
   let latMin = -90;
   let latMax = 90;
@@ -116,24 +116,24 @@ export function getGeohashCenter(geohash: string): [number, number] {
  */
 export function getAdjacentGeohashes(geohash: string): string[] {
   const neighbors: { [key: string]: { [key: string]: string } } = {
-    right: { even: 'bc01fg45238967deuvhjyznpkmstqrwx', odd: 'p0r21436x8zb9dcf5h7kjnmqesgutwvy' },
-    left: { even: '238967debc01fg45kmstqrwxuvhjyznp', odd: '14365h7k9dcfesgujnmqp0r2twvyx8zb' },
-    top: { even: 'p0r21436x8zb9dcf5h7kjnmqesgutwvy', odd: 'bc01fg45238967deuvhjyznpkmstqrwx' },
-    bottom: { even: '14365h7k9dcfesgujnmqp0r2twvyx8zb', odd: '238967debc01fg45kmstqrwxuvhjyznp' }
+    right: { even: "bc01fg45238967deuvhjyznpkmstqrwx", odd: "p0r21436x8zb9dcf5h7kjnmqesgutwvy" },
+    left: { even: "238967debc01fg45kmstqrwxuvhjyznp", odd: "14365h7k9dcfesgujnmqp0r2twvyx8zb" },
+    top: { even: "p0r21436x8zb9dcf5h7kjnmqesgutwvy", odd: "bc01fg45238967deuvhjyznpkmstqrwx" },
+    bottom: { even: "14365h7k9dcfesgujnmqp0r2twvyx8zb", odd: "238967debc01fg45kmstqrwxuvhjyznp" },
   };
 
   const borders: { [key: string]: { [key: string]: string } } = {
-    right: { even: 'bcfguvyz', odd: 'prxz' },
-    left: { even: '0145hjnp', odd: '028b' },
-    top: { even: 'prxz', odd: 'bcfguvyz' },
-    bottom: { even: '028b', odd: '0145hjnp' }
+    right: { even: "bcfguvyz", odd: "prxz" },
+    left: { even: "0145hjnp", odd: "028b" },
+    top: { even: "prxz", odd: "bcfguvyz" },
+    bottom: { even: "028b", odd: "0145hjnp" },
   };
 
   function getNeighbor(hash: string, direction: string): string {
-    if (!hash) return '';
+    if (!hash) return "";
     const lastChar = hash[hash.length - 1];
     let parent = hash.slice(0, -1);
-    const type = hash.length % 2 === 0 ? 'even' : 'odd';
+    const type = hash.length % 2 === 0 ? "even" : "odd";
 
     if (borders[direction][type].indexOf(lastChar) !== -1 && parent) {
       parent = getNeighbor(parent, direction);
@@ -144,14 +144,14 @@ export function getAdjacentGeohashes(geohash: string): string[] {
   }
 
   return [
-    getNeighbor(geohash, 'top'),
-    getNeighbor(getNeighbor(geohash, 'top'), 'right'),
-    getNeighbor(geohash, 'right'),
-    getNeighbor(getNeighbor(geohash, 'bottom'), 'right'),
-    getNeighbor(geohash, 'bottom'),
-    getNeighbor(getNeighbor(geohash, 'bottom'), 'left'),
-    getNeighbor(geohash, 'left'),
-    getNeighbor(getNeighbor(geohash, 'top'), 'left')
+    getNeighbor(geohash, "top"),
+    getNeighbor(getNeighbor(geohash, "top"), "right"),
+    getNeighbor(geohash, "right"),
+    getNeighbor(getNeighbor(geohash, "bottom"), "right"),
+    getNeighbor(geohash, "bottom"),
+    getNeighbor(getNeighbor(geohash, "bottom"), "left"),
+    getNeighbor(geohash, "left"),
+    getNeighbor(getNeighbor(geohash, "top"), "left"),
   ];
 }
 
@@ -167,11 +167,4 @@ export function encodeGeohash4(lat: number, lon: number): string {
  */
 export function encodeGeohash5(lat: number, lon: number): string {
   return encodeGeohash(lat, lon, 5);
-}
-
-/**
- * Get 8 adjacent geohash-4 cells
- */
-export function getAdjacentGeohash4(geohash: string): string[] {
-  return getAdjacentGeohashes(geohash);
 }
