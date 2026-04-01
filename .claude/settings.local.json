@@ -58,7 +58,8 @@
       "Bash(done)",
       "Bash(npx biome:*)",
       "Bash(git stash:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }
