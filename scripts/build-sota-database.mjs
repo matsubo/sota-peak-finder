@@ -11,21 +11,21 @@
  *   public/data/sota.db
  */
 
-import { Database } from 'bun:sqlite';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { Database } from "bun:sqlite";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const CSV_PATH = process.argv[2] || '/tmp/sota-summits-worldwide.csv';
-const OUTPUT_PATH = path.join(__dirname, '../public/data/sota.db');
+const CSV_PATH = process.argv[2] || "/tmp/sota-summits-worldwide.csv";
+const OUTPUT_PATH = path.join(__dirname, "../public/data/sota.db");
 const BATCH_SIZE = 1000;
 
-console.log('🏔️  Building SOTA SQLite Database');
-console.log('=====================================\n');
+console.log("🏔️  Building SOTA SQLite Database");
+console.log("=====================================\n");
 console.log(`Input CSV:  ${CSV_PATH}`);
 console.log(`Output DB:  ${OUTPUT_PATH}\n`);
 
@@ -38,26 +38,26 @@ if (!fs.existsSync(outputDir)) {
 // Remove existing database
 if (fs.existsSync(OUTPUT_PATH)) {
   fs.unlinkSync(OUTPUT_PATH);
-  console.log('🗑️  Removed existing database');
+  console.log("🗑️  Removed existing database");
 }
 
 // Read CSV file
 if (!fs.existsSync(CSV_PATH)) {
   console.error(`❌ CSV file not found: ${CSV_PATH}`);
-  console.error('\nPlease download the worldwide SOTA CSV from:');
-  console.error('https://www.sotadata.org.uk/\n');
+  console.error("\nPlease download the worldwide SOTA CSV from:");
+  console.error("https://www.sotadata.org.uk/\n");
   process.exit(1);
 }
 
-const csvContent = fs.readFileSync(CSV_PATH, 'utf-8');
-const lines = csvContent.split('\n');
+const csvContent = fs.readFileSync(CSV_PATH, "utf-8");
+const lines = csvContent.split("\n");
 console.log(`📄 Read ${lines.length.toLocaleString()} lines from CSV\n`);
 
 // Initialize database
-console.log('🔧 Creating database schema...');
+console.log("🔧 Creating database schema...");
 const db = new Database(OUTPUT_PATH);
-db.exec('PRAGMA journal_mode = WAL');
-db.exec('PRAGMA synchronous = NORMAL');
+db.exec("PRAGMA journal_mode = WAL");
+db.exec("PRAGMA synchronous = NORMAL");
 
 // Create schema
 db.exec(`
@@ -100,7 +100,7 @@ db.exec(`
   );
 `);
 
-console.log('✅ Schema created\n');
+console.log("✅ Schema created\n");
 
 // Prepare insert statements
 const insertSummit = db.prepare(`
@@ -114,7 +114,7 @@ const insertSpatialIndex = db.prepare(`
 `);
 
 // Parse CSV and insert data
-console.log('📥 Importing summits...');
+console.log("📥 Importing summits...");
 let processed = 0;
 let skipped = 0;
 let errors = 0;
@@ -138,19 +138,13 @@ const insertBatch = db.transaction((summitBatch) => {
         summit.association,
         summit.region,
         summit.validFrom,
-        summit.validTo
+        summit.validTo,
       );
 
       const summitId = result.lastInsertRowid;
 
       // Insert into spatial index (point represented as bbox with same min/max)
-      insertSpatialIndex.run(
-        summitId,
-        summit.lat,
-        summit.lat,
-        summit.lon,
-        summit.lon
-      );
+      insertSpatialIndex.run(summitId, summit.lat, summit.lat, summit.lon, summit.lon);
 
       processed++;
     } catch (error) {
@@ -172,16 +166,16 @@ for (const line of dataLines) {
   try {
     // Parse CSV line (handle quoted fields with commas)
     const parts = [];
-    let current = '';
+    let current = "";
     let inQuotes = false;
 
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
       if (char === '"') {
         inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
+      } else if (char === "," && !inQuotes) {
         parts.push(current.trim());
-        current = '';
+        current = "";
       } else {
         current += char;
       }
@@ -199,16 +193,16 @@ for (const line of dataLines) {
       regionName,
       summitName,
       altM,
-      altFt,
-      gridRef1,
-      gridRef2,
+      _altFt,
+      _gridRef1,
+      _gridRef2,
       longitude,
       latitude,
       points,
       bonusPoints,
       validFrom,
       validTo,
-      activationCount
+      activationCount,
     ] = parts;
 
     const lat = parseFloat(latitude);
@@ -217,7 +211,7 @@ for (const line of dataLines) {
     const pts = parseInt(points, 10);
 
     // Validate numeric values
-    if (isNaN(lat) || isNaN(lon) || isNaN(altitude) || isNaN(pts)) {
+    if (Number.isNaN(lat) || Number.isNaN(lon) || Number.isNaN(altitude) || Number.isNaN(pts)) {
       skipped++;
       continue;
     }
@@ -230,7 +224,7 @@ for (const line of dataLines) {
 
     batch.push({
       ref: summitCode,
-      name: summitName.replace(/^"|"$/g, ''),
+      name: summitName.replace(/^"|"$/g, ""),
       lat,
       lon,
       altitude,
@@ -240,7 +234,7 @@ for (const line of dataLines) {
       association: associationName,
       region: regionName,
       validFrom: validFrom || null,
-      validTo: validTo || null
+      validTo: validTo || null,
     });
 
     // Insert batch when it reaches BATCH_SIZE
@@ -267,10 +261,10 @@ if (batch.length > 0) {
 }
 
 console.log(`\r   Processed: ${processed.toLocaleString()} summits    `);
-console.log('\n✅ Import complete\n');
+console.log("\n✅ Import complete\n");
 
 // Add metadata
-console.log('📝 Adding metadata...');
+console.log("📝 Adding metadata...");
 const buildDate = new Date().toISOString();
 db.exec(`
   INSERT INTO metadata (key, value) VALUES
@@ -280,41 +274,43 @@ db.exec(`
 `);
 
 // Optimize database
-console.log('🔧 Optimizing database...');
+console.log("🔧 Optimizing database...");
 // Switch from WAL to DELETE journal mode for portable single-file database
 // WAL mode requires separate -wal/-shm files which don't work with sqlite3_deserialize
-db.exec('PRAGMA journal_mode = DELETE');
-db.exec('VACUUM');
-db.exec('ANALYZE');
+db.exec("PRAGMA journal_mode = DELETE");
+db.exec("VACUUM");
+db.exec("ANALYZE");
 
 // Get statistics
-const stats = db.query('SELECT COUNT(*) as count FROM summits').get();
+const stats = db.query("SELECT COUNT(*) as count FROM summits").get();
 const dbSize = fs.statSync(OUTPUT_PATH).size;
 const dbSizeMB = (dbSize / 1024 / 1024).toFixed(2);
 
 // Get association breakdown
-const associations = db.query(`
+const associations = db
+  .query(`
   SELECT association, COUNT(*) as count
   FROM summits
   GROUP BY association
   ORDER BY count DESC
   LIMIT 10
-`).all();
+`)
+  .all();
 
 db.close();
 
-console.log('✅ Database optimized\n');
-console.log('📊 Statistics');
-console.log('=====================================');
+console.log("✅ Database optimized\n");
+console.log("📊 Statistics");
+console.log("=====================================");
 console.log(`Total summits:    ${stats.count.toLocaleString()}`);
 console.log(`Skipped lines:    ${skipped.toLocaleString()}`);
 console.log(`Errors:           ${errors.toLocaleString()}`);
 console.log(`Database size:    ${dbSizeMB} MB`);
 console.log(`\nTop associations:`);
-associations.forEach(a => {
+associations.forEach((a) => {
   console.log(`  ${a.association.padEnd(20)} ${a.count.toLocaleString()}`);
 });
-console.log('\n✅ Database ready at:', OUTPUT_PATH);
-console.log('\nNext steps:');
-console.log('  1. Run: bun run dev');
-console.log('  2. Test the app with worldwide SOTA data\n');
+console.log("\n✅ Database ready at:", OUTPUT_PATH);
+console.log("\nNext steps:");
+console.log("  1. Run: bun run dev");
+console.log("  2. Test the app with worldwide SOTA data\n");

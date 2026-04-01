@@ -1,17 +1,17 @@
 export interface WeatherDay {
-  date: string
-  weatherCode: number
-  tempMax: number
-  tempMin: number
-  precipitationSum: number
-  windSpeedMax: number
-  windGustsMax: number
+  date: string;
+  weatherCode: number;
+  tempMax: number;
+  tempMin: number;
+  precipitationSum: number;
+  windSpeedMax: number;
+  windGustsMax: number;
 }
 
 export interface WeatherForecastData {
-  days: WeatherDay[]
-  elevation: number
-  fetchedAt: string
+  days: WeatherDay[];
+  elevation: number;
+  fetchedAt: string;
 }
 
 /**
@@ -19,27 +19,27 @@ export interface WeatherForecastData {
  * Full spec: https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM
  */
 export type WeatherCondition =
-  | 'clear'
-  | 'partlyCloudy'
-  | 'cloudy'
-  | 'fog'
-  | 'drizzle'
-  | 'rain'
-  | 'snow'
-  | 'showers'
-  | 'thunderstorm'
+  | "clear"
+  | "partlyCloudy"
+  | "cloudy"
+  | "fog"
+  | "drizzle"
+  | "rain"
+  | "snow"
+  | "showers"
+  | "thunderstorm";
 
 export function wmoCodeToCondition(code: number): WeatherCondition {
-  if (code === 0) return 'clear'
-  if (code <= 2) return 'partlyCloudy'
-  if (code === 3) return 'cloudy'
-  if (code >= 45 && code <= 48) return 'fog'
-  if (code >= 51 && code <= 57) return 'drizzle'
-  if (code >= 61 && code <= 67) return 'rain'
-  if (code >= 71 && code <= 77) return 'snow'
-  if (code >= 80 && code <= 82) return 'showers'
-  if (code >= 95 && code <= 99) return 'thunderstorm'
-  return 'cloudy' // fallback
+  if (code === 0) return "clear";
+  if (code <= 2) return "partlyCloudy";
+  if (code === 3) return "cloudy";
+  if (code >= 45 && code <= 48) return "fog";
+  if (code >= 51 && code <= 57) return "drizzle";
+  if (code >= 61 && code <= 67) return "rain";
+  if (code >= 71 && code <= 77) return "snow";
+  if (code >= 80 && code <= 82) return "showers";
+  if (code >= 95 && code <= 99) return "thunderstorm";
+  return "cloudy"; // fallback
 }
 
 /**
@@ -49,16 +49,16 @@ export function wmoCodeToCondition(code: number): WeatherCondition {
 export async function fetchWeatherForecast(
   lat: number,
   lon: number,
-  elevation: number
+  elevation: number,
 ): Promise<WeatherForecastData> {
   const daily = [
-    'temperature_2m_max',
-    'temperature_2m_min',
-    'precipitation_sum',
-    'wind_speed_10m_max',
-    'wind_gusts_10m_max',
-    'weather_code'
-  ].join(',')
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "precipitation_sum",
+    "wind_speed_10m_max",
+    "wind_gusts_10m_max",
+    "weather_code",
+  ].join(",");
 
   const url =
     `https://api.open-meteo.com/v1/forecast` +
@@ -67,31 +67,29 @@ export async function fetchWeatherForecast(
     `&elevation=${elevation}` +
     `&daily=${daily}` +
     `&timezone=auto` +
-    `&forecast_days=7`
+    `&forecast_days=7`;
 
-  const response = await fetch(url)
+  const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Open-Meteo API error: ${response.status}`)
+    throw new Error(`Open-Meteo API error: ${response.status}`);
   }
 
-  const data = await response.json()
+  const data = await response.json();
 
-  const days: WeatherDay[] = data.daily.time.map(
-    (date: string, i: number) => ({
-      date,
-      weatherCode: data.daily.weather_code[i],
-      tempMax: Math.round(data.daily.temperature_2m_max[i]),
-      tempMin: Math.round(data.daily.temperature_2m_min[i]),
-      precipitationSum: data.daily.precipitation_sum[i],
-      windSpeedMax: Math.round(data.daily.wind_speed_10m_max[i]),
-      windGustsMax: Math.round(data.daily.wind_gusts_10m_max[i])
-    })
-  )
+  const days: WeatherDay[] = data.daily.time.map((date: string, i: number) => ({
+    date,
+    weatherCode: data.daily.weather_code[i],
+    tempMax: Math.round(data.daily.temperature_2m_max[i]),
+    tempMin: Math.round(data.daily.temperature_2m_min[i]),
+    precipitationSum: data.daily.precipitation_sum[i],
+    windSpeedMax: Math.round(data.daily.wind_speed_10m_max[i]),
+    windGustsMax: Math.round(data.daily.wind_gusts_10m_max[i]),
+  }));
 
   return {
     days,
     elevation: data.elevation,
-    fetchedAt: new Date().toISOString()
-  }
+    fetchedAt: new Date().toISOString(),
+  };
 }

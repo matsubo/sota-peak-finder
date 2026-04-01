@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import type { SotaData } from '../types/location'
-import { initSotaDatabase } from '../utils/api'
+import { useEffect, useState } from "react";
+import type { SotaData } from "../types/location";
+import { initSotaDatabase } from "../utils/api";
 
 /**
  * SOTA データベースの初期化フック
@@ -10,32 +10,32 @@ import { initSotaDatabase } from '../utils/api'
  * @returns isReady: データベースが初期化済みか, error: 初期化エラー
  */
 export function useSotaData() {
-  const [isReady, setIsReady] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    let mounted = true
+    let mounted = true;
 
     initSotaDatabase()
       .then((success) => {
         if (mounted) {
-          setIsReady(success)
+          setIsReady(success);
           if (!success) {
-            setError(new Error('Failed to initialize SOTA database'))
+            setError(new Error("Failed to initialize SOTA database"));
           }
         }
       })
       .catch((err) => {
         if (mounted) {
-          setError(err)
-          setIsReady(false)
+          setError(err);
+          setIsReady(false);
         }
-      })
+      });
 
     return () => {
-      mounted = false
-    }
-  }, [])
+      mounted = false;
+    };
+  }, []);
 
   // 後方互換性のため、旧形式のオブジェクトも返す
   return {
@@ -43,8 +43,8 @@ export function useSotaData() {
     error,
     // レガシー形式（既存コードとの互換性のため）
     summits: [],
-    version: '2.0.0',
-    lastUpdate: new Date().toISOString().split('T')[0],
-    region: 'Worldwide'
-  } as SotaData & { isReady: boolean; error: Error | null }
+    version: "2.0.0",
+    lastUpdate: new Date().toISOString().split("T")[0],
+    region: "Worldwide",
+  } as SotaData & { isReady: boolean; error: Error | null };
 }

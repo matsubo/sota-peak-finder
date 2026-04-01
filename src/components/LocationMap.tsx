@@ -1,45 +1,54 @@
-import { useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap, useMapEvents } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import { Link } from "react-router-dom";
+import { summitPath } from "../utils/summit";
 
 // Fix Leaflet default marker icon issue with bundlers
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-delete (L.Icon.Default.prototype as any)._getIconUrl
+// biome-ignore lint/suspicious/noExplicitAny: Leaflet internal API
+delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-})
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+});
 
 interface SotaSummit {
-  ref: string
-  name: string
-  lat: number
-  lon: number
-  altitude: number
-  points: number
-  distance: number
-  bearing: number
-  cardinalBearing: string
-  isActivationZone: boolean
+  ref: string;
+  name: string;
+  lat: number;
+  lon: number;
+  altitude: number;
+  points: number;
+  distance: number;
+  bearing: number;
+  cardinalBearing: string;
+  isActivationZone: boolean;
 }
 
 interface LocationMapProps {
-  latitude: number
-  longitude: number
-  sotaSummits?: SotaSummit[]
-  isOnline?: boolean
-  onMapClick?: (lat: number, lon: number) => void
-  clickedLocation?: { lat: number; lon: number } | null
+  latitude: number;
+  longitude: number;
+  sotaSummits?: SotaSummit[];
+  isOnline?: boolean;
+  onMapClick?: (lat: number, lon: number) => void;
+  clickedLocation?: { lat: number; lon: number } | null;
 }
 
 // Custom marker icons
 const createCurrentLocationIcon = () => {
   return L.divIcon({
-    className: 'current-location-marker',
+    className: "current-location-marker",
     html: `
       <div style="
         width: 20px;
@@ -52,27 +61,27 @@ const createCurrentLocationIcon = () => {
     `,
     iconSize: [20, 20],
     iconAnchor: [10, 10],
-  })
-}
+  });
+};
 
 const createSummitIcon = (isInRange: boolean, points: number) => {
   // Color based on SOTA points (difficulty/altitude)
-  let color = 'rgb(255, 169, 51)' // 1-3 points (amber)
+  let color = "rgb(255, 169, 51)"; // 1-3 points (amber)
   if (points >= 10) {
-    color = 'rgb(255, 20, 20)' // 10+ points (red - hardest)
+    color = "rgb(255, 20, 20)"; // 10+ points (red - hardest)
   } else if (points >= 8) {
-    color = 'rgb(255, 100, 0)' // 8-9 points (orange-red)
+    color = "rgb(255, 100, 0)"; // 8-9 points (orange-red)
   } else if (points >= 4) {
-    color = 'rgb(0, 255, 255)' // 4-7 points (cyan)
+    color = "rgb(0, 255, 255)"; // 4-7 points (cyan)
   }
 
   // Override with green if in activation zone
   if (isInRange) {
-    color = 'rgb(57, 255, 20)' // VFD green for activation zone
+    color = "rgb(57, 255, 20)"; // VFD green for activation zone
   }
 
   return L.divIcon({
-    className: 'summit-marker',
+    className: "summit-marker",
     html: `
       <div style="
         width: 30px;
@@ -98,50 +107,49 @@ const createSummitIcon = (isInRange: boolean, points: number) => {
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30],
-  })
-}
+  });
+};
 
 // Component to handle map clicks
 function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lon: number) => void }) {
   useMapEvents({
     click: (e) => {
       if (onMapClick) {
-        onMapClick(e.latlng.lat, e.latlng.lng)
+        onMapClick(e.latlng.lat, e.latlng.lng);
       }
     },
-  })
-  return null
+  });
+  return null;
 }
 
 // Component to auto-fit bounds (only on initial load)
 function MapBounds({ latitude, longitude, sotaSummits }: LocationMapProps) {
-  const map = useMap()
-  const hasInitialized = useRef(false)
+  const map = useMap();
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
     // Only fit bounds once on initial load
-    if (hasInitialized.current) return
+    if (hasInitialized.current) return;
 
     if (sotaSummits && sotaSummits.length > 0) {
       const bounds = L.latLngBounds([
         [latitude, longitude],
-        ...sotaSummits.map(s => [s.lat, s.lon] as [number, number])
-      ])
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 })
+        ...sotaSummits.map((s) => [s.lat, s.lon] as [number, number]),
+      ]);
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
     } else {
-      map.setView([latitude, longitude], 13)
+      map.setView([latitude, longitude], 13);
     }
 
-    hasInitialized.current = true
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map]) // Only depend on map, not on data changes
+    hasInitialized.current = true;
+  }, [map, longitude, sotaSummits?.map, sotaSummits?.length, sotaSummits, latitude]); // Only depend on map, not on data changes
 
-  return null
+  return null;
 }
 
 const createClickedLocationIcon = () => {
   return L.divIcon({
-    className: 'clicked-location-marker',
+    className: "clicked-location-marker",
     html: `
       <div style="
         width: 20px;
@@ -154,28 +162,38 @@ const createClickedLocationIcon = () => {
     `,
     iconSize: [20, 20],
     iconAnchor: [10, 10],
-  })
-}
+  });
+};
 
-export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = true, onMapClick, clickedLocation }: LocationMapProps) {
-  const { t } = useTranslation()
+export function LocationMap({
+  latitude,
+  longitude,
+  sotaSummits = [],
+  isOnline = true,
+  onMapClick,
+  clickedLocation,
+}: LocationMapProps) {
+  const { t } = useTranslation();
 
   return (
-    <div className="card-technical rounded-none overflow-hidden corner-accent border-l-4 border-l-teal-500" style={{ height: '400px' }}>
+    <div
+      className="card-technical rounded-none overflow-hidden corner-accent border-l-4 border-l-teal-500"
+      style={{ height: "400px" }}
+    >
       {!isOnline && (
         <div className="absolute top-2 left-2 z-[1000] bg-amber-500/90 text-black px-3 py-1 rounded text-xs font-mono-data">
-          {t('map.offlineNotice')}
+          {t("map.offlineNotice")}
         </div>
       )}
       {onMapClick && (
         <div className="absolute top-2 right-2 z-[1000] bg-blue-500/90 text-white px-3 py-1 rounded text-xs font-mono-data">
-          {t('map.clickToFind')}
+          {t("map.clickToFind")}
         </div>
       )}
       <MapContainer
         center={[latitude, longitude]}
         zoom={13}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: "100%", width: "100%" }}
         zoomControl={true}
       >
         <TileLayer
@@ -191,19 +209,26 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
         <Marker position={[latitude, longitude]} icon={createCurrentLocationIcon()}>
           <Popup>
             <div className="font-mono-data text-xs">
-              <div className="font-bold text-teal-600">{t('map.yourLocation')}</div>
-              <div>{latitude.toFixed(6)}, {longitude.toFixed(6)}</div>
+              <div className="font-bold text-teal-600">{t("map.yourLocation")}</div>
+              <div>
+                {latitude.toFixed(6)}, {longitude.toFixed(6)}
+              </div>
             </div>
           </Popup>
         </Marker>
 
         {/* Clicked location marker (where user clicked) */}
         {clickedLocation && (
-          <Marker position={[clickedLocation.lat, clickedLocation.lon]} icon={createClickedLocationIcon()}>
+          <Marker
+            position={[clickedLocation.lat, clickedLocation.lon]}
+            icon={createClickedLocationIcon()}
+          >
             <Popup>
               <div className="font-mono-data text-xs">
-                <div className="font-bold text-amber-600">{t('map.selectedLocation')}</div>
-                <div>{clickedLocation.lat.toFixed(6)}, {clickedLocation.lon.toFixed(6)}</div>
+                <div className="font-bold text-amber-600">{t("map.selectedLocation")}</div>
+                <div>
+                  {clickedLocation.lat.toFixed(6)}, {clickedLocation.lon.toFixed(6)}
+                </div>
               </div>
             </Popup>
           </Marker>
@@ -212,7 +237,7 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
         {/* SOTA summit markers */}
         {sotaSummits.map((summit) => {
           // Use clicked location if available, otherwise use GPS location
-          const referencePoint = clickedLocation || { lat: latitude, lon: longitude }
+          const referencePoint = clickedLocation || { lat: latitude, lon: longitude };
 
           return (
             <div key={summit.ref}>
@@ -220,13 +245,13 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
               <Polyline
                 positions={[
                   [referencePoint.lat, referencePoint.lon],
-                  [summit.lat, summit.lon]
+                  [summit.lat, summit.lon],
                 ]}
                 pathOptions={{
-                  color: summit.isActivationZone ? 'rgb(102, 255, 153)' : 'rgb(255, 169, 51)',
+                  color: summit.isActivationZone ? "rgb(102, 255, 153)" : "rgb(255, 169, 51)",
                   weight: 2,
                   opacity: 0.6,
-                  dashArray: '10, 5'
+                  dashArray: "10, 5",
                 }}
               />
 
@@ -242,28 +267,28 @@ export function LocationMap({ latitude, longitude, sotaSummits = [], isOnline = 
                     <div className="text-gray-600">
                       {summit.distance < 1000
                         ? `${Math.round(summit.distance)}m`
-                        : `${(summit.distance / 1000).toFixed(1)}km`
-                      } {summit.cardinalBearing}
+                        : `${(summit.distance / 1000).toFixed(1)}km`}{" "}
+                      {summit.cardinalBearing}
                     </div>
                     <div className="text-gray-600">
                       {summit.altitude}m / {summit.points} pts
                     </div>
                     {summit.isActivationZone && (
-                      <div className="text-green-600 font-bold">{t('map.inActivationZone')}</div>
+                      <div className="text-green-600 font-bold">{t("map.inActivationZone")}</div>
                     )}
                     <Link
-                      to={`/summit/${summit.ref.toLowerCase().replace(/\//g, '-')}`}
+                      to={summitPath(summit.ref)}
                       className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-xs font-semibold"
                     >
-                      <span>{t('map.viewDetails')}</span>
+                      <span>{t("map.viewDetails")}</span>
                     </Link>
                   </div>
                 </Popup>
               </Marker>
             </div>
-          )
+          );
         })}
       </MapContainer>
     </div>
-  )
+  );
 }

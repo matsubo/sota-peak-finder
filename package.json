@@ -11,16 +11,24 @@
     "build:all": "bun run build:sota && bun run build:sitemaps && bun run build",
     "setup": "bun scripts/setup-dev-database.ts",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx",
-    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "lint": "biome check --diagnostic-level=error .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "knip": "knip",
+    "lighthouse": "NODE_OPTIONS='--no-deprecation' lhci autorun",
     "version:patch": "npm version patch",
     "version:minor": "npm version minor",
     "version:major": "npm version major",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/typography": "^0.5.19",
@@ -28,17 +36,12 @@
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.57.1",
-    "@typescript-eslint/parser": "^8.57.1",
     "@vitejs/plugin-react": "^5.2.0",
     "autoprefixer": "^10.4.27",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "eslint": "^9.39.4",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-unused-imports": "^4.4.1",
     "husky": "^9.1.7",
+    "knip": "^6.1.0",
     "lint-staged": "^16.4.0",
     "postcss": "^8.5.8",
     "tailwind-merge": "^3.5.0",
@@ -46,6 +49,7 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.2",
     "workbox-window": "^7.4.0"
   },
   "peerDependencies": {
@@ -67,7 +71,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix"
+      "biome check --write"
     ]
   }
 }

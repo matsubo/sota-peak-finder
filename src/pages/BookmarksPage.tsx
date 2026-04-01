@@ -1,29 +1,31 @@
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { Bookmark, Star, Trophy, Trash2 } from 'lucide-react'
-import { Helmet } from 'react-helmet-async'
-import { Header } from '../components/Header'
-import { Footer } from '../components/Footer'
-import { useBookmarks } from '../hooks/useBookmarks'
+import { Bookmark, Star, Trash2, Trophy } from "lucide-react";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
+import { useBookmarks } from "../hooks/useBookmarks";
+import { formatDateShort } from "../utils/date";
+import { summitPath } from "../utils/summit";
 
 interface SummitEntryProps {
-  summitRef: string
-  savedAt: string
-  onRemove: (ref: string) => void
-  removeLabel: string
-  savedAtLabel: string
+  summitRef: string;
+  savedAt: string;
+  locale: string;
+  onRemove: (ref: string) => void;
+  removeLabel: string;
+  savedAtLabel: string;
 }
 
-function SummitEntry({ summitRef, savedAt, onRemove, removeLabel, savedAtLabel }: SummitEntryProps) {
-  const summitUrl = `/summit/${summitRef.toLowerCase().replace(/\//g, '-')}`
-
-  const formatDate = (iso: string) => {
-    try {
-      return new Date(iso).toLocaleDateString()
-    } catch {
-      return ''
-    }
-  }
+function SummitEntry({
+  summitRef,
+  savedAt,
+  locale,
+  onRemove,
+  removeLabel,
+  savedAtLabel,
+}: SummitEntryProps) {
+  const summitUrl = summitPath(summitRef);
 
   return (
     <div className="flex items-center justify-between gap-3 data-panel rounded p-3 hover:bg-teal-500/5 transition-colors">
@@ -35,10 +37,11 @@ function SummitEntry({ summitRef, savedAt, onRemove, removeLabel, savedAtLabel }
           {summitRef}
         </Link>
         <div className="text-[10px] text-teal-400/50 font-mono-data mt-0.5">
-          {savedAtLabel}: {formatDate(savedAt)}
+          {savedAtLabel}: {formatDateShort(savedAt, locale)}
         </div>
       </div>
       <button
+        type="button"
         onClick={() => onRemove(summitRef)}
         title={removeLabel}
         aria-label={removeLabel}
@@ -47,21 +50,21 @@ function SummitEntry({ summitRef, savedAt, onRemove, removeLabel, savedAtLabel }
         <Trash2 className="w-3.5 h-3.5" />
       </button>
     </div>
-  )
+  );
 }
 
 export function BookmarksPage() {
-  const { t } = useTranslation()
-  const { bookmarks, removeBookmark } = useBookmarks()
+  const { t, i18n } = useTranslation();
+  const { bookmarks, removeBookmark } = useBookmarks();
 
-  const wantToGo = Object.entries(bookmarks).filter(([, b]) => b.status === 'want_to_go')
-  const activated = Object.entries(bookmarks).filter(([, b]) => b.status === 'activated')
-  const isEmpty = wantToGo.length === 0 && activated.length === 0
+  const wantToGo = Object.entries(bookmarks).filter(([, b]) => b.status === "want_to_go");
+  const activated = Object.entries(bookmarks).filter(([, b]) => b.status === "activated");
+  const isEmpty = wantToGo.length === 0 && activated.length === 0;
 
   return (
     <>
       <Helmet>
-        <title>{t('bookmarks.title')} | SOTA Peak Finder</title>
+        <title>{t("bookmarks.title")} | SOTA Peak Finder</title>
       </Helmet>
 
       <div className="min-h-screen p-3 sm:p-4 md:p-5 relative z-10">
@@ -77,10 +80,10 @@ export function BookmarksPage() {
                   </div>
                   <div>
                     <h1 className="font-display text-xl text-amber-400 tracking-wider">
-                      {t('bookmarks.title')}
+                      {t("bookmarks.title")}
                     </h1>
                     <p className="text-xs text-teal-300/70 font-mono-data mt-1">
-                      {t('bookmarks.count', { count: wantToGo.length + activated.length })}
+                      {t("bookmarks.count", { count: wantToGo.length + activated.length })}
                     </p>
                   </div>
                 </div>
@@ -92,8 +95,10 @@ export function BookmarksPage() {
             {isEmpty ? (
               <div className="card-technical rounded-none p-10 text-center">
                 <Bookmark className="w-10 h-10 text-teal-400/30 mx-auto mb-3" />
-                <p className="text-gray-400 font-mono-data">{t('bookmarks.empty')}</p>
-                <p className="text-xs text-gray-500 font-mono-data mt-2">{t('bookmarks.emptyDesc')}</p>
+                <p className="text-gray-400 font-mono-data">{t("bookmarks.empty")}</p>
+                <p className="text-xs text-gray-500 font-mono-data mt-2">
+                  {t("bookmarks.emptyDesc")}
+                </p>
               </div>
             ) : (
               <>
@@ -102,7 +107,7 @@ export function BookmarksPage() {
                     <div className="flex items-center gap-2 mb-3">
                       <Star className="w-4 h-4 text-amber-400 fill-current" />
                       <h2 className="font-display text-amber-400 tracking-wider">
-                        {t('bookmarks.wantToGo')}
+                        {t("bookmarks.wantToGo")}
                         <span className="ml-2 text-sm font-mono-data text-amber-400/60">
                           ({wantToGo.length})
                         </span>
@@ -114,9 +119,10 @@ export function BookmarksPage() {
                           key={ref}
                           summitRef={ref}
                           savedAt={b.savedAt}
+                          locale={i18n.language}
                           onRemove={removeBookmark}
-                          removeLabel={t('bookmarks.remove')}
-                          savedAtLabel={t('bookmarks.savedAt')}
+                          removeLabel={t("bookmarks.remove")}
+                          savedAtLabel={t("bookmarks.savedAt")}
                         />
                       ))}
                     </div>
@@ -128,7 +134,7 @@ export function BookmarksPage() {
                     <div className="flex items-center gap-2 mb-3">
                       <Trophy className="w-4 h-4 text-green-400 fill-current" />
                       <h2 className="font-display text-green-400 tracking-wider">
-                        {t('bookmarks.activated')}
+                        {t("bookmarks.activated")}
                         <span className="ml-2 text-sm font-mono-data text-green-400/60">
                           ({activated.length})
                         </span>
@@ -140,9 +146,10 @@ export function BookmarksPage() {
                           key={ref}
                           summitRef={ref}
                           savedAt={b.savedAt}
+                          locale={i18n.language}
                           onRemove={removeBookmark}
-                          removeLabel={t('bookmarks.remove')}
-                          savedAtLabel={t('bookmarks.savedAt')}
+                          removeLabel={t("bookmarks.remove")}
+                          savedAtLabel={t("bookmarks.savedAt")}
                         />
                       ))}
                     </div>
@@ -156,5 +163,5 @@ export function BookmarksPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

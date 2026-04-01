@@ -1,73 +1,76 @@
-import { MapPin, Navigation, TrendingUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useEffect, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { MapPin, Navigation, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 interface HeroMapBannerProps {
-  totalSummits?: number | null
-  isOnline: boolean
+  totalSummits?: number | null;
+  isOnline: boolean;
 }
 
 interface DotPosition {
-  cx: number
-  cy: number
-  r: number
-  opacity: number
-  delay: number
+  cx: number;
+  cy: number;
+  r: number;
+  opacity: number;
+  delay: number;
 }
 
 export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
-  const { t } = useTranslation()
-  const [animatedCount, setAnimatedCount] = useState(0)
+  const { t } = useTranslation();
+  const [animatedCount, setAnimatedCount] = useState(0);
 
   // Pre-generate random positions for dots to avoid impure calls during render
   const dotPositions = useMemo(() => {
-    const generateDots = (count: number, baseX: number, rangeX: number, baseY: number, rangeY: number): DotPosition[] => {
+    const generateDots = (
+      count: number,
+      baseX: number,
+      rangeX: number,
+      baseY: number,
+      rangeY: number,
+    ): DotPosition[] => {
       return Array.from({ length: count }, () => ({
         cx: baseX + Math.random() * rangeX,
         cy: baseY + Math.random() * rangeY,
         r: 1.5 + Math.random() * 1,
         opacity: 0.4 + Math.random() * 0.3,
-        delay: Math.random() * 3
-      }))
-    }
+        delay: Math.random() * 3,
+      }));
+    };
 
     return {
       northAmerica: generateDots(15, 100, 80, 80, 60),
       europe: generateDots(20, 380, 60, 70, 50),
       asia: generateDots(25, 500, 120, 90, 80),
       southAmerica: generateDots(12, 180, 60, 170, 80),
-      australia: generateDots(8, 650, 50, 200, 40)
-    }
-  }, [])
+      australia: generateDots(8, 650, 50, 200, 40),
+    };
+  }, []);
 
   // Animate summit counter
   useEffect(() => {
-    if (!totalSummits) return
+    if (!totalSummits) return;
 
-    const duration = 2000 // 2 seconds
-    const steps = 60
-    const increment = totalSummits / steps
-    let current = 0
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const increment = totalSummits / steps;
+    let current = 0;
 
     const timer = window.setInterval(() => {
-      current += increment
+      current += increment;
       if (current >= totalSummits) {
-        setAnimatedCount(totalSummits)
-        window.clearInterval(timer)
+        setAnimatedCount(totalSummits);
+        window.clearInterval(timer);
       } else {
-        setAnimatedCount(Math.floor(current))
+        setAnimatedCount(Math.floor(current));
       }
-    }, duration / steps)
+    }, duration / steps);
 
-    return () => window.clearInterval(timer)
-  }, [totalSummits])
+    return () => window.clearInterval(timer);
+  }, [totalSummits]);
 
   return (
-    <Link
-      to="/nearby"
-      className="block group animate-fade-in"
-    >
+    <Link to="/nearby" className="block group animate-fade-in">
       <div className="relative overflow-hidden rounded-none border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-950/40 via-black/60 to-teal-950/40 hover:from-blue-900/50 hover:via-black/70 hover:to-teal-900/50 transition-all duration-500">
         {/* Animated Grid Background */}
         <div className="absolute inset-0 opacity-20">
@@ -78,7 +81,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
                 linear-gradient(to right, rgb(34 211 238 / 0.1) 1px, transparent 1px),
                 linear-gradient(to bottom, rgb(34 211 238 / 0.1) 1px, transparent 1px)
               `,
-              backgroundSize: '40px 40px'
+              backgroundSize: "40px 40px",
             }}
           />
         </div>
@@ -89,13 +92,18 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
         {/* World Map Dots Pattern */}
         <div className="absolute inset-0 opacity-30">
-          <svg className="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
+          <svg
+            className="w-full h-full"
+            viewBox="0 0 800 300"
+            preserveAspectRatio="xMidYMid slice"
+            aria-hidden="true"
+          >
             {/* Simplified world map as dot clusters */}
             {/* North America */}
             <g className="animate-fade-in-delayed-1">
-              {dotPositions.northAmerica.map((dot, i) => (
+              {dotPositions.northAmerica.map((dot) => (
                 <circle
-                  key={`na-${i}`}
+                  key={`na-${dot.cx}-${dot.cy}`}
                   cx={dot.cx}
                   cy={dot.cy}
                   r={dot.r}
@@ -109,9 +117,9 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
             {/* Europe */}
             <g className="animate-fade-in-delayed-2">
-              {dotPositions.europe.map((dot, i) => (
+              {dotPositions.europe.map((dot) => (
                 <circle
-                  key={`eu-${i}`}
+                  key={`eu-${dot.cx}-${dot.cy}`}
                   cx={dot.cx}
                   cy={dot.cy}
                   r={dot.r}
@@ -125,9 +133,9 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
             {/* Asia */}
             <g className="animate-fade-in-delayed-3">
-              {dotPositions.asia.map((dot, i) => (
+              {dotPositions.asia.map((dot) => (
                 <circle
-                  key={`as-${i}`}
+                  key={`as-${dot.cx}-${dot.cy}`}
                   cx={dot.cx}
                   cy={dot.cy}
                   r={dot.r}
@@ -141,9 +149,9 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
             {/* South America */}
             <g className="animate-fade-in-delayed-4">
-              {dotPositions.southAmerica.map((dot, i) => (
+              {dotPositions.southAmerica.map((dot) => (
                 <circle
-                  key={`sa-${i}`}
+                  key={`sa-${dot.cx}-${dot.cy}`}
                   cx={dot.cx}
                   cy={dot.cy}
                   r={dot.r}
@@ -157,9 +165,9 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
 
             {/* Australia */}
             <g className="animate-fade-in-delayed-5">
-              {dotPositions.australia.map((dot, i) => (
+              {dotPositions.australia.map((dot) => (
                 <circle
-                  key={`au-${i}`}
+                  key={`au-${dot.cx}-${dot.cy}`}
                   cx={dot.cx}
                   cy={dot.cy}
                   r={dot.r}
@@ -172,8 +180,26 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
             </g>
 
             {/* Connection lines between continents (subtle) */}
-            <line x1="180" y1="110" x2="380" y2="100" stroke="rgb(34 211 238)" strokeWidth="0.5" opacity="0.15" className="animate-draw-line" />
-            <line x1="440" y1="90" x2="550" y2="120" stroke="rgb(34 211 238)" strokeWidth="0.5" opacity="0.15" className="animate-draw-line" />
+            <line
+              x1="180"
+              y1="110"
+              x2="380"
+              y2="100"
+              stroke="rgb(34 211 238)"
+              strokeWidth="0.5"
+              opacity="0.15"
+              className="animate-draw-line"
+            />
+            <line
+              x1="440"
+              y1="90"
+              x2="550"
+              y2="120"
+              stroke="rgb(34 211 238)"
+              strokeWidth="0.5"
+              opacity="0.15"
+              className="animate-draw-line"
+            />
           </svg>
         </div>
 
@@ -185,30 +211,32 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-blue-400/60 text-xs font-mono-data tracking-wider">
                   <MapPin className="w-4 h-4" />
-                  <span>{t('hero.gpsLocationFinder')}</span>
+                  <span>{t("hero.gpsLocationFinder")}</span>
                 </div>
 
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-display leading-tight">
-                  <span className="glow-blue">{t('hero.findNearest')}</span>
+                  <span className="glow-blue">{t("hero.findNearest")}</span>
                   <br />
-                  <span className="glow-amber">{t('hero.sotaSummits')}</span>
+                  <span className="glow-amber">{t("hero.sotaSummits")}</span>
                 </h2>
 
                 <p className="text-teal-200/70 text-sm sm:text-base font-mono-data leading-relaxed">
-                  {t('hero.description')}
+                  {t("hero.description")}
                 </p>
 
                 <div className="flex items-center gap-4 pt-2">
                   <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-sm">
-                    <div className="text-xs font-mono-data text-blue-400/60 mb-1">{t('hero.worldwide')}</div>
+                    <div className="text-xs font-mono-data text-blue-400/60 mb-1">
+                      {t("hero.worldwide")}
+                    </div>
                     <div className="text-2xl font-mono-data glow-blue">
-                      {totalSummits ? animatedCount.toLocaleString() : '---'}
+                      {totalSummits ? animatedCount.toLocaleString() : "---"}
                     </div>
                   </div>
 
                   <div className="text-xs font-mono-data text-teal-400/60 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4" />
-                    {isOnline ? t('hero.onlineMode') : t('hero.offlineMode')}
+                    {isOnline ? t("hero.onlineMode") : t("hero.offlineMode")}
                   </div>
                 </div>
 
@@ -216,7 +244,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
                   <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-teal-500/20 border border-blue-500/40 rounded-sm group-hover:border-blue-400/60 group-hover:bg-gradient-to-r group-hover:from-blue-500/30 group-hover:to-teal-500/30 transition-all duration-300">
                     <Navigation className="w-5 h-5 text-blue-400 group-hover:rotate-45 transition-transform duration-500" />
                     <span className="font-display text-lg tracking-wider text-blue-300">
-                      {t('hero.activateGPS')}
+                      {t("hero.activateGPS")}
                     </span>
                     <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
                   </div>
@@ -233,7 +261,7 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
                   <div className="relative">
                     <img
                       src={`${import.meta.env.BASE_URL}images/mountain-seeker-screenshot.png`}
-                      alt={t('hero.imageAlt')}
+                      alt={t("hero.imageAlt")}
                       className="relative rounded-lg border-2 border-blue-500/40 shadow-2xl group-hover:border-blue-400/60 transition-all duration-300"
                       loading="lazy"
                       width="600"
@@ -259,5 +287,5 @@ export function HeroMapBanner({ totalSummits, isOnline }: HeroMapBannerProps) {
         <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
     </Link>
-  )
+  );
 }
