@@ -58,7 +58,7 @@
   "dependencies": {
     "@sqlite.org/sqlite-wasm": "^3.51.2-build8",
     "esbuild": "^0.27.4",
-    "i18next": "^25.8.18",
+    "i18next": "^26.0.3",
     "i18next-browser-languagedetector": "^8.2.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.7.0",
