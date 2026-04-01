@@ -30,7 +30,7 @@
     "@biomejs/biome": "^2.4.9",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.58.2",
-    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/bun": "latest",
     "@types/leaflet": "^1.9.21",
@@ -45,7 +45,7 @@
     "lint-staged": "^16.4.0",
     "postcss": "^8.5.8",
     "tailwind-merge": "^3.5.0",
-    "tailwindcss": "^4.2.1",
+    "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.3",
     "vite-plugin-pwa": "^1.2.0",
@@ -67,7 +67,7 @@
     "react-helmet-async": "^2.0.5",
     "react-i18next": "^17.0.2",
     "react-leaflet": "^5.0.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
