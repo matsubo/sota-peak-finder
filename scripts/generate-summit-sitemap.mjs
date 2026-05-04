@@ -90,27 +90,33 @@ chunks.forEach((chunk, index) => {
   console.log(`✅ Generated ${filename}`);
 });
 
-// Generate sitemap index if multiple files
-if (numSitemaps > 1) {
-  console.log("\n📑 Generating sitemap index...");
+// Generate Google sitemap index (sitemap.xml) — always output
+console.log("\n📑 Generating sitemap index (sitemap.xml)...");
 
-  const indexPath = path.join(__dirname, "../public/sitemap-index.xml");
+const today = new Date().toISOString().split("T")[0];
+const STATIC_SITEMAP = "sitemap-static.xml";
 
-  let indexXml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  indexXml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+const indexEntries = [STATIC_SITEMAP, ...sitemapFiles];
 
-  sitemapFiles.forEach((filename) => {
-    indexXml += "  <sitemap>\n";
-    indexXml += `    <loc>${BASE_URL}/${filename}</loc>\n`;
-    indexXml += `    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>\n`;
-    indexXml += "  </sitemap>\n";
-  });
+let indexXml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+indexXml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
-  indexXml += "</sitemapindex>\n";
+indexEntries.forEach((filename) => {
+  indexXml += "  <sitemap>\n";
+  indexXml += `    <loc>${BASE_URL}/${filename}</loc>\n`;
+  indexXml += `    <lastmod>${today}</lastmod>\n`;
+  indexXml += "  </sitemap>\n";
+});
 
-  fs.writeFileSync(indexPath, indexXml);
-  console.log(`✅ Generated sitemap-index.xml\n`);
-}
+indexXml += "</sitemapindex>\n";
+
+// Primary sitemap index referenced from robots.txt
+fs.writeFileSync(path.join(__dirname, "../public/sitemap.xml"), indexXml);
+console.log(`✅ Generated sitemap.xml`);
+
+// Mirror for backwards compatibility / Search Console submissions
+fs.writeFileSync(path.join(__dirname, "../public/sitemap-index.xml"), indexXml);
+console.log(`✅ Generated sitemap-index.xml\n`);
 
 db.close();
 
