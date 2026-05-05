@@ -41,6 +41,7 @@ export default defineConfig({
         skipWaiting: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,json,wasm,db}"],
         maximumFileSizeToCacheInBytes: 60 * 1024 * 1024, // 60 MB for SQLite database
+        navigateFallbackDenylist: [/^\/sota-peak-finder\/(sitemap.*\.xml|robots\.txt|llms\.txt)$/i],
         runtimeCaching: [
           {
             // SQLite database - cache first with long expiration
