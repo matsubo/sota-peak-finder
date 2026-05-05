@@ -16,6 +16,7 @@ export default defineConfig({
       manifest: {
         name: "SOTA Peak Finder - Find Summits Worldwide",
         short_name: "SOTA Peak Finder",
+        version: packageJson.version,
         description:
           "Find nearby SOTA summits worldwide with GPS. 179,000+ summits. Works offline.",
         theme_color: "#2196F3",
