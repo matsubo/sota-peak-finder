@@ -59,7 +59,8 @@
       "Bash(npx biome:*)",
       "Bash(git stash:*)",
       "Bash(git push:*)",
-      "Skill(commit-commands:commit-push-pr)"
+      "Skill(commit-commands:commit-push-pr)",
+      "Bash(lsof -iTCP:5173 -sTCP:LISTEN)"
     ]
   }
 }
