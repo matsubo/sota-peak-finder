@@ -7,6 +7,8 @@
 
 import type { Database, Sqlite3Static } from "@sqlite.org/sqlite-wasm";
 import sqlite3InitModule from "@sqlite.org/sqlite-wasm";
+import { haversineDistance } from "./coordinate";
+import { boundingBox, buildSummitSearchQuery, type SummitSearchFilters } from "./summitQuery";
 
 export interface SotaSummit {
   id: number;
@@ -161,16 +163,7 @@ class SotaDatabase {
       await this.init();
     }
 
-    // Calculate bounding box
-    // 1 degree latitude ≈ 111 km
-    // 1 degree longitude ≈ 111 km * cos(latitude)
-    const latDelta = radiusKm / 111;
-    const lonDelta = radiusKm / (111 * Math.cos((lat * Math.PI) / 180));
-
-    const minLat = lat - latDelta;
-    const maxLat = lat + latDelta;
-    const minLon = lon - lonDelta;
-    const maxLon = lon + lonDelta;
+    const { minLat, maxLat, minLon, maxLon } = boundingBox(lat, lon, radiusKm);
 
     // Query using R*Tree spatial index (bounding box only)
     // Distance calculation done in JavaScript since SQLite lacks trig functions
@@ -195,22 +188,11 @@ class SotaDatabase {
       },
     });
 
-    // Calculate Haversine distance in JavaScript
-    const toRad = (deg: number) => (deg * Math.PI) / 180;
-    const results: SotaSummitWithDistance[] = candidates.map((summit) => {
-      const dLat = toRad(summit.lat - lat);
-      const dLon = toRad(summit.lon - lon);
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat)) *
-          Math.cos(toRad(summit.lat)) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = 6371 * c; // km
-
-      return { ...summit, distance };
-    });
+    // Exact distances in JavaScript, since SQLite has no trigonometric functions.
+    const results: SotaSummitWithDistance[] = candidates.map((summit) => ({
+      ...summit,
+      distance: haversineDistance(lat, lon, summit.lat, summit.lon) / 1000,
+    }));
 
     // Sort by distance and return top N
     results.sort((a, b) => a.distance - b.distance);
@@ -449,103 +431,19 @@ class SotaDatabase {
   /**
    * Advanced filtered search with pagination
    */
-  async searchSummits(filters: {
-    association?: string;
-    region?: string;
-    country?: string;
-    minAltitude?: number;
-    maxAltitude?: number;
-    minPoints?: number;
-    maxPoints?: number;
-    minActivations?: number;
-    maxActivations?: number;
-    searchText?: string;
-    sortBy?: "name" | "altitude" | "points" | "activations" | "ref";
-    sortOrder?: "asc" | "desc";
-    offset?: number;
-    limit?: number;
-  }): Promise<{ summits: SotaSummit[]; total: number }> {
+  async searchSummits(
+    filters: SummitSearchFilters & {
+      offset?: number;
+      limit?: number;
+    },
+  ): Promise<{ summits: SotaSummit[]; total: number }> {
     if (!this.db) {
       await this.init();
     }
 
-    const {
-      association,
-      region,
-      country,
-      minAltitude,
-      maxAltitude,
-      minPoints,
-      maxPoints,
-      minActivations,
-      maxActivations,
-      searchText,
-      sortBy = "name",
-      sortOrder = "asc",
-      offset = 0,
-      limit = 20,
-    } = filters;
+    const { offset = 0, limit = 20 } = filters;
 
-    // Build WHERE clause dynamically
-    const whereClauses: string[] = [];
-    const bindings: (string | number)[] = [];
-
-    if (country) {
-      // Filter by country: association must start with country name
-      whereClauses.push("(association = ? OR association LIKE ?)");
-      bindings.push(country, `${country} - %`);
-    }
-
-    if (association) {
-      whereClauses.push("association = ?");
-      bindings.push(association);
-    }
-
-    if (region) {
-      whereClauses.push("region = ?");
-      bindings.push(region);
-    }
-
-    if (minAltitude !== undefined) {
-      whereClauses.push("altitude >= ?");
-      bindings.push(minAltitude);
-    }
-
-    if (maxAltitude !== undefined) {
-      whereClauses.push("altitude <= ?");
-      bindings.push(maxAltitude);
-    }
-
-    if (minPoints !== undefined) {
-      whereClauses.push("points >= ?");
-      bindings.push(minPoints);
-    }
-
-    if (maxPoints !== undefined) {
-      whereClauses.push("points <= ?");
-      bindings.push(maxPoints);
-    }
-
-    if (minActivations !== undefined) {
-      whereClauses.push("activations >= ?");
-      bindings.push(minActivations);
-    }
-
-    if (maxActivations !== undefined) {
-      whereClauses.push("activations <= ?");
-      bindings.push(maxActivations);
-    }
-
-    if (searchText?.trim()) {
-      whereClauses.push("(ref LIKE ? OR name LIKE ?)");
-      const searchPattern = `%${searchText.trim()}%`;
-      bindings.push(searchPattern, searchPattern);
-    }
-
-    const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
-
-    // Build ORDER BY clause
-    const orderByClause = `ORDER BY ${sortBy} ${sortOrder.toUpperCase()}`;
+    const { whereClause, bindings, orderByClause } = buildSummitSearchQuery(filters);
 
     // Count total results
     const countQuery = `SELECT COUNT(*) as total FROM summits ${whereClause}`;

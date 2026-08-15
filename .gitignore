@@ -8,6 +8,7 @@ dist/
 bun.lock
 playwright-report/
 test-results/
+coverage/
 .env
 .env.local
 master.json
