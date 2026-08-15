@@ -363,5 +363,10 @@
     "remove": "Remove",
     "count": "{{count}} bookmarked",
     "headerTitle": "Bookmarks"
+  },
+  "errorBoundary": {
+    "title": "Signal Lost",
+    "description": "Something went wrong while rendering this page. Reloading usually clears it; your bookmarks are stored locally and are safe.",
+    "reload": "Reload"
   }
 }
