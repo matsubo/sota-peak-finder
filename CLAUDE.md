@@ -67,7 +67,10 @@ Summit refs in URLs use lowercase with `-` replacing `/` (e.g., `JA/SO-001` → 
 
 **SQLite WASM constraints**:
 - Always use `PRAGMA journal_mode = DELETE` (WAL breaks `sqlite3_deserialize`)
-- WASM files must live in `public/wasm/`
+- WASM files must live in `public/wasm/`, kept in lockstep with the installed
+  `@sqlite.org/sqlite-wasm` by `bun run sync:wasm` (run automatically by `setup` and `build`).
+  A stale copy makes the newer JS glue request symbols the old binary lacks, and `init()` fails
+  at runtime without breaking the build.
 - OPFS requires COOP/COEP headers; this app uses in-memory mode instead
 
 ### External APIs

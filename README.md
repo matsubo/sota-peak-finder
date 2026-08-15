@@ -186,7 +186,8 @@ bun run build:all
 
 ### Important Notes
 - **Journal Mode**: Always use `PRAGMA journal_mode = DELETE` (WAL breaks `sqlite3_deserialize`)
-- **WASM Files**: Must be in `public/wasm/` directory
+- **WASM Files**: Must be in `public/wasm/` directory, synced from the installed
+  `@sqlite.org/sqlite-wasm` via `bun run sync:wasm` (runs automatically in `setup` and `build`)
 - **OPFS**: Requires COOP/COEP headers (not compatible with standard GitHub Pages)
 
 ## 🎨 Design System

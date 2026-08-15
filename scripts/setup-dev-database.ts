@@ -18,6 +18,10 @@ console.log("🏔️  Setting up SOTA database for local development");
 console.log("==================================================\n");
 
 try {
+  // Keep public/wasm/ in lockstep with the installed @sqlite.org/sqlite-wasm
+  await $`bun run sync:wasm`.quiet();
+  console.log("✅ SQLite WASM assets synced\n");
+
   // Download latest SOTA CSV
   console.log("📥 Downloading latest SOTA database from official source...");
   console.log(`Source: ${CSV_URL}\n`);
