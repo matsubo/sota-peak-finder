@@ -19,7 +19,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Nothing reaches production without the full suite passing first.
+  verify:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: verify
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -55,6 +60,25 @@ jobs:
         run: bun run build
         env:
           VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-PLFT9JFX' }}
+
+      # The verify job tests the database it built itself. This run rebuilds from
+      # a freshly downloaded CSV -- on the weekly cron, that is the only thing
+      # that changes -- so the suite runs once more against the exact database
+      # about to be published. An upstream format change fails here instead of
+      # shipping an empty app.
+      - name: Install Playwright browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E tests against the database being deployed
+        run: bun run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-deploy
+          path: playwright-report/
+          retention-days: 7
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
