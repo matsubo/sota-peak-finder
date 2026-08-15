@@ -119,6 +119,7 @@ function App() {
                   subtitle={t("dashboard.worldwide")}
                   icon={Mountain}
                   color="teal"
+                  testId="total-summits"
                 />
 
                 <StatsCard

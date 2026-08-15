@@ -16,6 +16,8 @@ interface StatsCardProps {
   linkTo?: string;
   color?: "amber" | "teal" | "green" | "blue" | "red";
   className?: string;
+  /** Stable hook for tests; the rendered title is translated and cannot be targeted reliably. */
+  testId?: string;
 }
 
 export function StatsCard({
@@ -27,6 +29,7 @@ export function StatsCard({
   linkTo,
   color = "teal",
   className = "",
+  testId,
 }: StatsCardProps) {
   const colorClasses = {
     amber: "border-l-amber-500 bg-amber-500/5",
@@ -61,7 +64,10 @@ export function StatsCard({
           <div className="text-xs font-mono-data text-teal-400/60 tracking-wider mb-2 uppercase">
             {title}
           </div>
-          <div className={`text-3xl font-mono-data ${textColorClasses[color]} mb-1 tracking-tight`}>
+          <div
+            className={`text-3xl font-mono-data ${textColorClasses[color]} mb-1 tracking-tight`}
+            data-testid={testId ? `${testId}-value` : undefined}
+          >
             {value}
           </div>
           {subtitle && <div className="text-xs text-teal-200/70 font-mono-data">{subtitle}</div>}
