@@ -1,210 +1,81 @@
-# Offline QTH - JCC/JCG Finder
+# SOTA Peak Finder
 
 ## Project Overview
-Offline QTH is a Progressive Web App (PWA) for amateur radio operators in Japan. It helps users find their QTH information (JCC/JCG codes, grid locator, and nearby SOTA summits) using GPS location data. The app works completely offline after the first visit.
+SOTA Peak Finder is a Progressive Web App for amateur radio operators who chase
+or activate SOTA (Summits On The Air) references. It finds nearby summits from
+the device's GPS position, lets the full worldwide summit list be browsed and
+filtered, and shows per-summit detail including weather and recent activation
+history. After the first visit the summit database is cached locally, so summit
+lookup keeps working with no network at all -- which is the normal condition on
+a summit.
 
-**Live Demo:** https://matsubo.github.io/sota-peak-finder/
+**Live site:** https://matsubo.github.io/sota-peak-finder/
+**Source:** https://github.com/matsubo/sota-peak-finder
 
 ## Target Audience
-Amateur radio operators in Japan who need to quickly find:
-- JCC (Japan Century City) codes
-- JCG (Japan Century Gun) codes
-- Grid locator (Maidenhead 6-digit)
-- Nearby SOTA (Summits on the Air) summits with distance and bearing
-- Elevation and accurate address information
+Amateur radio operators worldwide, in two roles:
+- **Activators** heading to a summit, who need the reference, points, altitude
+  and activation-zone boundary, offline and in the field.
+- **Chasers** looking up a summit they have just worked.
+
+## Coverage
+Worldwide. 181,658 summits across every SOTA association, rebuilt weekly from
+the official SOTA summit list at https://storage.sota.org.uk/summitslist.csv.
+This is not limited to any single country.
 
 ## Key Features
-- **Japan-only support**: All data (JCC/JCG/SOTA) is for Japan only
-- **Offline-first**: Works without internet after initial cache
-- **PWA**: Can be installed on home screen as native app
-- **GPS-based**: Auto-detects location and shows relevant information
-- **SOTA support**: Shows nearest 3 SOTA summits with distance, bearing, and activation zone status
-- **Grid locator**: Auto-calculates Maidenhead locator (6-digit)
-- **Elevation**: Uses Japan GSI API for accurate elevation (online mode)
-- **Accurate address**: Uses OpenStreetMap API for prefecture/city (online mode)
-- **Lightweight**: Fast performance with local data
+- GPS-based nearby summit search, ranked by great-circle distance
+- Browse and filter the whole worldwide list by association, region, country,
+  altitude, points and activation count
+- Summit detail: coordinates, grid locator, altitude, points, activation history
+- 7-day weather forecast per summit, altitude-adjusted
+- GPS activation-zone checker comparing device altitude against the summit
+- Bookmarks with "want to go" and "activated" states, stored on the device
+- Activator log history
+- Fully offline after first load; installable as a PWA
+- English and Japanese
+
+## Routes
+| Path | Purpose |
+|------|---------|
+| `/` | Dashboard with worldwide SOTA statistics |
+| `/nearby` | GPS-based nearby summit finder |
+| `/summits` | Browseable and filterable summit list |
+| `/summit/:ref` | Summit detail, weather, activation history |
+| `/activator/:userId` | Activator log history |
+| `/bookmarks` | Saved summits |
+| `/help` | Help |
+
+Summit references appear in URLs lowercased with `/` replaced by `-`:
+`JA/SO-001` becomes `/summit/ja-so-001`.
 
 ## Technology Stack
+- React 19, TypeScript, Vite
+- Tailwind CSS
+- SQLite compiled to WebAssembly (`@sqlite.org/sqlite-wasm`), loaded into memory
+  via `sqlite3_deserialize`
+- R*Tree spatial index for bounding-box queries, exact Haversine distances in JS
+- Workbox service worker for offline support
+- Leaflet with OpenStreetMap tiles
+- i18next
+- Deployed to GitHub Pages
 
-### Frontend
-- **Framework**: React 18 + TypeScript
-- **Build tool**: Vite 6
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **i18n**: react-i18next (Japanese/English)
-- **Router**: react-router-dom
+## Data
+The summit database ships as a prebuilt SQLite file at `/data/sota.db`,
+downloaded once and cached. Each summit record carries: reference, name,
+latitude, longitude, altitude in metres, points, activation count, bonus points,
+association and region.
 
-### PWA & Offline Support
-- **Service Worker**: vite-plugin-pwa
-- **Manifest**: PWA manifest for installability
-- **Cache strategy**:
-  - Static assets: CacheFirst
-  - GSI Elevation API: CacheFirst (30 days)
-  - OpenStreetMap API: NetworkFirst (7 days)
+External APIs used at runtime:
+- `api2.sota.org.uk` -- recent activations for a summit
+- `api-db2.sota.org.uk` -- activator log history
+- `api.open-meteo.com` -- weather forecast
+- `nominatim.openstreetmap.org` -- reverse geocoding
+- `cyberjapandata2.gsi.go.jp` -- elevation data for Japan
 
-### APIs (Online mode only)
-- **Elevation**: Japan GSI (Geospatial Information Authority)
-  - Endpoint: https://cyberjapandata2.gsi.go.jp/general/dem/scripts/getelevation.php
-- **Geocoding**: OpenStreetMap Nominatim
-  - Endpoint: https://nominatim.openstreetmap.org/reverse
-
-### Deployment
-- **Platform**: GitHub Pages
-- **CI/CD**: GitHub Actions
-- **Base URL**: /sota-peak-finder/
-
-## Project Structure
-
-### Source Files
-```
-src/
-├── App.tsx              # Main app component with location display
-├── main.tsx             # App entry point with router
-├── i18n.ts              # i18n configuration (ja/en)
-├── types/
-│   └── location.ts      # TypeScript types for location data
-├── hooks/
-│   ├── useGeolocation.ts    # GPS location hook
-│   ├── useLocationData.ts   # JCC/JCG data loader
-│   └── useSotaData.ts       # SOTA data loader
-├── utils/
-│   ├── api.ts           # API calls (elevation, geocoding)
-│   └── coordinate.ts    # Grid locator calculation
-├── lib/
-│   └── utils.ts         # Utility functions (cn for classnames)
-└── pages/
-    └── Help.tsx         # Help/FAQ page
-```
-
-### Public Assets
-```
-public/
-├── data/
-│   ├── location-data.json   # JCC/JCG location database (1,892 entries)
-│   └── sota-data.json       # SOTA summits database (7,211 summits)
-├── locales/
-│   ├── ja/translation.json  # Japanese translations
-│   └── en/translation.json  # English translations
-├── icon-192.png         # PWA icon 192x192
-├── icon-512.png         # PWA icon 512x512
-├── llms.txt             # This file
-└── sitemap.xml          # Search engine sitemap
-```
-
-## Data Format
-
-### location-data.json
-```json
-{
-  "version": "2.2.0",
-  "lastUpdate": "2024-02-03",
-  "locations": [
-    {
-      "lat": 43.05546,
-      "lon": 141.340956,
-      "prefecture": "北海道",
-      "city": "札幌市中央区",
-      "jcc": "1101",
-      "jcg": "11001"
-    }
-  ]
-}
-```
-**Total entries**: 1,892 municipalities
-
-### sota-data.json
-```json
-{
-  "version": "1.0.0",
-  "lastUpdate": "2026-02-03",
-  "region": "JA/JA5/JA6/JA8",
-  "summits": [
-    {
-      "ref": "JA/AC-001",
-      "name": "Chausuyama",
-      "lat": 35.2276,
-      "lon": 137.6555,
-      "altitude": 1415,
-      "points": 8,
-      "activations": 53,
-      "bonus": 3
-    }
-  ]
-}
-```
-**Total summits**: 7,211 Japanese SOTA summits
-
-## Key Algorithms
-
-### Grid Locator Calculation (Maidenhead)
-1. Longitude: Field (A-R) → Square (00-99) → Subsquare (a-x)
-2. Latitude: Field (A-R) → Square (00-99) → Subsquare (a-x)
-3. Returns 6-character string (e.g., "PM95vr")
-
-### Nearest Location Search
-- Uses Haversine formula to calculate distance
-- Finds nearest JCC/JCG location from GPS coordinates
-- For SOTA: Returns top 3 nearest summits with:
-  - Distance (meters/km)
-  - Bearing (degrees + cardinal direction)
-  - Activation zone check (within 25m vertical distance)
-
-### Offline Detection
-- Checks `navigator.onLine`
-- Falls back to estimated values when offline
-- Shows "(推定)" / "(Estimated)" label for offline data
-
-## Development
-
-### Setup
-```bash
-bun install
-```
-
-### Run locally
-```bash
-bun run dev
-# Opens at http://localhost:5173
-```
-
-### Build
-```bash
-bun run build
-# Output to dist/
-```
-
-### Preview production build
-```bash
-bun run preview
-```
-
-## Important Notes for LLMs
-
-1. **Never hardcode data counts**:
-   - SOTA summits: 7,211 (fetch from sota-data.json dynamically)
-   - JCC/JCG locations: 1,892 (fetch from location-data.json dynamically)
-
-2. **Base URL**: Always use `/sota-peak-finder/` as base path for GitHub Pages
-
-3. **Japan-only**: All features and data are Japan-specific
-
-4. **Offline-first design**:
-   - Core functionality must work without internet
-   - APIs are enhancements, not requirements
-   - Service Worker caches all assets
-
-5. **Mobile-first**: Designed primarily for smartphone use in the field
-
-## License
-MIT License
-
-## Author
-**JE1WFV**
-- X (Twitter): @je1wfv
-- GitHub: matsubo/sota-peak-finder
-- Blog: https://je1wfv.teraren.com/
-
-## Related Links
-- Demo: https://matsubo.github.io/sota-peak-finder/
-- Repository: https://github.com/matsubo/sota-peak-finder
-- Discord: https://discord.gg/Fztt8jwr6A
+## Notes for AI Agents
+- The app is client-side only; there is no backend API to call.
+- Summit data comes from the official SOTA list and is not authored here.
+  Corrections belong upstream with the relevant association manager.
+- Activation-zone logic uses the standard SOTA rule: within 25 vertical metres
+  of the summit.

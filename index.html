@@ -38,6 +38,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#2196F3">
 
+  <!--
+    GitHub Pages cannot set response headers, so the policy is delivered by meta.
+    Directives a meta-delivered policy ignores (frame-ancestors, report-uri,
+    sandbox) are deliberately omitted rather than listed misleadingly.
+
+    'wasm-unsafe-eval' is required: without it the browser refuses to compile
+    sqlite3.wasm and the entire summit database fails to load.
+    'unsafe-inline' covers the Google Tag Manager bootstrap snippet above.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' data: https://fonts.gstatic.com;
+    img-src 'self' data: blob: https://*.tile.openstreetmap.org https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com;
+    connect-src 'self' https://api2.sota.org.uk https://api-db2.sota.org.uk https://api.open-meteo.com https://nominatim.openstreetmap.org https://cyberjapandata2.gsi.go.jp https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com;
+    worker-src 'self' blob:;
+    frame-src https://www.googletagmanager.com;
+    base-uri 'self';
+    form-action 'self';
+    object-src 'none'
+  ">
+
   <title>SOTA Peak Finder - Find Summits Worldwide | Works Offline</title>
   <meta name="description" content="SOTA Peak Finder: Find nearby summits worldwide with GPS. 179,000+ SOTA summits with references, points, altitude, and distance. Fully offline PWA for activators.">
   <meta name="keywords" content="SOTA,Summits On The Air,Peak Finder,ham radio,amateur radio,mountain,summit,activator,offline,PWA,GPS,worldwide,summit finder">

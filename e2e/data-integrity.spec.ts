@@ -60,6 +60,9 @@ test.describe("Pages load without console errors", () => {
     "/sota-peak-finder/",
     "/sota-peak-finder/summits",
     "/sota-peak-finder/bookmarks",
+    // Exercises the widest set of external hosts -- map tiles, weather and the
+    // SOTA APIs -- so it is what actually validates the Content-Security-Policy.
+    "/sota-peak-finder/summit/ja-so-001",
   ]) {
     test(`no console errors on ${route}`, async ({ page }) => {
       const errors = collectPageErrors(page);

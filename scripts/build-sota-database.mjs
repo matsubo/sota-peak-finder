@@ -299,6 +299,17 @@ const associations = db
 
 db.close();
 
+// WAL is used during inserts for speed, so -wal/-shm sidecars exist by this
+// point. Vite copies public/ wholesale, so anything left behind is deployed:
+// remove them rather than shipping stale SQLite scratch files.
+for (const suffix of ["-wal", "-shm"]) {
+  const sidecar = `${OUTPUT_PATH}${suffix}`;
+  if (fs.existsSync(sidecar)) {
+    fs.unlinkSync(sidecar);
+    console.log(`🧹 Removed ${path.basename(sidecar)}`);
+  }
+}
+
 console.log("✅ Database optimized\n");
 console.log("📊 Statistics");
 console.log("=====================================");

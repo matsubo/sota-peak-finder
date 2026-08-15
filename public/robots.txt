@@ -1,14 +1,18 @@
-# Robots.txt for Offline QTH - JCC/JCG Finder
+# Robots.txt for SOTA Peak Finder
 # https://matsubo.github.io/sota-peak-finder/
+#
+# Note: crawlers only read robots.txt from the origin root, so this file is
+# advisory. The rules that actually apply to this site live in
+# https://matsubo.github.io/robots.txt. Paths below are written origin-relative
+# so they can be copied there verbatim.
 
 User-agent: *
-Allow: /
+Allow: /sota-peak-finder/
 
-# Sitemap
+# Data files are large and not useful in an index
+Disallow: /sota-peak-finder/data/
+
+# Locale files are consumed by the app, not by readers
+Disallow: /sota-peak-finder/locales/
+
 Sitemap: https://matsubo.github.io/sota-peak-finder/sitemap.xml
-
-# Prevent indexing of data files
-Disallow: /data/
-
-# Prevent indexing of locale files
-Disallow: /locales/
