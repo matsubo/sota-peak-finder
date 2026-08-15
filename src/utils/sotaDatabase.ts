@@ -78,7 +78,10 @@ class SotaDatabase {
 
       // Download database from network (Service Worker will cache it)
       console.log("📥 Downloading SOTA database...");
-      const response = await fetch(`${basePath}data/sota.db`);
+      // The fingerprint is what invalidates the service worker's CacheFirst copy
+      // when the database changes; without it users would keep the first copy
+      // they ever downloaded until the cache entry expired.
+      const response = await fetch(`${basePath}data/sota.db?v=${__DB_VERSION__}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch database: ${response.statusText}`);
       }
