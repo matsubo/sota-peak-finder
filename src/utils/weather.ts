@@ -1,4 +1,4 @@
-export interface WeatherDay {
+interface WeatherDay {
   date: string;
   weatherCode: number;
   tempMax: number;

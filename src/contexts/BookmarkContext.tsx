@@ -3,7 +3,7 @@ import { trackBookmarkCycle, trackBookmarkRemove } from "../utils/analytics";
 
 export type BookmarkStatus = "want_to_go" | "activated";
 
-export interface Bookmark {
+interface Bookmark {
   status: BookmarkStatus;
   savedAt: string;
 }
