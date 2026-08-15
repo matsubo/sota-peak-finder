@@ -6,6 +6,7 @@ import type {
   SotaSummitWithDistance,
 } from "../types/location";
 import { bearingToCardinal, calculateBearing, haversineDistance } from "./coordinate";
+import { logger } from "./logger";
 import { sotaDatabase } from "./sotaDatabase";
 
 /**
@@ -21,7 +22,7 @@ export async function getElevation(lat: number, lon: number): Promise<number | n
       return Math.round(data.elevation);
     }
   } catch (error) {
-    console.log("標高取得エラー:", error);
+    logger.debug("標高取得エラー:", error);
   }
   return null;
 }
@@ -51,7 +52,7 @@ export async function reverseGeocode(lat: number, lon: number): Promise<Geocodin
       };
     }
   } catch (error) {
-    console.log("逆ジオコーディングエラー:", error);
+    logger.debug("逆ジオコーディングエラー:", error);
   }
   return null;
 }
@@ -64,7 +65,7 @@ export async function loadLocationData(): Promise<LocationData | null> {
     const basePath = import.meta.env.BASE_URL || "/";
     const response = await fetch(`${basePath}data/location-data.json`);
     const data = await response.json();
-    console.log("Location data loaded successfully:", data);
+    logger.debug("Location data loaded successfully:", data);
     return data;
   } catch (error) {
     console.error("Failed to load location data:", error);

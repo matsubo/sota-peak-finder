@@ -8,6 +8,7 @@
 import type { Database, Sqlite3Static } from "@sqlite.org/sqlite-wasm";
 import sqlite3InitModule from "@sqlite.org/sqlite-wasm";
 import { haversineDistance } from "./coordinate";
+import { logger } from "./logger";
 import { boundingBox, buildSummitSearchQuery, type SummitSearchFilters } from "./summitQuery";
 
 export interface SotaSummit {
@@ -65,21 +66,21 @@ class SotaDatabase {
 
   private async _init(): Promise<void> {
     try {
-      console.log("🏔️  Initializing SOTA Database...");
+      logger.debug("🏔️  Initializing SOTA Database...");
 
       // Initialize SQLite WASM
       const basePath = import.meta.env.BASE_URL || "/";
       // @ts-expect-error - sqlite3InitModule type definition is incorrect, it does accept config
       this.sqlite3 = await sqlite3InitModule({
-        print: console.log,
+        print: logger.debug,
         printErr: console.error,
         locateFile: (file: string) => `${basePath}wasm/${file}`,
       });
 
-      console.log("✅ SQLite WASM initialized (version:", this.sqlite3.version.libVersion, ")");
+      logger.debug("✅ SQLite WASM initialized (version:", this.sqlite3.version.libVersion, ")");
 
       // Download database from network (Service Worker will cache it)
-      console.log("📥 Downloading SOTA database...");
+      logger.debug("📥 Downloading SOTA database...");
       // The fingerprint is what invalidates the service worker's CacheFirst copy
       // when the database changes; without it users would keep the first copy
       // they ever downloaded until the cache entry expired.
@@ -114,7 +115,7 @@ class SotaDatabase {
         dbData = new Uint8Array(arrayBuffer);
       }
 
-      console.log(`✅ Downloaded database (${(dbData.length / 1024 / 1024).toFixed(2)} MB)`);
+      logger.debug(`✅ Downloaded database (${(dbData.length / 1024 / 1024).toFixed(2)} MB)`);
 
       // Load database into memory using sqlite3_deserialize
       this.db = new this.sqlite3.oo1.DB(":memory:");
@@ -136,7 +137,7 @@ class SotaDatabase {
 
       // Verify database integrity
       const count = this.db.selectValue("SELECT COUNT(*) FROM summits");
-      console.log(`✅ Database ready with ${count?.toLocaleString()} summits`);
+      logger.debug(`✅ Database ready with ${count?.toLocaleString()} summits`);
     } catch (error) {
       console.error("❌ Failed to initialize database:", error);
       this.initPromise = null;
@@ -291,7 +292,7 @@ class SotaDatabase {
         },
       });
     } catch {
-      console.warn("⚠️  Metadata table not found (older database version)");
+      logger.warn("⚠️  Metadata table not found (older database version)");
     }
 
     return metadata;
@@ -305,10 +306,10 @@ class SotaDatabase {
       if ("storage" in navigator && "getDirectory" in navigator.storage) {
         const opfsRoot = await navigator.storage.getDirectory();
         await opfsRoot.removeEntry("sota.db");
-        console.log("✅ Cleared OPFS cache");
+        logger.debug("✅ Cleared OPFS cache");
       }
     } catch (error) {
-      console.warn("⚠️  Failed to clear OPFS cache:", error);
+      logger.warn("⚠️  Failed to clear OPFS cache:", error);
     }
   }
 

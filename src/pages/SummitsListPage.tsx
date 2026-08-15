@@ -10,6 +10,7 @@ import { SummitFilters } from "../components/SummitFilters";
 import { SummitTable } from "../components/SummitTable";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { useSummitFilters } from "../hooks/useSummitFilters";
+import { logger } from "../utils/logger";
 
 export function SummitsListPage() {
   const isOnline = useOnlineStatus();
@@ -26,7 +27,7 @@ export function SummitsListPage() {
           setSotaBuildDate(metadata.buildDate);
         }
       } catch (error) {
-        console.warn("Failed to load database metadata:", error);
+        logger.warn("Failed to load database metadata:", error);
       }
     };
     loadMetadata();
