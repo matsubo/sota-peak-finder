@@ -57,8 +57,10 @@ jobs:
       - name: Build
         run: bun run build
 
+      # With coverage, so the thresholds in vitest.config.ts are enforced here
+      # rather than being advisory.
       - name: Unit tests
-        run: bun run test
+        run: bun run test:coverage
 
       - name: Install Playwright browser
         run: bunx playwright install --with-deps chromium

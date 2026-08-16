@@ -25,6 +25,15 @@ export default defineConfig({
         "src/locales/**",
         "src/types/**",
       ],
+      // Enforced in CI so the number cannot quietly regress. Statements and
+      // lines are the target; branches and functions are pinned just under
+      // their current level to stop backsliding without blocking work.
+      thresholds: {
+        statements: 80,
+        lines: 80,
+        branches: 68,
+        functions: 75,
+      },
     },
   },
 });

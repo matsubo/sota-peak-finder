@@ -121,7 +121,7 @@ describe("useSummitFilters", () => {
   });
 
   it("sends blank text filters as undefined rather than empty strings", async () => {
-    const { result } = renderHook(() => useSummitFilters(), { wrapper: hookWrapper() });
+    renderHook(() => useSummitFilters(), { wrapper: hookWrapper() });
     await flushDebounce();
 
     expect(searchSummits.mock.calls[0][0]).toMatchObject({

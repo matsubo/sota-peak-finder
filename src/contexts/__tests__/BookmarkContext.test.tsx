@@ -8,6 +8,10 @@ const wrapper = ({ children }: { children: ReactNode }) => (
   <BookmarkProvider>{children}</BookmarkProvider>
 );
 
+function lastEvent() {
+  return window.dataLayer[window.dataLayer.length - 1];
+}
+
 function stored() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
 }
@@ -93,14 +97,14 @@ describe("useBookmarks", () => {
     const { result } = renderHook(() => useBookmarks(), { wrapper });
 
     act(() => result.current.cycleBookmark("JA/SO-001"));
-    expect(window.dataLayer.at(-1)).toMatchObject({
+    expect(lastEvent()).toMatchObject({
       event: "bookmark_cycle",
       from_status: "none",
       to_status: "want_to_go",
     });
 
     act(() => result.current.removeBookmark("JA/SO-001"));
-    expect(window.dataLayer.at(-1)).toMatchObject({
+    expect(lastEvent()).toMatchObject({
       event: "bookmark_remove",
       previous_status: "want_to_go",
     });

@@ -108,14 +108,14 @@ describe("useActivations", () => {
 describe("useActivatorHistory", () => {
   it("loads an activator's log", async () => {
     fetchActivatorHistory.mockResolvedValue([{ summitCode: "JA/SO-001" }]);
-    const { result } = renderHook(() => useActivatorHistory(42));
+    const { result } = renderHook(() => useActivatorHistory("42"));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   it("reports a failure rather than throwing", async () => {
     fetchActivatorHistory.mockRejectedValue(new Error("no such activator"));
-    const { result } = renderHook(() => useActivatorHistory(42));
+    const { result } = renderHook(() => useActivatorHistory("42"));
 
     await waitFor(() => expect(result.current.error).toBeTruthy());
   });

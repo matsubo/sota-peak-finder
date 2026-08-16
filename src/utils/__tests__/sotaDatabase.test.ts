@@ -76,7 +76,7 @@ describe("initialisation", () => {
 
     await sotaDatabase.init();
     expect(seen.length).toBeGreaterThan(0);
-    expect(seen.at(-1)?.[0]).toBe(32);
+    expect(seen[seen.length - 1][0]).toBe(32);
   });
 
   it("stops notifying a listener once it unsubscribes", async () => {
