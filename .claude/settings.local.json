@@ -61,7 +61,8 @@
       "Bash(git push:*)",
       "Skill(commit-commands:commit-push-pr)",
       "Bash(lsof -iTCP:5173 -sTCP:LISTEN)",
-      "Bash(npx playwright *)"
+      "Bash(npx playwright *)",
+      "Bash(git merge:*)"
     ]
   }
 }
