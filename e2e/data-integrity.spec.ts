@@ -24,6 +24,39 @@ function collectPageErrors(page: Page): string[] {
   return errors;
 }
 
+/**
+ * Third-party APIs return stub payloads for the console checks.
+ *
+ * The app logs console.error when these fail, and this suite now gates
+ * deployment, so leaving them live would let an outage at open-meteo or
+ * sota.org.uk block a release for reasons that have nothing to do with the
+ * change being shipped. Requests are still issued, so a Content-Security-Policy
+ * that failed to allow these hosts is still caught.
+ */
+async function stubThirdPartyApis(page: Page): Promise<void> {
+  await page.route(/api2\.sota\.org\.uk|api-db2\.sota\.org\.uk/, (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
+  );
+  await page.route(/api\.open-meteo\.com/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        elevation: 1000,
+        daily: {
+          time: [],
+          weathercode: [],
+          temperature_2m_max: [],
+          temperature_2m_min: [],
+          precipitation_sum: [],
+          windspeed_10m_max: [],
+          windgusts_10m_max: [],
+        },
+      }),
+    }),
+  );
+}
+
 test.describe("Summit data actually loads", () => {
   test("dashboard reports a realistic worldwide summit count", async ({ page }) => {
     await page.goto("/sota-peak-finder/");
@@ -66,6 +99,7 @@ test.describe("Pages load without console errors", () => {
   ]) {
     test(`no console errors on ${route}`, async ({ page }) => {
       const errors = collectPageErrors(page);
+      await stubThirdPartyApis(page);
 
       await page.goto(route);
       await expect(page.locator("header")).toBeVisible({ timeout: 30000 });
